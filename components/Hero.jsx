@@ -47,8 +47,8 @@ const Hero = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
                     {/* Card */}
                     <div className="bg-white rounded-xl shadow-md p-6 border border-indigo-100 hover:shadow-lg transition-shadow duration-300">
-                        <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                            <Brain className="h-6 w-6 text-indigo-600" />
+                        <div className="w-12 h-12 group hover:bg-indigo-200 transition-all duration-300  bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
+                            <Brain className="h-6 w-6 text-indigo-600 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" />
                         </div>
                         <h3 className="font-semibold text-lg text-gray-800 mb-2">AI Content Generation</h3>
                         <p className="text-gray-600 text-sm">Create high-quality blog posts, articles, and marketing copy in minutes with our advanced AI.</p>
@@ -56,8 +56,8 @@ const Hero = () => {
                     
                     {/* Card */}
                     <div className="bg-white rounded-xl shadow-md p-6 border border-purple-100 hover:shadow-lg transition-shadow duration-300">
-                        <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                            <BarChart3 className="h-6 w-6 text-purple-600" />
+                        <div className="w-12 h-12 group hover:bg-purple-200 transition-all duration-300  bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                            <BarChart3 className="h-6 w-6 text-purple-600 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" />
                         </div>
                         <h3 className="font-semibold text-lg text-gray-800 mb-2">SEO Scoring & Optimization</h3>
                         <p className="text-gray-600 text-sm">Get real-time SEO analysis and recommendations to maximize your content's search visibility.</p>
@@ -65,8 +65,8 @@ const Hero = () => {
                     
                     {/* Content Publishing Card */}
                     <div className="bg-white rounded-xl shadow-md p-6 border border-indigo-100 hover:shadow-lg transition-shadow duration-300">
-                        <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
-                            <Send className="h-6 w-6 text-indigo-600" />
+                        <div className="w-12 h-12 group hover:bg-indigo-200 transition-all duration-300  bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
+                            <Send className="h-6 w-6 text-indigo-600 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" />
                         </div>
                         <h3 className="font-semibold text-lg text-gray-800 mb-2">One-Click Publishing</h3>
                         <p className="text-gray-600 text-sm">Publish your optimized content directly to your blog or CMS with our seamless integration.</p>
