@@ -1,6 +1,7 @@
 "use client"
 import React from 'react';
 import { Brain, BarChart3, Send, Sparkles } from 'lucide-react';
+import Link from 'next/link';
 
 const Hero = () => {
     return (
@@ -32,9 +33,9 @@ const Hero = () => {
 
                 {/* Buttons */}
                 <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
-                    <button className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold px-6 py-3 md:px-8 md:py-4 rounded-lg shadow-lg hover:shadow-xl hover:from-purple-600 hover:to-indigo-600 transition duration-150 transform cursor-pointer flex items-center justify-center">
+                    <Link href="/login" className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold px-6 py-3 md:px-8 md:py-4 rounded-lg shadow-lg hover:shadow-xl hover:from-purple-600 hover:to-indigo-600 transition duration-150 transform cursor-pointer flex items-center justify-center">
                         Start Creating Now
-                    </button>
+                    </Link>
                     <button className="bg-white text-gray-800 border-2 border-indigo-100 font-semibold px-6 py-3 md:px-8 md:py-4 rounded-lg hover:border-indigo-200 hover:bg-indigo-50 transition duration-300 flex items-center justify-center cursor-pointer">
                         View All Features
                     </button>
@@ -44,7 +45,7 @@ const Hero = () => {
             {/* Feature Cards */}
             <div className='max-w-6xl mx-auto px-4'>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
-                    {/* AI Content Generation Card */}
+                    {/* Card */}
                     <div className="bg-white rounded-xl shadow-md p-6 border border-indigo-100 hover:shadow-lg transition-shadow duration-300">
                         <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
                             <Brain className="h-6 w-6 text-indigo-600" />
@@ -53,7 +54,7 @@ const Hero = () => {
                         <p className="text-gray-600 text-sm">Create high-quality blog posts, articles, and marketing copy in minutes with our advanced AI.</p>
                     </div>
                     
-                    {/* SEO Scoring Card */}
+                    {/* Card */}
                     <div className="bg-white rounded-xl shadow-md p-6 border border-purple-100 hover:shadow-lg transition-shadow duration-300">
                         <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
                             <BarChart3 className="h-6 w-6 text-purple-600" />
