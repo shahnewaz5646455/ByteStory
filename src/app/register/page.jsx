@@ -8,37 +8,46 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 // Icons
-// import { FcGoogle } from "react-icons/fc";
-import { Mail, Lock, Loader2 } from "lucide-react";
+import { Mail, Lock, User, Loader2 } from "lucide-react";
 import { Eye, EyeOff } from "lucide-react";
 
-function LoginPage() {
+function RegisterPage() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  async function handleEmailLogin(e) {
+  async function handleRegister(e) {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
     setLoading(true);
-    await signIn("credentials", { redirect: false, email, password });
+    // Call your backend API to create the user
+    // await fetch("/api/register", { method: "POST", body: JSON.stringify({ name, email, password }) })
+    //   .then(res => res.json())
+    //   .then(() => signIn("credentials", { email, password }));
     setLoading(false);
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 ">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50">
       <Card className="max-w-md w-full overflow-hidden shadow-xl">
-        {/* Form */}
-        <CardContent className="px-6 ">
+        <CardContent className="px-6">
           <div className="mb-2 text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-1 text-gray-900">
-              Welcome back
+              Create your account
             </h2>
+
             <h3 className="text-2xl md:text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-              Sign in
+              Sign up
             </h3>
             <p className="text-sm text-slate-600">
-              Use your email or continue with Google
+              Sign up with email or continue with Google
             </p>
           </div>
 
@@ -46,11 +55,9 @@ function LoginPage() {
             {/* Google Button */}
             <Button
               onClick={() => signIn("google")}
-              className="w-full flex items-center gap-2 cursor-pointer bg-white text-gray-800 border-2 border-indigo-100 font-semibold px-6 py-3 md:px-8 md:py-4 rounded-lg hover:border-indigo-200 hover:bg-indigo-50 transition duration-300  justify-center "
+              className="w-full flex items-center gap-2 cursor-pointer bg-white text-gray-800 border-2 border-indigo-100 font-semibold px-6 py-3 md:px-8 md:py-4 rounded-lg hover:border-indigo-200 hover:bg-indigo-50 transition duration-300 justify-center"
               variant="outline"
-              aria-label="Sign in with Google"
             >
-              {/* google icon svg */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 48 48"
@@ -72,8 +79,25 @@ function LoginPage() {
               <Separator className="flex-1" />
             </div>
 
-            {/* Email/Password Form */}
-            <form onSubmit={handleEmailLogin} className="space-y-3">
+            {/* Registration Form */}
+            <form onSubmit={handleRegister} className="space-y-3">
+              {/* Name */}
+              <div className="space-y-1">
+                <Label htmlFor="name">Name</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                  <Input
+                    id="name"
+                    type="text"
+                    className="pl-10"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Email */}
               <div className="space-y-1">
                 <Label htmlFor="email">Email</Label>
                 <div className="relative">
@@ -89,6 +113,7 @@ function LoginPage() {
                 </div>
               </div>
 
+              {/* Password */}
               <div className="space-y-1">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
@@ -115,37 +140,54 @@ function LoginPage() {
                 </div>
               </div>
 
-              {/* Forgot password */}
-              <div className="flex items-center justify-between">
-                <a
-                  className="text-sm underline hover:text-indigo-600"
-                  href="/forgot"
-                >
-                  Forgot password?
-                </a>
+              {/* Confirm Password */}
+              <div className="space-y-1">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    className="pl-10 pr-10"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 cursor-pointer"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               </div>
 
-              {/* login button */}
+              {/* Register button */}
               <Button
                 type="submit"
                 disabled={loading}
                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold px-6 py-3 md:px-8 md:py-4 rounded-lg shadow-lg hover:shadow-xl hover:from-purple-600 hover:to-indigo-600 transition duration-150 transform cursor-pointer flex"
               >
                 {loading ? (
-                  <div className="flex items-center gap-2 ">
+                  <div className="flex items-center gap-2">
                     <Loader2 className="animate-spin w-4 h-4" />
-                    Signing in...
+                    Registering...
                   </div>
                 ) : (
-                  "Sign in with Email"
+                  "Sign up with Email"
                 )}
               </Button>
             </form>
 
             <p className="text-sm text-center">
-              Don’t have an account?{" "}
-              <a className="underline  hover:text-indigo-600" href="/register">
-                Create account
+              Already have an account?{" "}
+              <a className="underline hover:text-indigo-600" href="/login">
+                Sign in
               </a>
             </p>
           </div>
@@ -155,4 +197,4 @@ function LoginPage() {
   );
 }
 
-export default LoginPage;
+export default RegisterPage;
