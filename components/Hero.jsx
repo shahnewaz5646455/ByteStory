@@ -5,11 +5,11 @@ import Link from 'next/link';
 
 const Hero = () => {
     return (
-        <section className="relative bg-gradient-to-br from-indigo-50 min-h-screen via-white to-purple-50 text-center py-16 md:py-24 px-4 overflow-hidden">
+        <section className="relative bg-gradient-to-br from-indigo-50 min-h-[calc(100vh-64px)] via-white to-purple-50 text-center py-16 md:py-36 px-4 overflow-hidden">
             {/* Background bubbles */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
                 <div className="absolute -top-20 -left-20 w-72 h-72 bg-purple-100 rounded-full opacity-50 mix-blend-multiply animate-blob"></div>
-                <div className="absolute bottom-0 -right-20 w-72 h-72 bg-indigo-100 rounded-full opacity-50 mix-blend-multiply animate-blob animation-delay-2000"></div>
+                <div className="absolute md:block hidden bottom-0 -right-20 w-72 h-72 bg-indigo-100 rounded-full opacity-50 mix-blend-multiply animate-blob animation-delay-2000"></div>
             </div>
             
             <div className="max-w-4xl mx-auto relative z-10">
@@ -32,18 +32,18 @@ const Hero = () => {
                 </p>
 
                 {/* Buttons */}
-                <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
-                    <Link href="/login" className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold px-6 py-3 md:px-8 md:py-4 rounded-lg shadow-lg hover:shadow-xl hover:from-purple-600 hover:to-indigo-600 transition duration-150 transform cursor-pointer flex items-center justify-center">
+                <div className="flex justify-center gap-4 mb-16">
+                    <Link href="/login" className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold px-6 py-3 md:px-8 md:py-4 rounded-lg shadow-lg hover:shadow-xl hover:from-purple-600 hover:to-indigo-600 transition duration-150 transform cursor-pointer flex items-center justify-center w-max">
                         Start Creating Now
                     </Link>
-                    <button className="bg-white text-gray-800 border-2 border-indigo-100 font-semibold px-6 py-3 md:px-8 md:py-4 rounded-lg hover:border-indigo-200 hover:bg-indigo-50 transition duration-300 flex items-center justify-center cursor-pointer">
+                    <button className="bg-white text-gray-800 border-2 border-indigo-100 font-semibold px-6 py-3 md:px-8 md:py-4 rounded-lg hover:border-indigo-200 hover:bg-indigo-50 transition duration-300 flex items-center justify-center cursor-pointer w-max">
                         View All Features
                     </button>
                 </div>
             </div>
             
             {/* Feature Cards */}
-            <div className='max-w-6xl mx-auto px-4'>
+            <div className='max-w-6xl mx-auto'>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
                     {/* Card */}
                     <div className="bg-white rounded-xl shadow-md p-6 border border-indigo-100 hover:shadow-lg transition-shadow duration-300">
@@ -54,7 +54,6 @@ const Hero = () => {
                         <p className="text-gray-600 text-sm">Create high-quality blog posts, articles, and marketing copy in minutes with our advanced AI.</p>
                     </div>
                     
-                    {/* Card */}
                     <div className="bg-white rounded-xl shadow-md p-6 border border-purple-100 hover:shadow-lg transition-shadow duration-300">
                         <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
                             <BarChart3 className="h-6 w-6 text-purple-600" />
@@ -63,7 +62,6 @@ const Hero = () => {
                         <p className="text-gray-600 text-sm">Get real-time SEO analysis and recommendations to maximize your content's search visibility.</p>
                     </div>
                     
-                    {/* Content Publishing Card */}
                     <div className="bg-white rounded-xl shadow-md p-6 border border-indigo-100 hover:shadow-lg transition-shadow duration-300">
                         <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
                             <Send className="h-6 w-6 text-indigo-600" />
