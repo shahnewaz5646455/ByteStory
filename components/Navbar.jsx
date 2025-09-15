@@ -1,0 +1,132 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Menu, PencilLine, X } from "lucide-react";
+
+export default function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+
+  return (
+    <nav className="bg-white shadow-md sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16 items-center">
+          
+          {/* Logo */}
+          <Link href="/" className="flex-shrink-0 text-black font-bold text-2xl flex items-center gap-2 cursor-pointer">
+            <PencilLine />
+            ByteStory
+          </Link>
+
+          {/* Desktop Menu */}
+          <div className="hidden md:flex space-x-6 text-black font-medium">
+            <Link 
+              href="/" 
+              className={`hover:text-indigo-600 transition-colors ${pathname === "/" ? "text-indigo-600 font-semibold" : ""}`}
+            >
+              Home
+            </Link>
+            <Link 
+              href="/features" 
+              className={`hover:text-indigo-600 transition-colors ${pathname === "/features" ? "text-indigo-600 font-semibold" : ""}`}
+            >
+              Features
+            </Link>
+            <Link 
+              href="/blog" 
+              className={`hover:text-indigo-600 transition-colors ${pathname === "/blog" ? "text-indigo-600 font-semibold" : ""}`}
+            >
+              Blogs
+            </Link>
+            <Link 
+              href="/about" 
+              className={`hover:text-indigo-600 transition-colors ${pathname === "/about" ? "text-indigo-600 font-semibold" : ""}`}
+            >
+              About
+            </Link>
+            <Link 
+              href="/contact" 
+              className={`hover:text-indigo-600 transition-colors ${pathname === "/contact" ? "text-indigo-600 font-semibold" : ""}`}
+            >
+              Contact
+            </Link>
+          </div>
+
+          {/* Button */}
+          <div className="hidden md:flex">
+            <Link
+              href="/login"
+              className="bg-black text-white font-semibold px-4 py-2 rounded-lg shadow hover:bg-gray-800 transition-colors"
+            >
+              Get Started
+            </Link>
+          </div>
+
+          {/* menu button */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-black focus:outline-none"
+            >
+              {isOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Menu Dropdown */}
+      {isOpen && (
+        <div className="md:hidden absolute right-4 top-16 bg-white rounded-lg shadow-xl border border-gray-200 w-56">
+          <div className="px-2 pt-2 pb-3 space-y-1 text-black font-medium">
+            <Link 
+              href="/" 
+              className={`block px-3 py-2 rounded hover:bg-gray-100 ${pathname === "/" ? "bg-indigo-50 text-indigo-600 font-semibold" : ""}`}
+              onClick={() => setIsOpen(false)}
+            >
+              Home
+            </Link>
+            <Link 
+              href="/features" 
+              className={`block px-3 py-2 rounded hover:bg-gray-100 ${pathname === "/features" ? "bg-indigo-50 text-indigo-600 font-semibold" : ""}`}
+              onClick={() => setIsOpen(false)}
+            >
+              Features
+            </Link>
+            <Link 
+              href="/blog" 
+              className={`block px-3 py-2 rounded hover:bg-gray-100 ${pathname === "/blog" ? "bg-indigo-50 text-indigo-600 font-semibold" : ""}`}
+              onClick={() => setIsOpen(false)}
+            >
+              Blogs
+            </Link>
+            <Link 
+              href="/about" 
+              className={`block px-3 py-2 rounded hover:bg-gray-100 ${pathname === "/about" ? "bg-indigo-50 text-indigo-600 font-semibold" : ""}`}
+              onClick={() => setIsOpen(false)}
+            >
+              About
+            </Link>
+            <Link 
+              href="/contact" 
+              className={`block px-3 py-2 rounded hover:bg-gray-100 ${pathname === "/contact" ? "bg-indigo-50 text-indigo-600 font-semibold" : ""}`}
+              onClick={() => setIsOpen(false)}
+            >
+              Contact
+            </Link>
+            <div className="pt-2 border-t border-gray-200">
+              <Link 
+                href="/login" 
+                className="block bg-black text-white px-3 py-2 rounded shadow hover:bg-gray-800 transition-colors text-center"
+                onClick={() => setIsOpen(false)}
+              >
+                Get Started
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+    </nav>
+  );
+}
