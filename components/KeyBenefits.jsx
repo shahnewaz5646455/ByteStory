@@ -26,7 +26,7 @@ const benefits = [
   {
     icon: <BarChart3 className="h-7 w-7 text-purple-600" />,
     title: "Performance Analytics",
-    desc: "Track your blog’s growth with detailed insights on views, engagement, and audience reach.",
+    desc: "Track your blog's growth with detailed insights on views, engagement, and audience reach.",
   },
   {
     icon: <Heart className="h-7 w-7 text-purple-600" />,
@@ -39,7 +39,7 @@ const benefits = [
 const KeyBenefits = () => {
   return (
     <section className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4 md:px-0">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
             Why Choose Our <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">AI Platform</span>

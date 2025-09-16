@@ -3,35 +3,36 @@
 import React from 'react';
 import { Brain, BarChart3, Send, Sparkles } from 'lucide-react';
 import Link from 'next/link';
+import { SparklesText } from '@/components/ui/sparkles-text';
 
 const Hero = () => {
   return (
-    <section className="relative bg-gradient-to-br from-indigo-50 min-h-[calc(100vh-64px)] via-white to-purple-50 text-center py-16 md:py-36 px-4 overflow-hidden">
+    <section className="relative bg-gradient-to-br from-indigo-50 min-h-screen via-white to-purple-50 px-4 overflow-hidden flex flex-col items-center justify-center py-12 md:py-16 lg:py-20">
       {/* Background bubbles */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute -top-20 -left-20 w-72 h-72 bg-purple-100 rounded-full opacity-50 mix-blend-multiply animate-blob"></div>
-        <div className="absolute md:block hidden bottom-0 -right-20 w-72 h-72 bg-indigo-100 rounded-full opacity-50 mix-blend-multiply animate-blob animation-delay-2000"></div>
+        <div className="absolute -top-16 -left-16 md:-top-20 md:-left-20 w-48 h-48 md:w-72 md:h-72 bg-purple-100 rounded-full opacity-50"></div>
+        <div className="absolute bottom-0 -right-16 md:-right-20 w-48 h-48 md:w-72 md:h-72 bg-indigo-100 rounded-full opacity-50 mix-blend-multiply"></div>
       </div>
 
-      <div className="max-w-4xl mx-auto relative z-10">
+      <div className="max-w-4xl mx-auto relative z-10 w-full">
         {/* Badge */}
-        <div className="inline-flex mb-6">
-          <span className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-sm font-medium px-4 py-2 rounded-full shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center">
-            <Sparkles className="w-4 h-4 mr-2" />
+        <div className="inline-flex mb-4 md:mb-6 justify-center w-full">
+          <span className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-xs md:text-sm font-medium px-3 py-1 md:px-4 md:py-2 rounded-full shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center">
+            <Sparkles className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
             AI-Powered Content Suite
           </span>
         </div>
 
         {/* Heading */}
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight text-center">
           Create, Optimize & Publish with{" "}
-          <span className="relative inline-block bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-            AI Power
+          <span className="inline-block">
+            <SparklesText>AI Power</SparklesText>
           </span>
         </h1>
 
         {/* Subheading */}
-        <p className="text-lg md:text-xl text-gray-700 mb-10 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-base md:text-lg lg:text-xl text-gray-700 mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed text-center px-4">
           The all-in-one platform for AI content generation, SEO optimization, and seamless publishing.
         </p>
 
