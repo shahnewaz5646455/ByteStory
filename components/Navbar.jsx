@@ -56,12 +56,14 @@ export default function Navbar() {
 
           {/* Button */}
           <div className="hidden md:flex">
-            <Link
-              href="/login"
-              className="bg-black text-white font-semibold px-4 py-2 rounded-lg shadow hover:bg-gray-800 transition-colors"
+            <Link href="/login" className="group/button relative inline-flex items-center justify-center overflow-hidden rounded-md bg-gray-800 backdrop-blur-lg px-6 py-2 text-base font-semibold text-white transition-all duration-150 ease-in-out hover:shadow-lg hover:shadow-gray-600/50 border border-white/20 h-max">
+            <span>Sign In</span>
+            <div
+              className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]"
             >
-              Get Started
-            </Link>
+              <div className="relative h-full w-10 bg-white/20"></div>
+            </div>
+          </Link>
           </div>
 
           {/* menu button */}
