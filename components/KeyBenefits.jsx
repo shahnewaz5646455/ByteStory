@@ -52,7 +52,7 @@ const KeyBenefits = () => {
           {benefits.map((benefit, index) => (
             <div
               key={index}
-              className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 p-6 rounded-2xl border border-indigo-100 dark:border-gray-700 hover:shadow-lg dark:hover:shadow-purple-900/20 transition-all duration-300 group hover:-translate-y-1"
+              className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 p-6 rounded-2xl border border-indigo-100 dark:border-gray-700 hover:shadow-lg dark:hover:shadow-purple-900/20 transition-all duration-300 group hover:-translate-y-1"
             >
               <div className="w-14 h-14 bg-white dark:bg-gray-800 rounded-xl shadow-sm flex items-center justify-center mb-4 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/30 transition-colors">
                 {benefit.icon}

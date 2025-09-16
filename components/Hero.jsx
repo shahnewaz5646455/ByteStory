@@ -7,7 +7,7 @@ import { SparklesText } from '@/components/ui/sparkles-text';
 
 const Hero = () => {
   return (
-    <section className="relative bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 via-white to-purple-50 px-4 overflow-hidden flex flex-col items-center justify-center py-12 md:py-16 lg:py-0 min-h-[calc(100vh-64px)]">
+    <section className="relative bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 via-white to-purple-50 px-4 overflow-hidden flex flex-col items-center justify-center py-12 md:py-16 lg:py-0 min-h-[calc(100vh-64px)]">
       {/* Background bubbles */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute -top-16 -left-16 md:-top-20 md:-left-20 w-48 h-48 md:w-72 md:h-72 bg-purple-100 dark:bg-purple-900/30 rounded-full opacity-50 dark:opacity-30"></div>
