@@ -4,47 +4,46 @@ import { PenTool, Zap, TrendingUp, Layout, BarChart3, Heart } from "lucide-react
 
 const benefits = [
   {
-    icon: <PenTool className="h-7 w-7 text-purple-600" />,
+    icon: <PenTool className="h-7 w-7 text-purple-600 dark:text-purple-400" />,
     title: "Smart Content Creation",
     desc: "Generate high-quality, engaging content in minutes with our advanced AI algorithms.",
   },
   {
-    icon: <TrendingUp className="h-7 w-7 text-purple-600" />,
+    icon: <TrendingUp className="h-7 w-7 text-purple-600 dark:text-purple-400" />,
     title: "SEO Optimization",
     desc: "Built-in SEO tools that analyze and optimize your content for higher search rankings.",
   },
   {
-    icon: <Zap className="h-7 w-7 text-purple-600" />,
+    icon: <Zap className="h-7 w-7 text-purple-600 dark:text-purple-400" />,
     title: "Lightning Fast",
     desc: "Create, edit, and publish content 10x faster than traditional methods.",
   },
   {
-    icon: <Layout className="h-7 w-7 text-purple-600" />,
+    icon: <Layout className="h-7 w-7 text-purple-600 dark:text-purple-400" />,
     title: "AI Blog Templates",
     desc: "Kickstart your writing with ready-made AI-powered blog templates tailored to your niche.",
   },
   {
-    icon: <BarChart3 className="h-7 w-7 text-purple-600" />,
+    icon: <BarChart3 className="h-7 w-7 text-purple-600 dark:text-purple-400" />,
     title: "Performance Analytics",
     desc: "Track your blog's growth with detailed insights on views, engagement, and audience reach.",
   },
   {
-    icon: <Heart className="h-7 w-7 text-purple-600" />,
+    icon: <Heart className="h-7 w-7 text-purple-600 dark:text-purple-400" />,
     title: "Engagement Features",
     desc: "Boost interaction with likes, comments, and save options for your readers.",
   },
 ];
 
-
 const KeyBenefits = () => {
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-white dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Why Choose Our <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">AI Platform</span>
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Discover the powerful features that make content creation effortless and effective
           </p>
         </div>
@@ -53,15 +52,15 @@ const KeyBenefits = () => {
           {benefits.map((benefit, index) => (
             <div
               key={index}
-              className="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-2xl border border-indigo-100 hover:shadow-lg transition-all duration-300 group hover:-translate-y-1"
+              className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 p-6 rounded-2xl border border-indigo-100 dark:border-gray-700 hover:shadow-lg dark:hover:shadow-purple-900/20 transition-all duration-300 group hover:-translate-y-1"
             >
-              <div className="w-14 h-14 bg-white rounded-xl shadow-sm flex items-center justify-center mb-4 group-hover:bg-purple-100 transition-colors">
+              <div className="w-14 h-14 bg-white dark:bg-gray-800 rounded-xl shadow-sm flex items-center justify-center mb-4 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/30 transition-colors">
                 {benefit.icon}
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3 group-hover:text-purple-700 transition-colors">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 group-hover:text-purple-700 dark:group-hover:text-purple-400 transition-colors">
                 {benefit.title}
               </h3>
-              <p className="text-gray-600 group-hover:text-gray-700 transition-colors">
+              <p className="text-gray-600 dark:text-gray-300 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors">
                 {benefit.desc}
               </p>
             </div>
