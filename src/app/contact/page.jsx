@@ -94,7 +94,7 @@ export default function Contact() {
             Get in touch with our team
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-sm text-gray-300 md:text-base">
-            Send us a message and we’ll get back to you within one business day.
+            Send us a message. we’ll get back to you within one business day.
           </p>
         </motion.div>
 
