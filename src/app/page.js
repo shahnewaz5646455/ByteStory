@@ -2,6 +2,7 @@
 import Feature from "../../components/Feature";
 import Hero from "../../components/Hero";
 import KeyBenefits from "../../components/KeyBenefits";
+import { MarqueeDemo } from "../../components/Marquee";
 
 export default async function Home() {
  
@@ -9,8 +10,8 @@ export default async function Home() {
   return (
     <>
       <Hero />
-      {/* You can render data here */}
       <Feature />
+      <MarqueeDemo />
       <KeyBenefits />
     </>
   );
