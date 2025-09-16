@@ -21,7 +21,7 @@ const features = [
 
 const Feature = () => {
   return (
-    <section className="py-12 md:py-16 lg:py-20 bg-gray-50 dark:bg-gray-900">
+    <section className="py-12 md:py-16 lg:py-20 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="mb-10 md:mb-12 lg:mb-16 flex md:flex-row justify-between items-center md:items-start gap-6 md:gap-0">
