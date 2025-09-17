@@ -1,0 +1,53 @@
+Website color theme:
+Primary Colors:
+Indigo: #4f46e5 (indigo-600)
+
+Purple: #7c3aed (purple-600)
+
+Color Palette:
+Light Mode:
+Background: bg-white or gradient from-indigo-50 via-white to-purple-50
+
+Text: text-gray-900 (dark gray)
+
+Accents: Indigo and purple gradients
+
+Borders: border-indigo-100 (light indigo)
+
+Dark Mode:
+Background: dark:bg-gray-900 or gradient dark:from-gray-900 dark:via-gray-800 dark:to-purple-900
+
+Text: dark:text-white
+
+Accents: Indigo and purple with darker shades
+
+Borders: dark:border-gray-700
+
+Specific Color Values:
+Indigo-50: #eef2ff
+
+Indigo-100: #e0e7ff
+
+Indigo-500: #6366f1
+
+Indigo-600: #4f46e5 (your primary)
+
+Purple-600: #7c3aed (your secondary)
+
+Gray-700: #374151 (dark mode text/borders)
+
+Gray-800: #1f2937 (dark mode background)
+
+Gray-900: #111827 (dark mode background)
+
+Gradient Combinations:
+Your design uses beautiful gradients like:
+
+bg-gradient-to-r from-indigo-600 to-purple-600 (buttons)
+
+bg-gradient-to-r from-indigo-500 to-purple-600 (badges)
+
+bg-gradient-to-br from-indigo-50 via-white to-purple-50 (background)
+
+
+GEMINI_API_KEY=AIzaSyBFWXBdf57XWExzv4K7edNux_KuM2LUloU
