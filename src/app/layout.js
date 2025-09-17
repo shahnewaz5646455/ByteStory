@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "../../components/Navbar";
 import { ThemeProvider } from "../../components/theme-provider";
+import { ToastContainer } from "react-toastify";
 
 
 const geistSans = Geist({
@@ -25,6 +26,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -32,6 +34,17 @@ export default function RootLayout({ children }) {
           disableTransitionOnChange
         >
           <Navbar />
+          <ToastContainer
+  position="top-right"
+  autoClose={2000}
+  hideProgressBar={false}
+  newestOnTop={false}
+  closeOnClick
+  pauseOnHover
+  draggable
+  theme="light"
+/>
+
           <main>
             {children}
           </main>
