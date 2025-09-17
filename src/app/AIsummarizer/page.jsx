@@ -11,15 +11,31 @@ export default function Home() {
 
   const handleSummarize = async () => {
     if (!input.trim()) return;
-    
+
     setIsLoading(true);
+    setSummary("");
+    setCopied(false);
+
     try {
-      const result = await summarizeText(input);
-      setSummary(result);
-    } catch (error) {
-      setSummary("Error generating summary. Please try again.");
+      const res = await fetch("/api/summarize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: input }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setSummary(data.summary);
+      } else {
+        alert(data.error || "Failed to summarize text");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong!");
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const handleCopy = async () => {
@@ -67,7 +83,7 @@ export default function Home() {
                 </button>
               )}
             </div>
-            
+
             <textarea
               className="w-full border border-gray-200 dark:border-gray-600 rounded-lg p-4 focus:ring-2 focus:ring-indigo-500 focus:border-transparent dark:bg-gray-700 dark:text-white resize-none transition-all"
               rows={6}
@@ -75,7 +91,7 @@ export default function Home() {
               onChange={(e) => setInput(e.target.value)}
               placeholder="Paste your article, document, or any text you want to summarize..."
             />
-            
+
             <div className="flex justify-between items-center mt-4">
               <span className="text-sm text-gray-500 dark:text-gray-400">
                 {input.length} characters
@@ -117,13 +133,13 @@ export default function Home() {
                   {copied ? "Copied!" : "Copy"}
                 </button>
               </div>
-              
+
               <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
                 <p className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
                   {summary}
                 </p>
               </div>
-              
+
               <div className="flex items-center justify-between mt-4 text-sm text-gray-500 dark:text-gray-400">
                 <span>{summary.length} characters</span>
                 <span>{summary.split(/\s+/).length} words</span>
@@ -131,35 +147,6 @@ export default function Home() {
             </div>
           )}
         </div>
-
-        {/* Features */}
-        {!summary && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-            <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md">
-              <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Sparkles className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-              </div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">AI-Powered</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">Advanced AI algorithms for accurate summaries</p>
-            </div>
-            
-            <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md">
-              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <FileText className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-              </div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Fast & Efficient</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">Get summaries in seconds, not minutes</p>
-            </div>
-            
-            <div className="text-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md">
-              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Copy className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-              </div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Easy to Use</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">Simple copy-paste interface with one-click results</p>
-            </div>
-          </div>
-        )}
       </div>
     </main>
   );

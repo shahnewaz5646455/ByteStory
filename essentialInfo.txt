@@ -51,3 +51,7 @@ bg-gradient-to-br from-indigo-50 via-white to-purple-50 (background)
 
 
 GEMINI_API_KEY=AIzaSyBFWXBdf57XWExzv4K7edNux_KuM2LUloU
+
+
+
+RUBAID_GEMINI_API_KEY=AIzaSyBewQB-uKyYJpBwvLLmvcU8BautEN_E78k
