@@ -5,9 +5,7 @@ import HowItWorks from "../../components/HowItWorks";
 import KeyBenefits from "../../components/KeyBenefits";
 import { MarqueeDemo } from "../../components/Marquee";
 
-export default async function Home() {
- 
-
+export default function Home() {
   return (
     <>
       <Hero />
