@@ -45,7 +45,7 @@ export default function Navbar() {
               Features
             </Link>
             <Link
-              href="/blog"
+              href="/blogs"
               className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${pathname === "/blog" ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""}`}
             >
               Blogs
