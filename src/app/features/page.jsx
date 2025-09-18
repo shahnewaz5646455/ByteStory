@@ -20,6 +20,7 @@ import {
 import { TextAnimate } from "@/components/ui/text-animate";
 import { AuroraText } from "@/components/ui/aurora-text";
 import { toast } from "react-toastify";
+import Reader from "@/components/ui/Reader";
 
 export default function AIWriterPage() {
   const [input, setInput] = useState("");
@@ -322,6 +323,7 @@ export default function AIWriterPage() {
                     <span className="text-sm font-medium">Copy</span>
                   </motion.button>
                 )}
+                {output && <Reader text={output}/>}
               </div>
 
               <div className="bg-gradient-to-br from-white to-indigo-50/50 dark:from-gray-700/80 dark:to-gray-800/80 border-2 border-indigo-100/50 dark:border-gray-600 rounded-2xl p-6 h-48 overflow-y-auto shadow-inner">
