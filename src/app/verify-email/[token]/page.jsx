@@ -6,8 +6,10 @@ import { use, useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const EmailVerification = ({ params }) => {
+  const router = useRouter();
   const { token } = use(params);
   const [isVerified, setIsVerified] = useState(false);
 
@@ -21,6 +23,7 @@ const EmailVerification = ({ params }) => {
 
         if (verificationResponse.success) {
           setIsVerified(true);
+          router.push("/login");
         }
       } catch (error) {
         console.error("Verification failed", error);

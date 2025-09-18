@@ -26,8 +26,14 @@ import z from "zod";
 import { showToast } from "@/lib/showToast";
 import axios from "axios";
 import OtpVerification from "@/components/ui/Application/OtpVerification";
+import { useDispatch } from "react-redux";
+import { login } from "@/store/reducer/authReducer";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 function LoginPage() {
+  const router = useRouter();
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [otpVerifyLoading, setOtpVerifyLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -79,18 +85,20 @@ function LoginPage() {
     try {
       setOtpVerifyLoading(true);
 
-      const { data: registerResponse } = await axios.post(
+      const { data: otpResponse } = await axios.post(
         "/api/test/auth/verify-otp",
         values
       );
 
-      if (!registerResponse.success) {
-        throw new Error(registerResponse.message);
+      if (!otpResponse.success) {
+        throw new Error(otpResponse.message);
       }
 
-      setOtpEmail();
+      setOtpEmail("");
 
-      showToast("success", registerResponse.message);
+      showToast("success", otpResponse.message);
+      dispatch(login(otpResponse.data));
+      router.push("/");
     } catch (error) {
       showToast("error", error.message);
     } finally {
@@ -209,12 +217,12 @@ function LoginPage() {
 
                   {/* Forgot password */}
                   <div className="flex items-center justify-between">
-                    <a
-                      href="/forgot"
+                    <Link
+                      href="/reset-password"
                       className="text-sm underline hover:text-indigo-600"
                     >
                       Forgot password?
-                    </a>
+                    </Link>
                   </div>
 
                   {/* Submit */}
