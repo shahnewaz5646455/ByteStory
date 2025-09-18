@@ -4,7 +4,6 @@ import Navbar from "../../components/Navbar";
 import { ThemeProvider } from "../../components/theme-provider";
 import { ToastContainer } from "react-toastify";
 
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -26,7 +25,6 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -35,20 +33,17 @@ export default function RootLayout({ children }) {
         >
           <Navbar />
           <ToastContainer
-  position="top-right"
-  autoClose={2000}
-  hideProgressBar={false}
-  newestOnTop={false}
-  closeOnClick
-  pauseOnHover
-  draggable
-  theme="light"
-/>
+            position="top-right"
+            autoClose={2000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            pauseOnHover
+            draggable
+            theme="light"
+          />
 
-          <main>
-            {children}
-          </main>
-
+          <main>{children}</main>
         </ThemeProvider>
       </body>
     </html>
