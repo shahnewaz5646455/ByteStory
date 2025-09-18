@@ -67,26 +67,23 @@ export default function Navbar() {
             <p className="text-gray-800 dark:text-gray-100">ByteStory</p>
           </Link>
 
-
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-6 text-black dark:text-gray-200 font-medium">
             <Link
               href="/"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${
-                pathname === "/"
-                  ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
+              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${pathname === "/"
+                ? "text-indigo-600 dark:text-indigo-400 font-semibold"
+                : ""
+                }`}
             >
               Home
             </Link>
             <Link
               href="/features"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${
-                pathname === "/features"
-                  ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
+              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${pathname === "/features"
+                ? "text-indigo-600 dark:text-indigo-400 font-semibold"
+                : ""
+                }`}
             >
               Features
             </Link>
@@ -98,21 +95,19 @@ export default function Navbar() {
             </Link>
             <Link
               href="/about"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${
-                pathname === "/about"
-                  ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
+              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${pathname === "/about"
+                ? "text-indigo-600 dark:text-indigo-400 font-semibold"
+                : ""
+                }`}
             >
               About
             </Link>
             <Link
               href="/contact"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${
-                pathname === "/contact"
-                  ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
+              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${pathname === "/contact"
+                ? "text-indigo-600 dark:text-indigo-400 font-semibold"
+                : ""
+                }`}
             >
               Contact
             </Link>
@@ -178,175 +173,170 @@ export default function Navbar() {
               </Link>
             </div>
 
-          {/* menu button */}
-          <div className="md:hidden flex items-center">
-            {/* Mobile: search + theme + menu */}
+            {/* menu button */}
             <div className="md:hidden flex items-center">
-              {/* mobile search trigger */}
-              <Button
-                variant="outline"
-                size="icon"
-                className="mr-3 border-gray-300 dark:border-gray-600 bg-transparent dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
-                onClick={() => setIsSearchOpen((s) => !s)}
-                aria-label="Open search"
-              >
-                <Search className="h-[1.2rem] w-[1.2rem]" />
-              </Button>
-
-              {/* mobile theme toggle */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="mr-3 border-gray-300 dark:border-gray-600 bg-transparent dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                    <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                    <span className="sr-only">Toggle theme</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+              {/* Mobile: search + theme + menu */}
+              <div className="md:hidden flex items-center">
+                {/* mobile search trigger */}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="mr-3 border-gray-300 dark:border-gray-600 bg-transparent dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  onClick={() => setIsSearchOpen((s) => !s)}
+                  aria-label="Open search"
                 >
-                  <DropdownMenuItem
-                    onClick={() => setTheme("light")}
-                    className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
-                  >
-                    Light
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setTheme("dark")}
-                    className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
-                  >
-                    Dark
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setTheme("system")}
-                    className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
-                  >
-                    System
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  <Search className="h-[1.2rem] w-[1.2rem]" />
+                </Button>
 
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="text-black dark:text-white focus:outline-none transition-colors"
-                aria-label="Toggle menu"
-              >
-                {isOpen ? <X size={28} /> : <Menu size={28} />}
-              </button>
+                {/* mobile theme toggle */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="mr-3 border-gray-300 dark:border-gray-600 bg-transparent dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                      <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+                      <span className="sr-only">Toggle theme</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                  >
+                    <DropdownMenuItem
+                      onClick={() => setTheme("light")}
+                      className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
+                    >
+                      Light
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setTheme("dark")}
+                      className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
+                    >
+                      Dark
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setTheme("system")}
+                      className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
+                    >
+                      System
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <button
+                  onClick={() => setIsOpen(!isOpen)}
+                  className="text-black dark:text-white focus:outline-none transition-colors"
+                  aria-label="Toggle menu"
+                >
+                  {isOpen ? <X size={28} /> : <Menu size={28} />}
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Search box (overlay card) */}
-      {isSearchOpen && (
-        <div className="absolute inset-x-0 top-16 z-[60] flex justify-center px-4">
-          <div
-            ref={searchCardRef}
-            className="w-full max-w-2xl rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl"
-          >
-            <form onSubmit={onSubmitSearch} className="flex items-center gap-2 p-3">
-              <Search className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-              <input
-                ref={searchInputRef}
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search ByteStory..."
-                className="flex-1 bg-transparent outline-none text-gray-900 dark:text-gray-100 placeholder:text-gray-400"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                className="text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                onClick={() => setIsSearchOpen(false)}
-              >
-                <X className="h-5 w-5" />
-              </Button>
-              <Button type="submit" className="bg-black dark:bg-indigo-600 text-white hover:bg-gray-800">
-                Search
-              </Button>
-            </form>
+        {/* Search box (overlay card) */}
+        {isSearchOpen && (
+          <div className="absolute inset-x-0 top-16 z-[60] flex justify-center px-4">
+            <div
+              ref={searchCardRef}
+              className="w-full max-w-2xl rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl"
+            >
+              <form onSubmit={onSubmitSearch} className="flex items-center gap-2 p-3">
+                <Search className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search ByteStory..."
+                  className="flex-1 bg-transparent outline-none text-gray-900 dark:text-gray-100 placeholder:text-gray-400"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  onClick={() => setIsSearchOpen(false)}
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+                <Button type="submit" className="bg-black dark:bg-indigo-600 text-white hover:bg-gray-800">
+                  Search
+                </Button>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Mobile Menu Dropdown */}
-      {isOpen && (
-        <div className="md:hidden absolute right-4 top-16 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 w-56 transition-colors z-50">
-          <div className="px-2 pt-2 pb-3 space-y-1 text-black dark:text-gray-200 font-medium">
-            <Link
-              href="/"
-              className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                pathname === "/"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
-              onClick={() => setIsOpen(false)}
-            >
-              Home
-            </Link>
-            <Link
-              href="/features"
-              className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                pathname === "/features"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
-              onClick={() => setIsOpen(false)}
-            >
-              Features
-            </Link>
-            <Link
-              href="/blog"
-              className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                pathname === "/blog"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
-              onClick={() => setIsOpen(false)}
-            >
-              Blogs
-            </Link>
-            <Link
-              href="/about"
-              className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                pathname === "/about"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
-              onClick={() => setIsOpen(false)}
-            >
-              About
-            </Link>
-            <Link
-              href="/contact"
-              className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                pathname === "/contact"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
-              onClick={() => setIsOpen(false)}
-            >
-              Contact
-            </Link>
-            <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+        {/* Mobile Menu Dropdown */}
+        {isOpen && (
+          <div className="md:hidden absolute right-4 top-16 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 w-56 transition-colors z-50">
+            <div className="px-2 pt-2 pb-3 space-y-1 text-black dark:text-gray-200 font-medium">
               <Link
-                href="/login"
-                className="block bg-black dark:bg-indigo-600 text-white px-3 py-2 rounded shadow hover:bg-gray-800 transition-colors text-center"
+                href="/"
+                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/"
+                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
+                  : ""
+                  }`}
                 onClick={() => setIsOpen(false)}
               >
-                Get Started
+                Home
               </Link>
+              <Link
+                href="/features"
+                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/features"
+                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
+                  : ""
+                  }`}
+                onClick={() => setIsOpen(false)}
+              >
+                Features
+              </Link>
+              <Link
+                href="/blog"
+                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/blog"
+                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
+                  : ""
+                  }`}
+                onClick={() => setIsOpen(false)}
+              >
+                Blogs
+              </Link>
+              <Link
+                href="/about"
+                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/about"
+                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
+                  : ""
+                  }`}
+                onClick={() => setIsOpen(false)}
+              >
+                About
+              </Link>
+              <Link
+                href="/contact"
+                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/contact"
+                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
+                  : ""
+                  }`}
+                onClick={() => setIsOpen(false)}
+              >
+                Contact
+              </Link>
+              <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+                <Link
+                  href="/login"
+                  className="block bg-black dark:bg-indigo-600 text-white px-3 py-2 rounded shadow hover:bg-gray-800 transition-colors text-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Get Started
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
       </div>
     </nav>
   );
