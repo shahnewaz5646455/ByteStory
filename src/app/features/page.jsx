@@ -21,6 +21,7 @@ import { TextAnimate } from "@/components/ui/text-animate";
 import { AuroraText } from "@/components/ui/aurora-text";
 import { toast } from "react-toastify";
 import Reader from "@/components/ui/Reader";
+import GrammarChecker from "../../../components/GrammarChecker";
 
 export default function AIWriterPage() {
   const [input, setInput] = useState("");
@@ -425,6 +426,8 @@ export default function AIWriterPage() {
             </motion.div>
           ))}
         </motion.div>
+
+        <GrammarChecker />
 
         {/* CTA Section */}
         <motion.section
