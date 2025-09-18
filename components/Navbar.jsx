@@ -12,7 +12,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
-import Image from "next/image";
 export default function Navbar() {
   const { setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false); // mobile menu
@@ -57,30 +56,16 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
-           <Link
-      href="/"
-      className="flex-shrink-0 font-bold text-2xl flex items-center gap-2 cursor-pointer transition-colors"
-    >
-      {/* Light Mode Logo */}
-      <Image
-        src="/logo.png"
-        alt="ByteStory"
-        width={128}
-        height={40}
-        className="h-auto w-auto object-contain dark:hidden"
-        priority
-      />
-
-      {/* Dark Mode Logo */}
-      <Image
-        src="/logob.png"
-        alt="ByteStory"
-        width={128}
-        height={40}
-        className="h-auto w-auto object-contain hidden dark:block"
-        priority
-      />
-    </Link>
+          <Link
+            href="/"
+            className="flex-shrink-0 font-bold text-2xl flex items-center gap-2 cursor-pointer transition-colors"
+          >
+            <div className="w-10 h-10 rounded-full flex items-center justify-center 
+                  bg-gradient-to-r from-purple-500 to-indigo-500 shadow-md">
+              <Lightbulb className="w-6 h-6 text-white" />
+            </div>
+            <p className="text-gray-800 dark:text-gray-100">ByteStory</p>
+          </Link>
 
 
           {/* Desktop Menu */}
