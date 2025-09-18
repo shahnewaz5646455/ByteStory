@@ -64,8 +64,8 @@ export default function Navbar() {
       {/* Light Mode Logo */}
       <Image
         src="/logo.png"
-        alt="ByteStory Logo Light"
-        width={125}
+        alt="ByteStory"
+        width={128}
         height={40}
         className="h-auto w-auto object-contain dark:hidden"
         priority
@@ -74,8 +74,8 @@ export default function Navbar() {
       {/* Dark Mode Logo */}
       <Image
         src="/logob.png"
-        alt="ByteStory Logo Dark"
-        width={125}
+        alt="ByteStory"
+        width={128}
         height={40}
         className="h-auto w-auto object-contain hidden dark:block"
         priority
