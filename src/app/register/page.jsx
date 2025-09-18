@@ -24,6 +24,7 @@ import { Mail, Lock, User, Loader2, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { zSchema } from "@/lib/zodSchema";
 import axios from "axios";
+import { showToast } from "@/lib/showToast";
 
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
@@ -54,26 +55,6 @@ export default function RegisterPage() {
     },
   });
 
-  // const handleRegister = async (values) => {
-  //   try {
-  //     setLoading(true);
-  //     const { data: registerResponse } = await axios.post(
-  //       "api/test/auth/register",
-  //       values
-  //     );
-  //     if (!registerResponse.success) {
-  //       throw new error(registerResponse.message);
-  //     }
-
-  //     form.reset();
-  //     alert(registerResponse.success);
-  //   } catch (error) {
-  //     alert(error.message);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const handleRegister = async (values) => {
     try {
       setLoading(true);
@@ -88,9 +69,9 @@ export default function RegisterPage() {
       }
 
       form.reset();
-      alert(registerResponse.message || "Registration successful!");
+      showToast("success", registerResponse.message);
     } catch (error) {
-      alert(error.message || "Something went wrong");
+      showToast("error", registerResponse.message);
     } finally {
       setLoading(false);
     }

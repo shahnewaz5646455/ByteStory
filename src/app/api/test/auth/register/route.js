@@ -57,7 +57,7 @@ export async function POST(request) {
         `${process.env.NEXT_PUBLIC_BASE_URL}/verify-email/${token}`
       )
     );
-    console.log("📧 Mail result:", mailResult);
+    // console.log("📧 Mail result:", mailResult);
 
     if (!mailResult.success) {
       return response(false, 500, "Failed to send verification email");
