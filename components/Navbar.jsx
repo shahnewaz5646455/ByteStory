@@ -3,8 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Moon, PencilLine, Sun, X } from "lucide-react";
-
+import { Lightbulb, Menu, Moon, Sun, X } from "lucide-react";
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -13,8 +12,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useTheme } from "next-themes";
-import Image from "next/image";
-
 export default function Navbar() {
   const { setTheme, theme } = useTheme()
   const [isOpen, setIsOpen] = useState(false);
@@ -26,30 +23,17 @@ export default function Navbar() {
         <div className="flex justify-between h-16 items-center">
 
           {/* Logo */}
-         <Link
-      href="/"
-      className="flex-shrink-0 font-bold text-2xl flex items-center gap-2 cursor-pointer transition-colors"
-    >
-      {/* Light Mode Logo */}
-      <Image
-        src="/logo.png"
-        alt="ByteStory Logo Light"
-        width={125}
-        height={40}
-        className="h-auto w-auto object-contain dark:hidden"
-        priority
-      />
+          <Link
+            href="/"
+            className="flex-shrink-0 font-bold text-2xl flex items-center gap-2 cursor-pointer transition-colors"
+          >
+            <div className="w-10 h-10 rounded-full flex items-center justify-center 
+                  bg-gradient-to-r from-purple-500 to-indigo-500 shadow-md">
+              <Lightbulb className="w-6 h-6 text-white" />
+            </div>
+            <p className="text-gray-800 dark:text-gray-100">Byte Story</p>
+          </Link>
 
-      {/* Dark Mode Logo */}
-      <Image
-        src="/logob.png"
-        alt="ByteStory Logo Dark"
-        width={125}
-        height={40}
-        className="h-auto w-auto object-contain hidden dark:block"
-        priority
-      />
-    </Link>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-6 text-black dark:text-gray-200 font-medium">
@@ -96,19 +80,19 @@ export default function Navbar() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={() => setTheme("light")}
                   className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
                 >
                   Light
                 </DropdownMenuItem>
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={() => setTheme("dark")}
                   className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
                 >
                   Dark
                 </DropdownMenuItem>
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={() => setTheme("system")}
                   className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
                 >
@@ -142,19 +126,19 @@ export default function Navbar() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={() => setTheme("light")}
                   className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
                 >
                   Light
                 </DropdownMenuItem>
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={() => setTheme("dark")}
                   className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
                 >
                   Dark
                 </DropdownMenuItem>
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={() => setTheme("system")}
                   className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
                 >
