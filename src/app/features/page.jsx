@@ -125,7 +125,7 @@ export default function AIWriterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4 transition-colors duration-200">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200">
       <main className="container mx-auto px-4 py-8 relative z-10">
         {/* Hero Section */}
         <section className="text-center mb-16">
@@ -162,13 +162,13 @@ export default function AIWriterPage() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.6 }}
-          className=" rounded-2xl shadow-xl dark:shadow-gray-900/50 p-8 border border-indigo-100/50 dark:border-gray-700/50 hover:shadow-2xl dark:hover:shadow-indigo-900/20 transition-all duration-300 mb-16 backdrop-blur-sm bg-white/95 dark:bg-gray-800/95"
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl dark:shadow-gray-900/50 p-8 border border-indigo-100/50 dark:border-gray-700/50 hover:shadow-2xl dark:hover:shadow-indigo-900/20 transition-all duration-300 mb-16 backdrop-blur-sm bg-white/95 dark:bg-gray-800/95"
         >
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Input Section */}
             <div className="flex-1">
               <div className="mb-6">
-                <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+                <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                   What would you like to write about?
                 </h3>
 
@@ -194,8 +194,9 @@ export default function AIWriterPage() {
                     </div>
                     <ChevronDown
                       size={18}
-                      className={`transition-transform duration-300 text-indigo-400 ${showTemplates ? "rotate-180" : ""
-                        }`}
+                      className={`transition-transform duration-300 text-indigo-400 ${
+                        showTemplates ? "rotate-180" : ""
+                      }`}
                     />
                   </button>
 
@@ -214,10 +215,11 @@ export default function AIWriterPage() {
                               setSelectedTemplate(template.id);
                               setShowTemplates(false);
                             }}
-                            className={`flex items-center w-full px-4 py-3 text-left hover:bg-indigo-50 dark:hover:bg-gray-700 transition-all duration-200 group ${selectedTemplate === template.id
-                              ? "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300"
-                              : "text-gray-700 dark:text-gray-300"
-                              }`}
+                            className={`flex items-center w-full px-4 py-3 text-left hover:bg-indigo-50 dark:hover:bg-gray-700 transition-all duration-200 group ${
+                              selectedTemplate === template.id
+                                ? "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300"
+                                : "text-gray-700 dark:text-gray-300"
+                            }`}
                           >
                             <span className="text-indigo-500 dark:text-indigo-400 group-hover:scale-110 transition-transform">
                               {template.icon}
@@ -258,10 +260,11 @@ export default function AIWriterPage() {
                       whileTap={{ scale: 0.95 }}
                       type="submit"
                       disabled={isGenerating || !input.trim()}
-                      className={`p-3 rounded-full shadow-lg transition-all duration-300 ${isGenerating || !input.trim()
-                        ? "bg-gray-300 dark:bg-gray-600 cursor-not-allowed"
-                        : "bg-gradient-to-r from-indigo-600 to-purple-600 cursor-pointer hover:shadow-indigo-500/30 dark:hover:shadow-purple-500/20"
-                        }`}
+                      className={`p-3 rounded-full shadow-lg transition-all duration-300 ${
+                        isGenerating || !input.trim()
+                          ? "bg-gray-300 dark:bg-gray-600 cursor-not-allowed"
+                          : "bg-gradient-to-r from-indigo-600 to-purple-600 cursor-pointer hover:shadow-indigo-500/30 dark:hover:shadow-purple-500/20"
+                      }`}
                     >
                       {isGenerating ? (
                         <motion.div
@@ -301,11 +304,11 @@ export default function AIWriterPage() {
             <div className="flex-1">
               <div className="flex justify-between items-center mb-6">
                 <div>
-                  <h3 className="text-2xl font-bold mb-3 bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                     Generated Content
                   </h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Powered by AI • Professional quality
+                    Powered by ByteStory AI • Professional quality
                   </p>
                 </div>
                 {output && (
@@ -396,8 +399,8 @@ export default function AIWriterPage() {
             </div>
           </div>
         </motion.div>
-
-        {/* Features Grid */}
+        
+         {/* Features Grid */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
