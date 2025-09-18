@@ -125,7 +125,7 @@ export default function AIWriterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200">
       <main className="container mx-auto px-4 py-8 relative z-10">
         {/* Hero Section */}
         <section className="text-center mb-16">
@@ -162,7 +162,7 @@ export default function AIWriterPage() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.6 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl dark:shadow-gray-900/50 p-8 border border-indigo-100/50 dark:border-gray-700/50 hover:shadow-2xl dark:hover:shadow-indigo-900/20 transition-all duration-300 mb-16 backdrop-blur-sm bg-white/95 dark:bg-gray-800/95"
+          className="rounded-2xl shadow-xl dark:shadow-gray-900/50 p-8 border border-indigo-100/50 dark:border-gray-700/50 hover:shadow-2xl dark:hover:shadow-indigo-900/20 transition-all duration-300 mb-16 backdrop-blur-sm bg-white/95 dark:bg-gray-800/95"
         >
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Input Section */}

@@ -3,9 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Moon, PencilLine, Sun, X, Search } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
+import { Lightbulb, Menu, Moon, Search, Sun, X } from "lucide-react";
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,8 +12,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
-import Image from "next/image";
-
 export default function Navbar() {
   const { setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false); // mobile menu
@@ -61,35 +58,15 @@ export default function Navbar() {
           {/* Logo */}
           <Link
             href="/"
-            className="flex-shrink-0 text-black dark:text-white font-bold text-2xl flex items-center gap-2 cursor-pointer transition-colors"
+            className="flex-shrink-0 font-bold text-2xl flex items-center gap-2 cursor-pointer transition-colors"
           >
-            <PencilLine className="dark:text-indigo-400" />
-            <span className="dark:text-white">ByteStory</span>
+            <div className="w-10 h-10 rounded-full flex items-center justify-center 
+                  bg-gradient-to-r from-purple-500 to-indigo-500 shadow-md">
+              <Lightbulb className="w-6 h-6 text-white" />
+            </div>
+            <p className="text-gray-800 dark:text-gray-100">Byte Story</p>
           </Link>
-         <Link
-      href="/"
-      className="flex-shrink-0 font-bold text-2xl flex items-center gap-2 cursor-pointer transition-colors"
-    >
-      {/* Light Mode Logo */}
-      <Image
-        src="/logo.png"
-        alt="ByteStory Logo Light"
-        width={125}
-        height={40}
-        className="h-auto w-auto object-contain dark:hidden"
-        priority
-      />
 
-      {/* Dark Mode Logo */}
-      <Image
-        src="/logob.png"
-        alt="ByteStory Logo Dark"
-        width={125}
-        height={40}
-        className="h-auto w-auto object-contain hidden dark:block"
-        priority
-      />
-    </Link>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-6 text-black dark:text-gray-200 font-medium">
@@ -166,10 +143,7 @@ export default function Navbar() {
                   <span className="sr-only">Toggle theme</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-              >
+              <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                 <DropdownMenuItem
                   onClick={() => setTheme("light")}
                   className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
@@ -204,6 +178,8 @@ export default function Navbar() {
               </Link>
             </div>
 
+          {/* menu button */}
+          <div className="md:hidden flex items-center">
             {/* Mobile: search + theme + menu */}
             <div className="md:hidden flex items-center">
               {/* mobile search trigger */}
@@ -371,6 +347,7 @@ export default function Navbar() {
           </div>
         </div>
       )}
+      </div>
     </nav>
   );
 }
