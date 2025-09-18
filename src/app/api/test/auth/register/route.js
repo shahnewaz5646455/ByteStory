@@ -3,6 +3,7 @@ import { emailVerificationLink } from "@/email/emailVerificationLink";
 import { connectDB } from "@/lib/database.Connection";
 import { response } from "@/lib/helperFunction";
 import { sendMailer } from "@/lib/sendMail";
+// import { sendMailer } from "@/lib/sendMail";
 import { zSchema } from "@/lib/zodSchema";
 import { SignJWT } from "jose";
 

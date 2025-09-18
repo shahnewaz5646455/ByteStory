@@ -29,9 +29,10 @@ import OtpVerification from "@/components/ui/Application/OtpVerification";
 import { useDispatch } from "react-redux";
 import { login } from "@/store/reducer/authReducer";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 function LoginPage() {
+  // const searchParams = useSearchParams();
   const router = useRouter();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -98,7 +99,17 @@ function LoginPage() {
 
       showToast("success", otpResponse.message);
       dispatch(login(otpResponse.data));
+
       router.push("/");
+
+      //  next work dashboard user based redirect
+
+      // if (searchParams.has("callback")) {
+      //   router.push(searchParams.get("callback"))
+      // }
+      // else {
+      //   otpResponse.data.role + "admin" ? router.push("") :router.push("")
+      // }
     } catch (error) {
       showToast("error", error.message);
     } finally {
