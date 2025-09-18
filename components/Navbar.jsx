@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
+import Image from "next/image";
 
 export default function Navbar() {
   const { setTheme } = useTheme();
@@ -65,6 +66,30 @@ export default function Navbar() {
             <PencilLine className="dark:text-indigo-400" />
             <span className="dark:text-white">ByteStory</span>
           </Link>
+         <Link
+      href="/"
+      className="flex-shrink-0 font-bold text-2xl flex items-center gap-2 cursor-pointer transition-colors"
+    >
+      {/* Light Mode Logo */}
+      <Image
+        src="/logo.png"
+        alt="ByteStory Logo Light"
+        width={125}
+        height={40}
+        className="h-auto w-auto object-contain dark:hidden"
+        priority
+      />
+
+      {/* Dark Mode Logo */}
+      <Image
+        src="/logob.png"
+        alt="ByteStory Logo Dark"
+        width={125}
+        height={40}
+        className="h-auto w-auto object-contain hidden dark:block"
+        priority
+      />
+    </Link>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-6 text-black dark:text-gray-200 font-medium">

@@ -37,7 +37,7 @@ export async function POST(request) {
           "You are a helpful writing assistant. Create content about:";
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     const result = await model.generateContent(`${systemPrompt} ${prompt}`);
     const text = result.response.text();
 
