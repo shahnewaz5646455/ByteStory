@@ -22,6 +22,7 @@ import { AuroraText } from "@/components/ui/aurora-text";
 import { toast } from "react-toastify";
 import Reader from "@/components/ui/Reader";
 import GrammarChecker from "../../../components/GrammarChecker";
+import SpeechRecorder from "@/components/ui/speechRecorder";
 
 export default function AIWriterPage() {
   const [input, setInput] = useState("");
@@ -285,6 +286,7 @@ export default function AIWriterPage() {
                     </motion.button>
                   </div>
                 </div>
+                <SpeechRecorder/>
                 {error && (
                   <motion.p
                     initial={{ opacity: 0, y: -10 }}
