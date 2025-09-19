@@ -4,6 +4,8 @@ import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, AlertCircle, Loader2, Copy, Edit3, Sparkles, BookOpen, ArrowRight, X, ChevronRight, Star, Zap, Shield, Languages, Moon, Sun, Monitor } from 'lucide-react';
 import { useTheme } from 'next-themes';
+import { AuroraText } from '@/components/ui/aurora-text';
+import { TextAnimate } from '@/components/ui/text-animate';
 
 const GrammarChecker = () => {
   const [text, setText] = useState('');
@@ -103,30 +105,6 @@ const GrammarChecker = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
       <div className="max-w-6xl mx-auto">
-        {/* Theme Toggle */}
-        <div className="flex justify-end mb-6">
-          <div className="bg-white dark:bg-gray-800 rounded-full p-1 shadow-md flex">
-            <button
-              onClick={() => setTheme('light')}
-              className={`p-2 rounded-full ${theme === 'light' ? 'bg-indigo-100 text-indigo-600' : 'text-gray-500'}`}
-            >
-              <Sun size={18} />
-            </button>
-            <button
-              onClick={() => setTheme('dark')}
-              className={`p-2 rounded-full ${theme === 'dark' ? 'bg-indigo-800 text-white' : 'text-gray-500'}`}
-            >
-              <Moon size={18} />
-            </button>
-            <button
-              onClick={() => setTheme('system')}
-              className={`p-2 rounded-full ${theme === 'system' ? 'bg-indigo-100 dark:bg-indigo-800 text-indigo-600 dark:text-white' : 'text-gray-500'}`}
-            >
-              <Monitor size={18} />
-            </button>
-          </div>
-        </div>
-
         {/* Header */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -134,18 +112,25 @@ const GrammarChecker = () => {
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center rounded-full bg-indigo-100 dark:bg-indigo-900 px-4 py-2 text-sm font-medium text-indigo-700 dark:text-indigo-200 mb-6">
-            <Sparkles className="h-4 w-4 mr-2" />
-            AI-Powered Writing Assistant
-          </div>
-          
-          <h1 className="text-5xl font-bold text-indigo-900 dark:text-white mb-6 bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
-            Perfect Your Writing
-          </h1>
-          
-          <p className="text-xl text-indigo-700 dark:text-indigo-200 max-w-3xl mx-auto leading-relaxed">
-            Enhance your writing with our advanced AI-powered grammar checker. Get instant feedback on spelling, punctuation, and grammar mistakes.
-          </p>
+           <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="text-4xl sm:text-5xl font-bold mb-4"
+          >
+           Perfect Your
+            <span className="block bg-clip-text pb-2 text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+              <AuroraText>Masterful Writing</AuroraText>
+            </span>
+          </motion.h2>
+
+          <TextAnimate
+            animation="slideLeft"
+            by="character"
+            className="text-md text-gray-700 dark:text-gray-300 max-w-2xl mx-auto mb-8"
+          >
+              Enhance your writing with our advanced ByteStory-powered grammar checker.Get instant feedback on spelling, punctuation, and grammar mistakes. Perfect Your Writing
+          </TextAnimate>
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-10 max-w-2xl mx-auto">
