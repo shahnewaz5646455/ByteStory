@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Lightbulb, Menu, Moon, Search, Sun, X } from "lucide-react";
 import { Button } from "@/components/ui/button"
 import {
@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
+// import { useRouter } from "next/router";
 export default function Navbar() {
   const { setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false); // mobile menu
@@ -20,6 +21,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const searchInputRef = useRef(null);
   const searchCardRef = useRef(null);
+  const router = useRouter();  // ✅ call the hook inside your component
 
   // Focus the input when opening
   useEffect(() => {
@@ -44,10 +46,19 @@ export default function Navbar() {
   }, [isSearchOpen]);
 
   function onSubmitSearch(e) {
-    e.preventDefault();
+    
+     e.preventDefault();
+     const searchTerm = e.value
+   if(searchTerm === "seo" || "SEO" || "se"){
+    router.push("/seo-checker")
+   }
+   if(searchTerm === "grammar" || "GRAMMAR" || "grammer" || "gramar" ||" grammer" ){
+   document.getElementById("grammerChecker").scrollIntoView({ behavior: "smooth" });
+  } 
+   
+ 
     // TODO: route to your search page or handle query
     // e.g., router.push(`/search?q=${encodeURIComponent(query)}`)
-    console.log("Search submitted:", query);
     setIsSearchOpen(false);
   }
 
@@ -122,7 +133,7 @@ export default function Navbar() {
               onClick={() => setIsSearchOpen((s) => !s)}
               aria-label="Open search"
             >
-              <Search className="h-[1.2rem] w-[1.2rem]" />
+              <Search onClick={onSubmitSearch} className="h-[1.2rem] w-[1.2rem]" />
             </Button>
 
             {/* theme toggle */}

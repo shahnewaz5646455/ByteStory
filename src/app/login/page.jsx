@@ -4,6 +4,8 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // shadcn/ui components
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,7 +22,7 @@ import {
 } from "@/components/ui/form";
 
 // Icons
-import { Mail, Lock, Loader2, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Loader2, Eye, EyeOff, Sparkles } from "lucide-react";
 import { zSchema } from "@/lib/zodSchema";
 import z from "zod";
 import { showToast } from "@/lib/showToast";
@@ -28,11 +30,9 @@ import axios from "axios";
 import OtpVerification from "@/components/ui/Application/OtpVerification";
 import { useDispatch } from "react-redux";
 import { login } from "@/store/reducer/authReducer";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import GoogleG from "../../../components/GoogleG";
 
 function LoginPage() {
-  // const searchParams = useSearchParams();
   const router = useRouter();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -101,15 +101,6 @@ function LoginPage() {
       dispatch(login(otpResponse.data));
 
       router.push("/");
-
-      //  next work dashboard user based redirect
-
-      // if (searchParams.has("callback")) {
-      //   router.push(searchParams.get("callback"))
-      // }
-      // else {
-      //   otpResponse.data.role + "admin" ? router.push("") :router.push("")
-      // }
     } catch (error) {
       showToast("error", error.message);
     } finally {
@@ -118,20 +109,23 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50">
-      <Card className="max-w-md w-full overflow-hidden shadow-xl">
-        <CardContent className="p-8 ">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
+      <Card className="max-w-md w-full overflow-hidden shadow-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+        <CardContent className="p-8">
           {!otpEmail ? (
             <>
               {/* Heading */}
               <div className="mb-6 text-center">
-                <h2 className="text-3xl font-bold text-gray-900">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full mb-4">
+                  <Sparkles className="h-6 w-6 text-white" />
+                </div>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
                   Welcome back
                 </h2>
                 <h3 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
                   Sign in
                 </h3>
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
                   Use your email or continue with Google
                 </p>
               </div>
@@ -139,28 +133,19 @@ function LoginPage() {
               {/* Google Button */}
               <Button
                 onClick={() => signIn("google")}
-                className="w-full flex items-center gap-2 cursor-pointer bg-white text-gray-800 border-2 border-indigo-100 font-semibold px-6 py-3 rounded-lg hover:border-indigo-200 hover:bg-indigo-50 transition duration-300 justify-center"
+                className="w-full flex items-center gap-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-2 border-gray-200 dark:border-gray-600 font-semibold px-6 py-3 rounded-lg hover:border-indigo-300 dark:hover:border-indigo-400 hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-300 justify-center"
                 variant="outline"
+                aria-label="Sign in with Google"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 48 48"
-                  width="24"
-                  height="24"
-                >
-                  <path
-                    fill="#4285F4"
-                    d="M23.64 12.2c1.99 0 3.34.86 4.12 1.58l3.03-3.03C29.12 9.44 26.66 8 23.64 8 14.91 8 8 14.91 8 23.64s6.91 15.64 15.64 15.64c8.97 0 14.82-6.29 14.82-15.14 0-1.03-.11-1.79-.28-2.56H23.64v4.82h7.96c-.33 2-2.31 5.82-7.96 5.82-4.84 0-8.75-4.05-8.75-9s3.91-9 8.75-9z"
-                  />
-                </svg>
-                Continue with Google
+                <GoogleG className="w-5 h-5" />
+                <span>Continue with Google</span>
               </Button>
 
               {/* Separator */}
-              <div className="flex items-center gap-3 my-4">
-                <Separator className="flex-1" />
-                <span className="text-xs text-slate-500">or</span>
-                <Separator className="flex-1" />
+              <div className="flex items-center gap-3 my-6">
+                <Separator className="flex-1 bg-gray-200 dark:bg-gray-700" />
+                <span className="text-xs text-gray-500 dark:text-gray-400">or</span>
+                <Separator className="flex-1 bg-gray-200 dark:bg-gray-700" />
               </div>
 
               {/* Login Form */}
@@ -175,14 +160,14 @@ function LoginPage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel className="text-gray-700 dark:text-gray-300">Email</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                             <Input
                               type="email"
                               placeholder="you@example.com"
-                              className="pl-10"
+                              className="pl-10 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white"
                               {...field}
                             />
                           </div>
@@ -198,20 +183,20 @@ function LoginPage() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel className="text-gray-700 dark:text-gray-300">Password</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                             <Input
                               type={showPassword ? "text" : "password"}
                               placeholder="••••••••"
-                              className="pl-10 pr-10"
+                              className="pl-10 pr-10 bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white"
                               {...field}
                             />
                             <button
                               type="button"
                               onClick={() => setShowPassword(!showPassword)}
-                              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 cursor-pointer"
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer transition-colors"
                             >
                               {showPassword ? (
                                 <EyeOff className="w-4 h-4" />
@@ -230,7 +215,7 @@ function LoginPage() {
                   <div className="flex items-center justify-between">
                     <Link
                       href="/reset-password"
-                      className="text-sm underline hover:text-indigo-600"
+                      className="text-sm text-indigo-600 dark:text-indigo-400 underline hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
                     >
                       Forgot password?
                     </Link>
@@ -240,7 +225,7 @@ function LoginPage() {
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl hover:from-purple-600 hover:to-indigo-600 transition duration-150 flex justify-center"
+                    className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl hover:from-purple-600 hover:to-indigo-600 transition-all duration-300 flex justify-center"
                   >
                     {loading ? (
                       <div className="flex items-center gap-2">
@@ -255,11 +240,14 @@ function LoginPage() {
               </Form>
 
               {/* Register link */}
-              <p className="text-sm text-center mt-4">
-                Don’t have an account?{" "}
-                <a className="underline hover:text-indigo-600" href="/register">
+              <p className="text-sm text-center mt-6 text-gray-600 dark:text-gray-400">
+                Don't have an account?{" "}
+                <Link
+                  href="/register"
+                  className="text-indigo-600 dark:text-indigo-400 font-medium hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+                >
                   Create account
-                </a>
+                </Link>
               </p>
             </>
           ) : (
