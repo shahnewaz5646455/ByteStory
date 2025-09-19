@@ -49,7 +49,7 @@ export default function Navbar() {
     
      e.preventDefault();
      const searchTerm = e.value
-   if(searchTerm === "seo" || "SEO"){
+   if(searchTerm === "seo" || "SEO" || "se"){
     router.push("/seo-checker")
    }
    if(searchTerm === "grammar" || "GRAMMAR" || "grammer" || "gramar" ||" grammer" ){
