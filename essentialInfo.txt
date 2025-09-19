@@ -62,3 +62,4 @@ NODEMAILER_PASSWORD="yoazrwdzfrnpaguu"
 
 NEXT_PUBLIC_BASE_URL="http://localhost:3000" 
 NODE_ENV="development"
+RUBAID_GEMINI_API_KEY=AIzaSyBewQB-uKyYJpBwvLLmvcU8BautEN_E78k
