@@ -1,9 +1,9 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
-import Navbar from "../../components/Navbar";
 import { ThemeProvider } from "../../components/theme-provider";
 import GlobalStoreProvider from "@/components/ui/Application/GlobalStoreProvider";
+import Navbar from "../../components/Navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +33,7 @@ export default function RootLayout({ children }) {
           enableSystem
           disableTransitionOnChange
         >
+          
           <GlobalStoreProvider>
             <Navbar />
             {children}
