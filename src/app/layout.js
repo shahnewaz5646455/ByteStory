@@ -32,17 +32,7 @@ export default function RootLayout({ children }) {
           disableTransitionOnChange
         >
           <Navbar />
-          <ToastContainer
-            position="top-right"
-            autoClose={2000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            pauseOnHover
-            draggable
-            theme="light"
-          />
-
+          <ToastContainer />
           <main>{children}</main>
         </ThemeProvider>
       </body>
