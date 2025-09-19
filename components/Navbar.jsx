@@ -53,7 +53,7 @@ export default function Navbar() {
     router.push("/seo-checker")
    }
    if(searchTerm === "grammar" || "GRAMMAR" || "grammer" || "gramar" ||" grammer" ){
-   document.getElementById("grammerChecker").scrollIntoView({ behavior: "smooth" });
+   router.push(document.getElementById("grammerChecker").scrollIntoView({ behavior: "smooth" }));
   } 
    
  
