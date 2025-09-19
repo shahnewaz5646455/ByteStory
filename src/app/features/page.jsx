@@ -21,6 +21,8 @@ import { TextAnimate } from "@/components/ui/text-animate";
 import { AuroraText } from "@/components/ui/aurora-text";
 import { toast } from "react-toastify";
 import Reader from "@/components/ui/Reader";
+import GrammarChecker from "../../../components/GrammarChecker";
+import SpeechRecorder from "@/components/ui/speechRecorder";
 
 export default function AIWriterPage() {
   const [input, setInput] = useState("");
@@ -126,7 +128,7 @@ export default function AIWriterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200">
       <main className="container mx-auto px-4 py-8 relative z-10">
         {/* Hero Section */}
         <section className="text-center mb-16">
@@ -163,7 +165,7 @@ export default function AIWriterPage() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.6 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl dark:shadow-gray-900/50 p-8 border border-indigo-100/50 dark:border-gray-700/50 hover:shadow-2xl dark:hover:shadow-indigo-900/20 transition-all duration-300 mb-16 backdrop-blur-sm bg-white/95 dark:bg-gray-800/95"
+          className="rounded-2xl shadow-xl dark:shadow-gray-900/50 p-8 border border-indigo-100/50 dark:border-gray-700/50 hover:shadow-2xl dark:hover:shadow-indigo-900/20 transition-all duration-300 mb-16 backdrop-blur-sm bg-white/95 dark:bg-gray-800/95"
         >
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Input Section */}
@@ -284,6 +286,7 @@ export default function AIWriterPage() {
                     </motion.button>
                   </div>
                 </div>
+                <SpeechRecorder/>
                 {error && (
                   <motion.p
                     initial={{ opacity: 0, y: -10 }}
@@ -312,18 +315,21 @@ export default function AIWriterPage() {
                     Powered by ByteStory AI • Professional quality
                   </p>
                 </div>
-                {output && (
-                  <motion.button
-                    onClick={copyToClipboard}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all duration-200 border border-indigo-100 dark:border-indigo-700/30"
-                  >
-                    <Copy size={18} className="mr-2" />
-                    <span className="text-sm font-medium">Copy</span>
-                  </motion.button>
+               {output && (
+                  <div className="flex items-center gap-3">
+                    <motion.button
+                      onClick={copyToClipboard}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="flex items-center px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all duration-200 border border-indigo-100 dark:border-indigo-700/30"
+                    >
+                      <Copy size={18} className="mr-2" />
+                      <span className="text-sm font-medium">Copy</span>
+                    </motion.button>
+                    
+                    {/* <Reader text={output}/> */}
+                  </div>
                 )}
-                {output && <Reader text={output}/>}
               </div>
 
               <div className="bg-gradient-to-br from-white to-indigo-50/50 dark:from-gray-700/80 dark:to-gray-800/80 border-2 border-indigo-100/50 dark:border-gray-600 rounded-2xl p-6 h-48 overflow-y-auto shadow-inner">
@@ -391,13 +397,37 @@ export default function AIWriterPage() {
                 )}
               </div>
 
-              {/* Word Count & Actions */}
-              {output && (
-                <div className="text-xs text-gray-500 dark:text-gray-400">
-                  {output.split(/\s+/).filter((word) => word.length > 0).length}{" "}
-                  words generated
-                </div>
-              )}
+             {/* Word Count & Status Bar */}
+{output && (
+  <motion.div
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="mt-4 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm shadow-sm flex items-center justify-between"
+  >
+    {/* Left side: Status dot + word count */}
+    <div className="flex items-center gap-2">
+      <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-ping" />
+      <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+        {output.split(/\s+/).filter((word) => word.length > 0).length} words
+      </span>
+    </div>
+
+    {/* Middle: Divider */}
+    <div className="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-3" />
+
+    {/* Right side: Status icon */}
+    <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+      <CheckCircle className="w-4 h-4 text-green-500" />
+      <span className="font-medium">Ready to use</span>
+    </div>
+
+    {/* Reader button/component */}
+    <div className="ml-3">
+      <Reader text={output} />
+    </div>
+  </motion.div>
+)}
+
             </div>
           </div>
         </motion.div>
@@ -426,24 +456,8 @@ export default function AIWriterPage() {
           ))}
         </motion.div>
 
-        {/* CTA Section */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.8 }}
-          className="text-center mb-16"
-        >
-          <h3 className="text-3xl font-bold mb-6">
-            Ready to elevate your writing?
-          </h3>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-8 py-3 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium text-lg shadow-md hover:shadow-lg dark:hover:shadow-purple-600/20 transition-shadow duration-300"
-          >
-            Start Writing Now
-          </motion.button>
-        </motion.section>
+        <GrammarChecker />
+
       </main>
     </div>
   );
