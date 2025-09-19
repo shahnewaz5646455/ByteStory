@@ -100,7 +100,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/blogs"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${pathname === "/blog" ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""}`}
+              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${pathname === "/blogs" ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""}`}
             >
               Blogs
             </Link>
