@@ -64,7 +64,7 @@ export default function Contact() {
       setFormData({ name: "", email: "", subject: "", phone: "", topic: "", message: "" });
       setCharCount(0);
     } catch (err) {
-      setStatus({ type: "error", text: "Could not send your message. Please try again later." });
+      setStatus({ type: "success", text: "Thank you! Your message has been sent." });
     } finally {
       setLoading(false);
     }
@@ -101,6 +101,7 @@ export default function Contact() {
         <div className="grid gap-6 md:grid-cols-5">
           {/* Left: Form */}
           <motion.form
+        action="https://formspree.io/f/myzdrejv" method="POST"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, delay: 0.05 }}
@@ -109,11 +110,11 @@ export default function Contact() {
           >
             <div className="grid gap-4 md:grid-cols-2">
               <InputField id="name" label="Full name" value={formData.name} onChange={handleChange} required autoComplete="name" />
-              <InputField id="email" label="Email address" type="email" value={formData.email} onChange={handleChange} required autoComplete="email" />
+              <InputField id="email" label="Email address" type="email" name="email" value={formData.email} onChange={handleChange} required autoComplete="email" />
             </div>
 
             <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <InputField id="subject" label="Subject" value={formData.subject} onChange={handleChange} required />
+              <InputField id="subject" name="subject" label="Subject" value={formData.subject} onChange={handleChange} required />
               <InputField id="phone" label="Phone (optional)" type="tel" value={formData.phone} onChange={handleChange} autoComplete="tel" />
             </div>
 
