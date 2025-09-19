@@ -12,7 +12,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "next-themes";
-import Image from "next/image";
 export default function Navbar() {
   const { setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false); // mobile menu
