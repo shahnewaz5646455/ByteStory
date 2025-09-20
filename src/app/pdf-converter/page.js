@@ -273,22 +273,22 @@ export default function PdfConverter() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">PDF Text Extractor & Summarizer</h1>
-          <p className="text-lg text-gray-600">Upload a PDF file to extract its text content and generate a summary</p>
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-3">PDF Text Extractor & Summarizer</h1>
+          <p className="text-lg text-gray-600 dark:text-gray-300">Upload a PDF file to extract its text content and generate a summary</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 mb-8 border border-gray-100 dark:border-gray-700">
           <div className="flex items-center justify-center w-full mb-4">
-            <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
+            <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl cursor-pointer bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-900/70 transition-colors duration-200">
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                <svg className="w-12 h-12 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                <svg className="w-12 h-12 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                   <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
                 </svg>
-                <p className="mb-2 text-lg text-gray-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                <p className="text-sm text-gray-500">PDF (MAX. 10MB)</p>
+                <p className="mb-2 text-lg text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">PDF (MAX. 10MB)</p>
               </div>
               <input 
                 id="dropzone-file" 
@@ -302,21 +302,21 @@ export default function PdfConverter() {
           </div>
 
           {fileName && (
-            <div className="flex items-center justify-between bg-blue-50 p-4 rounded-lg mb-4">
+            <div className="flex items-center justify-between bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg mb-4">
               <div className="flex items-center">
-                <svg className="w-6 h-6 text-blue-600 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 20">
+                <svg className="w-6 h-6 text-indigo-600 dark:text-indigo-400 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 20">
                   <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 18a.969.969 0 0 0 .933 1h12.134A.97.97 0 0 0 15 18M1 7V5.828a2 2 0 0 1 .586-1.414l2.828-2.828A2 2 0 0 1 5.828 1h8.239A.97.97 0 0 1 15 2v5M6 1v4a1 1 0 0 1-1 1H1m14 6h-6m6 0-3-3m3 3-3 3"/>
                 </svg>
-                <span className="text-blue-700 font-medium truncate max-w-xs">{fileName}</span>
+                <span className="text-indigo-700 dark:text-indigo-300 font-medium truncate max-w-xs">{fileName}</span>
                 {pageCount > 0 && (
-                  <span className="ml-3 px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
+                  <span className="ml-3 px-2 py-1 bg-indigo-100 dark:bg-indigo-800/30 text-indigo-800 dark:text-indigo-300 text-xs font-semibold rounded-full">
                     {pageCount} page{pageCount !== 1 ? 's' : ''}
                   </span>
                 )}
               </div>
               <button 
                 onClick={handleClearAll}
-                className="text-gray-500 hover:text-gray-700 transition-colors duration-200"
+                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200"
               >
                 <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
                   <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m5 5 8 8m0-8-8 8"/>
@@ -327,18 +327,18 @@ export default function PdfConverter() {
 
           {isLoading && (
             <div className="flex flex-col items-center justify-center py-8">
-              <div className="w-12 h-12 rounded-full animate-spin border-4 border-solid border-blue-500 border-t-transparent mb-4"></div>
-              <p className="text-gray-600">Processing PDF...</p>
+              <div className="w-12 h-12 rounded-full animate-spin border-4 border-solid border-indigo-500 border-t-transparent mb-4"></div>
+              <p className="text-gray-600 dark:text-gray-300">Processing PDF...</p>
             </div>
           )}
 
           {error && (
-            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-4">
+            <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 rounded-lg mb-4">
               <div className="flex items-center">
                 <svg className="w-5 h-5 text-red-500 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                   <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                 </svg>
-                <span className="text-red-700 font-medium">{error}</span>
+                <span className="text-red-700 dark:text-red-300 font-medium">{error}</span>
               </div>
             </div>
           )}
@@ -346,14 +346,14 @@ export default function PdfConverter() {
 
         {text && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-2xl shadow-xl p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">Extracted Text</h2>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Extracted Text</h2>
                 <div className="flex space-x-2">
                   <button
                     onClick={handleSummarize}
                     disabled={isSummarizing}
-                    className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 disabled:opacity-50"
+                    className="flex items-center px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-indigo-600 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50"
                   >
                     {isSummarizing ? (
                       <>
@@ -375,7 +375,7 @@ export default function PdfConverter() {
                   <button
                     onClick={handleCopyText}
                     className={`flex items-center px-4 py-2 rounded-lg transition-colors duration-200 ${
-                      copied ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                      copied ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/50'
                     }`}
                   >
                     {copied ? (
@@ -396,10 +396,10 @@ export default function PdfConverter() {
                   </button>
                 </div>
               </div>
-              <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 h-96 overflow-y-auto">
-                <pre className="whitespace-pre-wrap text-sm text-gray-800 font-sans">{text}</pre>
+              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900/50 h-96 overflow-y-auto">
+                <pre className="whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200 font-sans">{text}</pre>
               </div>
-              <div className="mt-4 text-sm text-gray-500 flex items-center">
+              <div className="mt-4 text-sm text-gray-500 dark:text-gray-400 flex items-center">
                 <svg className="w-4 h-4 mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                   <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9h2v5m-2 0h4M9.408 5.5h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                 </svg>
@@ -407,15 +407,15 @@ export default function PdfConverter() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-xl p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">AI Summary</h2>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">AI Summary</h2>
                 {summary && (
                   <div className="flex space-x-2">
                     <button
                       onClick={handleCopySummary}
                       className={`flex items-center px-4 py-2 rounded-lg transition-colors duration-200 ${
-                        summaryCopied ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                        summaryCopied ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/50'
                       }`}
                     >
                       {summaryCopied ? (
@@ -437,7 +437,7 @@ export default function PdfConverter() {
                     <button
                       onClick={handleSpeak}
                       className={`flex items-center px-4 py-2 rounded-lg transition-colors duration-200 ${
-                        isSpeaking ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700 hover:bg-green-200'
+                        isSpeaking ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300' : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/50'
                       }`}
                       disabled={!summary || !selectedVoice || !window.speechSynthesis}
                     >
@@ -459,7 +459,7 @@ export default function PdfConverter() {
                     </button>
                     <button
                       onClick={handleStopSpeech}
-                      className="flex items-center px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors duration-200"
+                      className="flex items-center px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors duration-200"
                       disabled={!isSpeaking}
                     >
                       <svg className="w-5 h-5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -471,14 +471,14 @@ export default function PdfConverter() {
                 )}
               </div>
               <div className="mb-4">
-                <label htmlFor="voice-select" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="voice-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Select Voice:
                 </label>
                 <select
                   id="voice-select"
                   value={voices.findIndex((voice) => voice === selectedVoice)}
                   onChange={handleVoiceChange}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors"
                   disabled={voices.length === 0}
                 >
                   {voices.length === 0 ? (
@@ -492,16 +492,16 @@ export default function PdfConverter() {
                   )}
                 </select>
               </div>
-              <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 h-80 overflow-y-auto">
+              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900/50 h-80 overflow-y-auto">
                 {isSummarizing ? (
                   <div className="flex flex-col items-center justify-center h-full">
-                    <div className="w-12 h-12 rounded-full animate-spin border-4 border-solid border-purple-500 border-t-transparent mb-4"></div>
-                    <p className="text-gray-600">Generating summary...</p>
+                    <div className="w-12 h-12 rounded-full animate-spin border-4 border-solid border-indigo-500 border-t-transparent mb-4"></div>
+                    <p className="text-gray-600 dark:text-gray-300">Generating summary...</p>
                   </div>
                 ) : summary ? (
-                  <p className="whitespace-pre-wrap text-sm text-gray-800">{summary}</p>
+                  <p className="whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200">{summary}</p>
                 ) : (
-                  <div className="flex flex-col items-center justify-center h-full text-gray-500">
+                  <div className="flex flex-col items-center justify-center h-full text-gray-500 dark:text-gray-400">
                     <svg className="w-16 h-16 mb-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16v-5.5C11 9 10 8 8.5 8m3.5 8H5v-5.5C5 9 6 8 7.5 8m3.5 8v4M8 8V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M8 8V7c0-.6.4-1 1-1h6c.6 0 1 .4 1 1v1"/>
                     </svg>
