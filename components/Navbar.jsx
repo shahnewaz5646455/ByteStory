@@ -18,7 +18,6 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { useTheme } from "next-themes";
 // import { useRouter } from "next/router";
@@ -104,109 +103,104 @@ export default function Navbar() {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-6 text-black dark:text-gray-200 font-medium">
-  {/* Home Link */}
-  <NavigationMenu>
-    <NavigationMenuList>
-      <NavigationMenuItem>
-        <NavigationMenuLink
-          href="/"
-          className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${
-            pathname === "/"
-              ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80"
-              : ""
-          }`}
-        >
-          Home
-        </NavigationMenuLink>
-      </NavigationMenuItem>
+            {/* Home Link */}
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="/"
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/"
+                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                        : ""
+                      }`}
+                  >
+                    Home
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
 
-      {/* AI Tools Dropdown */}
-<NavigationMenuItem>
-  <NavigationMenuTrigger className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-    AI Tools
-  </NavigationMenuTrigger>
-  <NavigationMenuContent>
-    <ul className="grid w-[300px] gap-2 p-4 md:w-[400px] md:grid-cols-2 lg:w-[500px]">
-      <ListItem href="/seo-checker" title="SEO Checker">
-        Analyze and optimize your website for search engines.
-      </ListItem>
-      <ListItem href="/grammar-checker" title="Grammar Checker">
-        Check for grammar, spelling, and punctuation errors.
-      </ListItem>
-      <ListItem href="/blog-generator" title="Blog Post Generator">
-        Generate a full blog post from a simple title.
-      </ListItem>
-      <ListItem href="/AIsummarizer" title="AI Summarizer">
-        Summarize long articles and texts quickly.
-      </ListItem>
-      <ListItem href="/pdf-summarizer" title="PDF Summarizer">
-        Quickly get the main points from any PDF document.
-      </ListItem>
-      <ListItem href="/hashtag" title="Hashtag Generator">
-        Get suggested hashtags for your blog posts and content.
-      </ListItem>
-    </ul>
-  </NavigationMenuContent>
-</NavigationMenuItem>
+                {/* AI Tools Dropdown */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                    AI Tools
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[300px] gap-2 p-4 md:w-[400px] md:grid-cols-2 lg:w-[500px]">
+                      <ListItem href="/seo-checker" title="SEO Checker">
+                        Analyze and optimize your website for search engines.
+                      </ListItem>
+                      <ListItem href="/grammar-checker" title="Grammar Checker">
+                        Check for grammar, spelling, and punctuation errors.
+                      </ListItem>
+                      <ListItem href="/blog-generator" title="Blog Post Generator">
+                        Generate a full blog post from a simple title.
+                      </ListItem>
+                      <ListItem href="/AIsummarizer" title="AI Summarizer">
+                        Summarize long articles and texts quickly.
+                      </ListItem>
+                      <ListItem href="/pdf-summarizer" title="PDF Summarizer">
+                        Quickly get the main points from any PDF document.
+                      </ListItem>
+                      <ListItem href="/hashtag" title="Hashtag Generator">
+                        Get suggested hashtags for your blog posts and content.
+                      </ListItem>
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
 
-      {/* Features Link */}
-      <NavigationMenuItem>
-        <NavigationMenuLink
-          href="/features"
-          className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${
-            pathname === "/features"
-              ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80"
-              : ""
-          }`}
-        >
-          Features
-        </NavigationMenuLink>
-      </NavigationMenuItem>
+                {/* Features Link */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="/features"
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/features"
+                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                        : ""
+                      }`}
+                  >
+                    Features
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
 
-      {/* Blogs Link */}
-      <NavigationMenuItem>
-        <NavigationMenuLink
-          href="/blogs"
-          className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${
-            pathname === "/blogs"
-              ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80"
-              : ""
-          }`}
-        >
-          Blogs
-        </NavigationMenuLink>
-      </NavigationMenuItem>
+                {/* Blogs Link */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="/blogs"
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/blogs"
+                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                        : ""
+                      }`}
+                  >
+                    Blogs
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
 
-      {/* About Link */}
-      <NavigationMenuItem>
-        <NavigationMenuLink
-          href="/about"
-          className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${
-            pathname === "/about"
-              ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80"
-              : ""
-          }`}
-        >
-          About
-        </NavigationMenuLink>
-      </NavigationMenuItem>
+                {/* About Link */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="/about"
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/about"
+                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                        : ""
+                      }`}
+                  >
+                    About
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
 
-      {/* Contact Link */}
-      <NavigationMenuItem>
-        <NavigationMenuLink
-          href="/contact"
-          className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${
-            pathname === "/contact"
-              ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80"
-              : ""
-          }`}
-        >
-          Contact
-        </NavigationMenuLink>
-      </NavigationMenuItem>
-    </NavigationMenuList>
-  </NavigationMenu>
-</div>
+                {/* Contact Link */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="/contact"
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/contact"
+                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                        : ""
+                      }`}
+                  >
+                    Contact
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+          </div>
 
           <div className="flex gap-3 items-center">
             {/* Search trigger (desktop) */}
@@ -373,7 +367,7 @@ export default function Navbar() {
               <Link
                 href="/"
                 className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80"
+                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
                   : ""
                   }`}
                 onClick={() => setIsOpen(false)}
@@ -383,7 +377,7 @@ export default function Navbar() {
               <Link
                 href="/features"
                 className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/features"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80"
+                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
                   : ""
                   }`}
                 onClick={() => setIsOpen(false)}
@@ -393,7 +387,7 @@ export default function Navbar() {
               <Link
                 href="/blog"
                 className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/blog"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80"
+                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
                   : ""
                   }`}
                 onClick={() => setIsOpen(false)}
@@ -403,7 +397,7 @@ export default function Navbar() {
               <Link
                 href="/about"
                 className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/about"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80"
+                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
                   : ""
                   }`}
                 onClick={() => setIsOpen(false)}
@@ -413,7 +407,7 @@ export default function Navbar() {
               <Link
                 href="/contact"
                 className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/contact"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80"
+                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
                   : ""
                   }`}
                 onClick={() => setIsOpen(false)}
