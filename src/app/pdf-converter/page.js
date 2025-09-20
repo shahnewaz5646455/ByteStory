@@ -23,11 +23,20 @@ export default function PdfConverter() {
 
   // Fetch voices for speech synthesis
   useEffect(() => {
+    if (!window.speechSynthesis) {
+      setError('Web Speech API not supported in this browser. Try Chrome, Firefox, or Edge.');
+      return;
+    }
+
     const loadVoices = () => {
       const availableVoices = window.speechSynthesis.getVoices();
+      console.log(`Loaded ${availableVoices.length} voices`); // Debug log
       setVoices(availableVoices);
+      
       if (availableVoices.length > 0) {
-        setSelectedVoice(availableVoices[0]); // Default to first voice
+        // Prefer an English voice for better compatibility
+        const englishVoice = availableVoices.find(voice => voice.lang.startsWith('en'));
+        setSelectedVoice(englishVoice || availableVoices[0]);
       }
     };
 
@@ -156,7 +165,21 @@ export default function PdfConverter() {
   };
 
   const handleSpeak = () => {
-    if (!summary || !selectedVoice) return;
+    if (!summary || !selectedVoice || !window.speechSynthesis) {
+      setError('No summary or voice selected. Please generate a summary and choose a voice.');
+      return;
+    }
+
+    // Validate text: Ensure it's not empty and trim whitespace
+    const cleanSummary = summary.trim();
+    if (!cleanSummary) {
+      setError('Summary text is empty. Cannot speak.');
+      return;
+    }
+
+    // Safeguard: Limit text length to avoid browser limits (e.g., Chrome ~10k chars)
+    const maxLength = 5000; // Adjust as needed
+    const textToSpeak = cleanSummary.length > maxLength ? cleanSummary.substring(0, maxLength) + '...' : cleanSummary;
 
     if (isSpeaking) {
       window.speechSynthesis.pause();
@@ -170,18 +193,69 @@ export default function PdfConverter() {
       return;
     }
 
-    const utterance = new SpeechSynthesisUtterance(summary);
+    // Cancel any pending utterances to avoid queue issues
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(textToSpeak);
     utterance.voice = selectedVoice;
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = (event) => {
-      console.error('Speech error:', event);
-      setError('Error during speech synthesis');
+    
+    // Set language to match voice to prevent 'language-unavailable' error
+    utterance.lang = selectedVoice.lang;
+    
+    // Default utterance settings for better compatibility
+    utterance.volume = 1;
+    utterance.rate = 1;
+    utterance.pitch = 1;
+
+    utterance.onend = () => {
+      console.log('Speech synthesis ended successfully');
       setIsSpeaking(false);
     };
+
+    utterance.onerror = (event) => {
+      console.error('Speech error details:', {
+        error: event.error || 'unknown (empty event)',
+        utterance: textToSpeak.substring(0, 100) + '...', // First 100 chars for debug
+        voice: selectedVoice ? `${selectedVoice.name} (${selectedVoice.lang})` : 'none',
+        event: event // Full event object
+      });
+      
+      let errorMsg = 'Error during speech synthesis';
+      if (event.error) {
+        errorMsg += `: ${event.error}`;
+        // Map common errors to user-friendly messages
+        switch (event.error) {
+          case 'invalid-voice':
+            errorMsg += '. Try selecting a different voice.';
+            break;
+          case 'language-unavailable':
+            errorMsg += '. The voice language may not match the text. Try another voice.';
+            break;
+          case 'network':
+            errorMsg += '. Check your internet connection (some voices require online access).';
+            break;
+          case 'canceled':
+            errorMsg += '. Speech was canceled.';
+            break;
+          default:
+            break;
+        }
+      } else if (Object.keys(event).length === 0) {
+        errorMsg += '. Empty error event (browser quirk—try refreshing or another browser).';
+      }
+      
+      setError(errorMsg);
+      setIsSpeaking(false);
+    };
+
+    utterance.onstart = () => {
+      console.log('Speech synthesis started');
+      setIsSpeaking(true);
+    };
+
     utteranceRef.current = utterance;
 
     window.speechSynthesis.speak(utterance);
-    setIsSpeaking(true);
   };
 
   const handleStopSpeech = () => {
@@ -365,7 +439,7 @@ export default function PdfConverter() {
                       className={`flex items-center px-4 py-2 rounded-lg transition-colors duration-200 ${
                         isSpeaking ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700 hover:bg-green-200'
                       }`}
-                      disabled={!summary || !selectedVoice}
+                      disabled={!summary || !selectedVoice || !window.speechSynthesis}
                     >
                       {isSpeaking ? (
                         <>
@@ -408,7 +482,7 @@ export default function PdfConverter() {
                   disabled={voices.length === 0}
                 >
                   {voices.length === 0 ? (
-                    <option value="">No voices available</option>
+                    <option value="">Loading voices... (or not supported)</option>
                   ) : (
                     voices.map((voice, index) => (
                       <option key={index} value={index}>
