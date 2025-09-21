@@ -110,8 +110,8 @@ export default function Navbar() {
                   <NavigationMenuLink
                     href="/"
                     className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/"
-                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
-                        : ""
+                      ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                      : ""
                       }`}
                   >
                     Home
@@ -137,8 +137,11 @@ export default function Navbar() {
                       <ListItem href="/AIsummarizer" title="AI Summarizer">
                         Summarize long articles and texts quickly.
                       </ListItem>
-                      <ListItem href="/pdf-summarizer" title="PDF Summarizer">
+                      <ListItem href="/pdf_summarizer" title="PDF Summarizer">
                         Quickly get the main points from any PDF document.
+                      </ListItem>
+                      <ListItem href="/pdf-converter" title="PDF Extractor">
+                        Extract text from a PDF and generate a summarized version instantly.
                       </ListItem>
                       <ListItem href="/hashtag" title="Hashtag Generator">
                         Get suggested hashtags for your blog posts and content.
@@ -152,8 +155,8 @@ export default function Navbar() {
                   <NavigationMenuLink
                     href="/features"
                     className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/features"
-                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
-                        : ""
+                      ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                      : ""
                       }`}
                   >
                     Features
@@ -165,8 +168,8 @@ export default function Navbar() {
                   <NavigationMenuLink
                     href="/blogs"
                     className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/blogs"
-                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
-                        : ""
+                      ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                      : ""
                       }`}
                   >
                     Blogs
@@ -178,8 +181,8 @@ export default function Navbar() {
                   <NavigationMenuLink
                     href="/about"
                     className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/about"
-                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
-                        : ""
+                      ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                      : ""
                       }`}
                   >
                     About
@@ -191,8 +194,8 @@ export default function Navbar() {
                   <NavigationMenuLink
                     href="/contact"
                     className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/contact"
-                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
-                        : ""
+                      ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                      : ""
                       }`}
                   >
                     Contact
