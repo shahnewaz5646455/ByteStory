@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Lightbulb, Menu, Moon, Search, Sun, X } from "lucide-react";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +21,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const searchInputRef = useRef(null);
   const searchCardRef = useRef(null);
-  const router = useRouter();  // ✅ call the hook inside your component
+  const router = useRouter(); // ✅ call the hook inside your component
 
   // Focus the input when opening
   useEffect(() => {
@@ -46,17 +46,25 @@ export default function Navbar() {
   }, [isSearchOpen]);
 
   function onSubmitSearch(e) {
-    
-     e.preventDefault();
-     const searchTerm = e.value
-   if(searchTerm === "seo" || "SEO" || "se"){
-    router.push("/seo-checker")
-   }
-   if(searchTerm === "grammar" || "GRAMMAR" || "grammer" || "gramar" ||" grammer" ){
-   router.push(document.getElementById("grammerChecker").scrollIntoView({ behavior: "smooth" }));
-  } 
-   
- 
+    e.preventDefault();
+    const searchTerm = e.value;
+    if (searchTerm === "seo" || "SEO" || "se") {
+      router.push("/seo-checker");
+    }
+    if (
+      searchTerm === "grammar" ||
+      "GRAMMAR" ||
+      "grammer" ||
+      "gramar" ||
+      " grammer"
+    ) {
+      router.push(
+        document
+          .getElementById("grammerChecker")
+          .scrollIntoView({ behavior: "smooth" })
+      );
+    }
+
     // TODO: route to your search page or handle query
     // e.g., router.push(`/search?q=${encodeURIComponent(query)}`)
     setIsSearchOpen(false);
@@ -71,8 +79,10 @@ export default function Navbar() {
             href="/"
             className="flex-shrink-0 font-bold text-2xl flex items-center gap-2 cursor-pointer transition-colors"
           >
-            <div className="w-10 h-10 rounded-full flex items-center justify-center 
-                  bg-gradient-to-r from-purple-500 to-indigo-500 shadow-md">
+            <div
+              className="w-10 h-10 rounded-full flex items-center justify-center 
+                  bg-gradient-to-r from-purple-500 to-indigo-500 shadow-md"
+            >
               <Lightbulb className="w-6 h-6 text-white" />
             </div>
             <p className="text-gray-800 dark:text-gray-100">ByteStory</p>
@@ -82,43 +92,51 @@ export default function Navbar() {
           <div className="hidden md:flex space-x-6 text-black dark:text-gray-200 font-medium">
             <Link
               href="/"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${pathname === "/"
-                ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                : ""
-                }`}
+              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${
+                pathname === "/"
+                  ? "text-indigo-600 dark:text-indigo-400 font-semibold"
+                  : ""
+              }`}
             >
               Home
             </Link>
             <Link
               href="/features"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${pathname === "/features"
-                ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                : ""
-                }`}
+              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${
+                pathname === "/features"
+                  ? "text-indigo-600 dark:text-indigo-400 font-semibold"
+                  : ""
+              }`}
             >
               Features
             </Link>
             <Link
               href="/blogs"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${pathname === "/blogs" ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""}`}
+              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${
+                pathname === "/blogs"
+                  ? "text-indigo-600 dark:text-indigo-400 font-semibold"
+                  : ""
+              }`}
             >
               Blogs
             </Link>
             <Link
               href="/about"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${pathname === "/about"
-                ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                : ""
-                }`}
+              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${
+                pathname === "/about"
+                  ? "text-indigo-600 dark:text-indigo-400 font-semibold"
+                  : ""
+              }`}
             >
               About
             </Link>
             <Link
               href="/contact"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${pathname === "/contact"
-                ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                : ""
-                }`}
+              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${
+                pathname === "/contact"
+                  ? "text-indigo-600 dark:text-indigo-400 font-semibold"
+                  : ""
+              }`}
             >
               Contact
             </Link>
@@ -133,7 +151,10 @@ export default function Navbar() {
               onClick={() => setIsSearchOpen((s) => !s)}
               aria-label="Open search"
             >
-              <Search onClick={onSubmitSearch} className="h-[1.2rem] w-[1.2rem]" />
+              <Search
+                onClick={onSubmitSearch}
+                className="h-[1.2rem] w-[1.2rem]"
+              />
             </Button>
 
             {/* theme toggle */}
@@ -149,7 +170,10 @@ export default function Navbar() {
                   <span className="sr-only">Toggle theme</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+              <DropdownMenuContent
+                align="end"
+                className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+              >
                 <DropdownMenuItem
                   onClick={() => setTheme("light")}
                   className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
@@ -256,7 +280,10 @@ export default function Navbar() {
               ref={searchCardRef}
               className="w-full max-w-2xl rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl"
             >
-              <form onSubmit={onSubmitSearch} className="flex items-center gap-2 p-3">
+              <form
+                onSubmit={onSubmitSearch}
+                className="flex items-center gap-2 p-3"
+              >
                 <Search className="h-5 w-5 text-gray-500 dark:text-gray-400" />
                 <input
                   ref={searchInputRef}
@@ -274,7 +301,10 @@ export default function Navbar() {
                 >
                   <X className="h-5 w-5" />
                 </Button>
-                <Button type="submit" className="bg-black dark:bg-indigo-600 text-white hover:bg-gray-800">
+                <Button
+                  type="submit"
+                  className="bg-black dark:bg-indigo-600 text-white hover:bg-gray-800"
+                >
                   Search
                 </Button>
               </form>
@@ -288,50 +318,55 @@ export default function Navbar() {
             <div className="px-2 pt-2 pb-3 space-y-1 text-black dark:text-gray-200 font-medium">
               <Link
                 href="/"
-                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-                  }`}
+                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                  pathname === "/"
+                    ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
+                    : ""
+                }`}
                 onClick={() => setIsOpen(false)}
               >
                 Home
               </Link>
               <Link
                 href="/features"
-                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/features"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-                  }`}
+                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                  pathname === "/features"
+                    ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
+                    : ""
+                }`}
                 onClick={() => setIsOpen(false)}
               >
                 Features
               </Link>
               <Link
                 href="/blog"
-                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/blog"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-                  }`}
+                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                  pathname === "/blog"
+                    ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
+                    : ""
+                }`}
                 onClick={() => setIsOpen(false)}
               >
                 Blogs
               </Link>
               <Link
                 href="/about"
-                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/about"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-                  }`}
+                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                  pathname === "/about"
+                    ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
+                    : ""
+                }`}
                 onClick={() => setIsOpen(false)}
               >
                 About
               </Link>
               <Link
                 href="/contact"
-                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/contact"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-                  }`}
+                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                  pathname === "/contact"
+                    ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
+                    : ""
+                }`}
                 onClick={() => setIsOpen(false)}
               >
                 Contact
