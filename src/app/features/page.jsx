@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Send,
@@ -25,6 +25,9 @@ import GrammarChecker from "../../../components/GrammarChecker";
 import SpeechRecorder from "@/components/ui/speechRecorder";
 
 export default function AIWriterPage() {
+  const [isOnline,setIsOnline]=useState(true)
+  const [showNetStatus,setShowNetStatus]=useState(true)
+  const [showOffNetStatus,setShowOffNetStatus]=useState(false)
   const [input, setInput] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [output, setOutput] = useState("");
@@ -61,6 +64,36 @@ export default function AIWriterPage() {
       ),
     },
   ];
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+  console.log(isOnline);
+
+ 
+useEffect(() => {
+    if (isOnline) {
+      setShowOffNetStatus(false)
+      setShowNetStatus(true);
+      const timeout = setTimeout(() => setShowNetStatus(false), 4000);
+      return () => clearTimeout(timeout);
+    } 
+    if (!isOnline) {
+      setShowOffNetStatus(true);
+      // const timeout = setTimeout(() => setShowOffNetStatus(false), 4000);
+    }
+    else {
+      setShowNetStatus(false);
+    }
+  }, [isOnline]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -128,7 +161,21 @@ export default function AIWriterPage() {
   };
 
   return (
+    
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200">
+      {/* if network switch from off line to online this banner will be shown for 4 seconds */}
+      {showNetStatus && (
+        <div className="py-4 px-8 text-center bg-green-400" >
+          <h1 className="text-xl">You are online ✅</h1>
+        </div>
+      )}
+     {/* if network falls,this banner will be shown */}
+      {showOffNetStatus && (
+        <div className="py-4 px-8 text-center bg-red-500" >
+          <h1 className="text-xl">You are offline,request will be synced when Network is back ✅</h1>
+        </div>
+      )}
+    
       <main className="container mx-auto px-4 py-8 relative z-10">
         {/* Hero Section */}
         <section className="text-center mb-16">
