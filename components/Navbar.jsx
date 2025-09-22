@@ -2,19 +2,25 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, Moon, PencilLine, Sun, X, Search } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
+import { usePathname, useRouter } from "next/navigation";
+import { Lightbulb, Menu, Moon, Search, Sun, X } from "lucide-react";
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 import { useTheme } from "next-themes";
-import Image from "next/image";
-
+// import { useRouter } from "next/router";
 export default function Navbar() {
   const { setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false); // mobile menu
@@ -23,6 +29,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const searchInputRef = useRef(null);
   const searchCardRef = useRef(null);
+  const router = useRouter();  // ✅ call the hook inside your component
 
   // Focus the input when opening
   useEffect(() => {
@@ -47,11 +54,35 @@ export default function Navbar() {
   }, [isSearchOpen]);
 
   function onSubmitSearch(e) {
+
     e.preventDefault();
+    const searchTerm = e.value
+    if (searchTerm === "seo" || "SEO" || "se") {
+      router.push("/seo-checker")
+    }
+    if (searchTerm === "grammar" || "GRAMMAR" || "grammer" || "gramar" || " grammer") {
+      router.push(document.getElementById("grammerChecker").scrollIntoView({ behavior: "smooth" }));
+    }
+
+
     // TODO: route to your search page or handle query
     // e.g., router.push(`/search?q=${encodeURIComponent(query)}`)
-    console.log("Search submitted:", query);
     setIsSearchOpen(false);
+  }
+
+  function ListItem({ title, children, href, ...props }) {
+    return (
+      <li>
+        <NavigationMenuLink asChild>
+          <Link href={href}>
+            <div className="text-sm font-medium leading-none">{title}</div>
+            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+              {children}
+            </p>
+          </Link>
+        </NavigationMenuLink>
+      </li>
+    );
   }
 
   return (
@@ -61,84 +92,117 @@ export default function Navbar() {
           {/* Logo */}
           <Link
             href="/"
-            className="flex-shrink-0 text-black dark:text-white font-bold text-2xl flex items-center gap-2 cursor-pointer transition-colors"
+            className="flex-shrink-0 font-bold text-2xl flex items-center gap-2 cursor-pointer transition-colors"
           >
-            <PencilLine className="dark:text-indigo-400" />
-            <span className="dark:text-white">ByteStory</span>
+            <div className="w-10 h-10 rounded-full flex items-center justify-center 
+                  bg-gradient-to-r from-purple-500 to-indigo-500 shadow-md">
+              <Lightbulb className="w-6 h-6 text-white" />
+            </div>
+            <p className="text-gray-800 dark:text-gray-100">ByteStory</p>
           </Link>
-         <Link
-      href="/"
-      className="flex-shrink-0 font-bold text-2xl flex items-center gap-2 cursor-pointer transition-colors"
-    >
-      {/* Light Mode Logo */}
-      <Image
-        src="/logo.png"
-        alt="ByteStory Logo Light"
-        width={125}
-        height={40}
-        className="h-auto w-auto object-contain dark:hidden"
-        priority
-      />
-
-      {/* Dark Mode Logo */}
-      <Image
-        src="/logob.png"
-        alt="ByteStory Logo Dark"
-        width={125}
-        height={40}
-        className="h-auto w-auto object-contain hidden dark:block"
-        priority
-      />
-    </Link>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-6 text-black dark:text-gray-200 font-medium">
-            <Link
-              href="/"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${
-                pathname === "/"
-                  ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
-            >
-              Home
-            </Link>
-            <Link
-              href="/features"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${
-                pathname === "/features"
-                  ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
-            >
-              Features
-            </Link>
-            <Link
-              href="/blogs"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${pathname === "/blog" ? "text-indigo-600 dark:text-indigo-400 font-semibold" : ""}`}
-            >
-              Blogs
-            </Link>
-            <Link
-              href="/about"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${
-                pathname === "/about"
-                  ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
-            >
-              About
-            </Link>
-            <Link
-              href="/contact"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${
-                pathname === "/contact"
-                  ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
-            >
-              Contact
-            </Link>
+            {/* Home Link */}
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="/"
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/"
+                      ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                      : ""
+                      }`}
+                  >
+                    Home
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                {/* AI Tools Dropdown */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                    AI Tools
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[300px] gap-2 p-4 md:w-[400px] md:grid-cols-2 lg:w-[500px]">
+                      <ListItem href="/seo-checker" title="SEO Checker">
+                        Analyze and optimize your website for search engines.
+                      </ListItem>
+                      <ListItem href="/grammar-checker" title="Grammar Checker">
+                        Check for grammar, spelling, and punctuation errors.
+                      </ListItem>
+                      <ListItem href="/blog-generator" title="Blog Post Generator">
+                        Generate a full blog post from a simple title.
+                      </ListItem>
+                      <ListItem href="/AIsummarizer" title="AI Summarizer">
+                        Summarize long articles and texts quickly.
+                      </ListItem>
+                      <ListItem href="/pdf_summarizer" title="PDF Summarizer">
+                        Quickly get the main points from any PDF document.
+                      </ListItem>
+                      <ListItem href="/pdf-converter" title="PDF Extractor">
+                        Extract text from a PDF and generate a summarized version instantly.
+                      </ListItem>
+                      <ListItem href="/hashtag" title="Hashtag Generator">
+                        Get suggested hashtags for your blog posts and content.
+                      </ListItem>
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                {/* Features Link */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="/features"
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/features"
+                      ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                      : ""
+                      }`}
+                  >
+                    Features
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                {/* Blogs Link */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="/blogs"
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/blogs"
+                      ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                      : ""
+                      }`}
+                  >
+                    Blogs
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                {/* About Link */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="/about"
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/about"
+                      ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                      : ""
+                      }`}
+                  >
+                    About
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                {/* Contact Link */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="/contact"
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/contact"
+                      ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                      : ""
+                      }`}
+                  >
+                    Contact
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
           </div>
 
           <div className="flex gap-3 items-center">
@@ -150,7 +214,7 @@ export default function Navbar() {
               onClick={() => setIsSearchOpen((s) => !s)}
               aria-label="Open search"
             >
-              <Search className="h-[1.2rem] w-[1.2rem]" />
+              <Search onClick={onSubmitSearch} className="h-[1.2rem] w-[1.2rem]" />
             </Button>
 
             {/* theme toggle */}
@@ -166,10 +230,7 @@ export default function Navbar() {
                   <span className="sr-only">Toggle theme</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-              >
+              <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                 <DropdownMenuItem
                   onClick={() => setTheme("light")}
                   className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
@@ -204,173 +265,171 @@ export default function Navbar() {
               </Link>
             </div>
 
-            {/* Mobile: search + theme + menu */}
+            {/* menu button */}
             <div className="md:hidden flex items-center">
-              {/* mobile search trigger */}
-              <Button
-                variant="outline"
-                size="icon"
-                className="mr-3 border-gray-300 dark:border-gray-600 bg-transparent dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
-                onClick={() => setIsSearchOpen((s) => !s)}
-                aria-label="Open search"
-              >
-                <Search className="h-[1.2rem] w-[1.2rem]" />
-              </Button>
-
-              {/* mobile theme toggle */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="mr-3 border-gray-300 dark:border-gray-600 bg-transparent dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                    <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                    <span className="sr-only">Toggle theme</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+              {/* Mobile: search + theme + menu */}
+              <div className="md:hidden flex items-center">
+                {/* mobile search trigger */}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="mr-3 border-gray-300 dark:border-gray-600 bg-transparent dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  onClick={() => setIsSearchOpen((s) => !s)}
+                  aria-label="Open search"
                 >
-                  <DropdownMenuItem
-                    onClick={() => setTheme("light")}
-                    className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
-                  >
-                    Light
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setTheme("dark")}
-                    className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
-                  >
-                    Dark
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setTheme("system")}
-                    className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
-                  >
-                    System
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  <Search className="h-[1.2rem] w-[1.2rem]" />
+                </Button>
 
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="text-black dark:text-white focus:outline-none transition-colors"
-                aria-label="Toggle menu"
-              >
-                {isOpen ? <X size={28} /> : <Menu size={28} />}
-              </button>
+                {/* mobile theme toggle */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="mr-3 border-gray-300 dark:border-gray-600 bg-transparent dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                      <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+                      <span className="sr-only">Toggle theme</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+                  >
+                    <DropdownMenuItem
+                      onClick={() => setTheme("light")}
+                      className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
+                    >
+                      Light
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setTheme("dark")}
+                      className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
+                    >
+                      Dark
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setTheme("system")}
+                      className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
+                    >
+                      System
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <button
+                  onClick={() => setIsOpen(!isOpen)}
+                  className="text-black dark:text-white focus:outline-none transition-colors"
+                  aria-label="Toggle menu"
+                >
+                  {isOpen ? <X size={28} /> : <Menu size={28} />}
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Search box (overlay card) */}
-      {isSearchOpen && (
-        <div className="absolute inset-x-0 top-16 z-[60] flex justify-center px-4">
-          <div
-            ref={searchCardRef}
-            className="w-full max-w-2xl rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl"
-          >
-            <form onSubmit={onSubmitSearch} className="flex items-center gap-2 p-3">
-              <Search className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-              <input
-                ref={searchInputRef}
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search ByteStory..."
-                className="flex-1 bg-transparent outline-none text-gray-900 dark:text-gray-100 placeholder:text-gray-400"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                className="text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                onClick={() => setIsSearchOpen(false)}
-              >
-                <X className="h-5 w-5" />
-              </Button>
-              <Button type="submit" className="bg-black dark:bg-indigo-600 text-white hover:bg-gray-800">
-                Search
-              </Button>
-            </form>
+        {/* Search box (overlay card) */}
+        {isSearchOpen && (
+          <div className="absolute inset-x-0 top-16 z-[60] flex justify-center px-4">
+            <div
+              ref={searchCardRef}
+              className="w-full max-w-2xl rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl"
+            >
+              <form onSubmit={onSubmitSearch} className="flex items-center gap-2 p-3">
+                <Search className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search ByteStory..."
+                  className="flex-1 bg-transparent outline-none text-gray-900 dark:text-gray-100 placeholder:text-gray-400"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  onClick={() => setIsSearchOpen(false)}
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+                <Button type="submit" className="bg-black dark:bg-indigo-600 text-white hover:bg-gray-800">
+                  Search
+                </Button>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Mobile Menu Dropdown */}
-      {isOpen && (
-        <div className="md:hidden absolute right-4 top-16 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 w-56 transition-colors z-50">
-          <div className="px-2 pt-2 pb-3 space-y-1 text-black dark:text-gray-200 font-medium">
-            <Link
-              href="/"
-              className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                pathname === "/"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
-              onClick={() => setIsOpen(false)}
-            >
-              Home
-            </Link>
-            <Link
-              href="/features"
-              className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                pathname === "/features"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
-              onClick={() => setIsOpen(false)}
-            >
-              Features
-            </Link>
-            <Link
-              href="/blog"
-              className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                pathname === "/blog"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
-              onClick={() => setIsOpen(false)}
-            >
-              Blogs
-            </Link>
-            <Link
-              href="/about"
-              className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                pathname === "/about"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
-              onClick={() => setIsOpen(false)}
-            >
-              About
-            </Link>
-            <Link
-              href="/contact"
-              className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
-                pathname === "/contact"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
-              onClick={() => setIsOpen(false)}
-            >
-              Contact
-            </Link>
-            <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+        {/* Mobile Menu Dropdown */}
+        {isOpen && (
+          <div className="md:hidden absolute right-4 top-16 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 w-56 transition-colors z-50">
+            <div className="px-2 pt-2 pb-3 space-y-1 text-black dark:text-gray-200 font-medium">
               <Link
-                href="/login"
-                className="block bg-black dark:bg-indigo-600 text-white px-3 py-2 rounded shadow hover:bg-gray-800 transition-colors text-center"
+                href="/"
+                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/"
+                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
+                  : ""
+                  }`}
                 onClick={() => setIsOpen(false)}
               >
-                Get Started
+                Home
               </Link>
+              <Link
+                href="/features"
+                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/features"
+                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
+                  : ""
+                  }`}
+                onClick={() => setIsOpen(false)}
+              >
+                Features
+              </Link>
+              <Link
+                href="/blog"
+                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/blog"
+                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
+                  : ""
+                  }`}
+                onClick={() => setIsOpen(false)}
+              >
+                Blogs
+              </Link>
+              <Link
+                href="/about"
+                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/about"
+                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
+                  : ""
+                  }`}
+                onClick={() => setIsOpen(false)}
+              >
+                About
+              </Link>
+              <Link
+                href="/contact"
+                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/contact"
+                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
+                  : ""
+                  }`}
+                onClick={() => setIsOpen(false)}
+              >
+                Contact
+              </Link>
+              <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+                <Link
+                  href="/login"
+                  className="block bg-black dark:bg-indigo-600 text-white px-3 py-2 rounded shadow hover:bg-gray-800 transition-colors text-center"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Get Started
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </nav>
   );
 }
