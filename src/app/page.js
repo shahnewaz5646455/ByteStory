@@ -1,4 +1,5 @@
 
+import Cta from "../../components/Cta";
 import FAQ from "../../components/Faq";
 import Feature from "../../components/Feature";
 import Hero from "../../components/Hero";
@@ -17,6 +18,7 @@ export default function Home() {
       <HowItWorks />
       <TestimonialSection />
       <FAQ />
+      <Cta />
     </>
   );
 }
