@@ -35,7 +35,7 @@ export default function RootLayout({ children }) {
         >
           
           <GlobalStoreProvider>
-            <Navbar />
+            <Navbar/>
             {children}
           </GlobalStoreProvider>
           <ToastContainer />

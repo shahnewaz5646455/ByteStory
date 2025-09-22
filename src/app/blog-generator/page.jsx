@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Send,
@@ -24,15 +24,18 @@ import Reader from "@/components/ui/Reader";
 import SpeechRecorder from "@/components/ui/speechRecorder";
 
 export default function AIWriterPage() {
-  const [isOnline,setIsOnline]=useState(true)
-  const [showNetStatus,setShowNetStatus]=useState(true)
-  const [showOffNetStatus,setShowOffNetStatus]=useState(false)
+  const [isOnline, setIsOnline] = useState(navigator.onLine); // Initialize with current status
+const [showNetStatus, setShowNetStatus] = useState(false);
+const [showOffNetStatus, setShowOffNetStatus] = useState(false);
+const [hasNetworkChanged, setHasNetworkChanged] = useState(false); //
   const [input, setInput] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [output, setOutput] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState("blog");
   const [showTemplates, setShowTemplates] = useState(false);
   const [error, setError] = useState("");
+   
+
 
   const templates = [
     { id: "blog", name: "Blog Post", icon: <FileText size={18} /> },
@@ -63,36 +66,50 @@ export default function AIWriterPage() {
       ),
     },
   ];
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
+  // trigger online and offline state
+ // Replace your network-related state and useEffects with this: Track if network has changed
 
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, []);
-  console.log(isOnline);
-
- 
+// Set up network event listeners
 useEffect(() => {
-    if (isOnline) {
-      setShowOffNetStatus(false)
-      setShowNetStatus(true);
-      const timeout = setTimeout(() => setShowNetStatus(false), 4000);
-      return () => clearTimeout(timeout);
-    } 
-    if (!isOnline) {
-      setShowOffNetStatus(true);
-      // const timeout = setTimeout(() => setShowOffNetStatus(false), 4000);
-    }
-    else {
-      setShowNetStatus(false);
-    }
-  }, [isOnline]);
+  const handleOnline = () => {
+    setIsOnline(true);
+    setHasNetworkChanged(true); // Mark that network state has changed
+  };
+  
+  const handleOffline = () => {
+    setIsOnline(false);
+    setHasNetworkChanged(true); // Mark that network state has changed
+  };
+
+  window.addEventListener("online", handleOnline);
+  window.addEventListener("offline", handleOffline);
+
+  return () => {
+    window.removeEventListener("online", handleOnline);
+    window.removeEventListener("offline", handleOffline);
+  };
+}, []);
+
+// Handle network status display
+useEffect(() => {
+  // Only show status if network has actually changed (not on initial load)
+  if (!hasNetworkChanged) {
+    return;
+  }
+
+  if (isOnline) {
+    // Network came back online
+    setShowOffNetStatus(false);
+    setShowNetStatus(true);
+    const timeout = setTimeout(() => setShowNetStatus(false), 4000);
+    return () => clearTimeout(timeout);
+  } else {
+    // Network went offline
+    setShowNetStatus(false);
+    setShowOffNetStatus(true);
+  }
+}, [isOnline, hasNetworkChanged]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
