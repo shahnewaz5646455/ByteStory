@@ -181,16 +181,23 @@ useEffect(() => {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200">
       {/* if network switch from off line to online this banner will be shown for 4 seconds */}
       {showNetStatus && (
-        <div className="py-4 px-8 text-center bg-green-400" >
-          <h1 className="text-xl">You are online ✅</h1>
-        </div>
-      )}
-     {/* if network falls,this banner will be shown */}
-      {showOffNetStatus && (
-        <div className="py-4 px-8 text-center bg-red-500" >
-          <h1 className="text-xl">You are offline,request will be synced when Network is back ✅</h1>
-        </div>
-      )}
+  <div className="sticky top-0 z-50 py-3 px-4 text-center bg-green-500 shadow-lg animate-slideDown">
+    <div className="flex items-center justify-center gap-2">
+      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+      <h1 className="text-lg font-semibold text-white">You are back online ✅</h1>
+    </div>
+  </div>
+)}
+
+{showOffNetStatus && (
+  <div className="sticky top-0 z-50 py-3 px-4 text-center bg-red-600 shadow-lg animate-slideDown">
+    <div className="flex items-center justify-center gap-2">
+      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+      <h1 className="text-lg font-semibold text-white">You are currently offline</h1>
+    </div>
+    <p className="text-sm text-red-100 mt-1">Requests will be synced when network is back</p>
+  </div>
+)}
     
       <main className="container mx-auto px-4 py-8 relative z-10">
         {/* Hero Section */}
