@@ -21,7 +21,6 @@ import { TextAnimate } from "@/components/ui/text-animate";
 import { AuroraText } from "@/components/ui/aurora-text";
 import { toast } from "react-toastify";
 import Reader from "@/components/ui/Reader";
-import GrammarChecker from "../../../components/GrammarChecker";
 import SpeechRecorder from "@/components/ui/speechRecorder";
 
 export default function AIWriterPage() {
@@ -503,7 +502,6 @@ useEffect(() => {
           ))}
         </motion.div>
 
-        <GrammarChecker />
 
       </main>
     </div>
