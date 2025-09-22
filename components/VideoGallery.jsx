@@ -226,8 +226,8 @@ const VideoGallery = () => {
   };
 
   return (
-    <section id="tutorials" className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 via-white to-purple-50 min-h-screen relative overflow-hidden">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <section id="tutorials" className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 via-white to-purple-50 min-h-screen relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div 
           ref={ref} 
           variants={containerAnimation} 
@@ -237,14 +237,10 @@ const VideoGallery = () => {
         >
           <motion.h2 
             variants={itemAnimation} 
-            className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-4 text-gray-900 dark:text-white tracking-tight"
+            className="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-white tracking-tight"
           >
-            Writing Tutorials & Resources
+            Writing Tutorials & <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">Resources</span> 
           </motion.h2>
-          <motion.div 
-            variants={itemAnimation} 
-            className="w-24 h-1 bg-gradient-to-r from-indigo-600 to-purple-600 mx-auto mb-6" 
-          />
           <motion.p 
             variants={itemAnimation} 
             className="text-gray-700 dark:text-gray-300 max-w-3xl mx-auto text-lg md:text-xl leading-relaxed"
