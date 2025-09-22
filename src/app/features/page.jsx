@@ -1,511 +1,281 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Send,
-  Sparkles,
-  Brain,
-  Zap,
-  Clock,
-  CheckCircle,
-  Type,
-  FileText,
-  BookOpen,
-  PenTool,
-  ChevronDown,
-  BarChart3,
-  Copy,
-} from "lucide-react";
-import { TextAnimate } from "@/components/ui/text-animate";
-import { AuroraText } from "@/components/ui/aurora-text";
-import { toast } from "react-toastify";
-import Reader from "@/components/ui/Reader";
-import GrammarChecker from "../../../components/GrammarChecker";
-import SpeechRecorder from "@/components/ui/speechRecorder";
+import { useState } from "react"
+import { Search, Zap, CheckCircle, ArrowRight, Play, Image as ImageIcon } from "lucide-react"
 
-export default function AIWriterPage() {
-  const [isOnline,setIsOnline]=useState(true)
-  const [showNetStatus,setShowNetStatus]=useState(true)
-  const [showOffNetStatus,setShowOffNetStatus]=useState(false)
-  const [input, setInput] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [output, setOutput] = useState("");
-  const [selectedTemplate, setSelectedTemplate] = useState("blog");
-  const [showTemplates, setShowTemplates] = useState(false);
-  const [error, setError] = useState("");
+const tools = [
+  {
+    title: "SEO Checker",
+    description: "Our SEO Checker analyzes your website and gives you actionable suggestions to improve your ranking on search engines. Perfect for bloggers, businesses, and marketers.",
+    features: [
+      "Keyword optimization analysis",
+      "Meta tag recommendations",
+      "Content readability score",
+      "Backlink opportunity suggestions",
+      "Competitor analysis insights"
+    ],
+    useCases: ["Bloggers", "E-commerce sites", "Content marketers", "Small businesses"],
+    imageType: "screenshot" // or "video"
+  },
+  {
+    title: "Grammar Checker",
+    description: "Eliminate grammar, spelling, and punctuation mistakes instantly. Improve the readability and professionalism of your content.",
+    features: [
+      "Real-time grammar correction",
+      "Spelling and punctuation check",
+      "Tone and style suggestions",
+      "Plagiarism detection",
+      "Vocabulary enhancement"
+    ],
+    useCases: ["Writers", "Students", "Professionals", "Non-native speakers"],
+    imageType: "screenshot"
+  },
+  {
+    title: "Blog Post Generator",
+    description: "Turn a simple title into a complete, well-structured blog post. Save time and focus on creativity while AI takes care of the writing.",
+    features: [
+      "Topic expansion and research",
+      "SEO-optimized structure",
+      "Multiple content tones available",
+      "Image suggestion integration",
+      "One-click publishing ready"
+    ],
+    useCases: ["Content creators", "Marketing teams", "Agency writers", "Small business owners"],
+    imageType: "video"
+  },
+  {
+    title: "AI Summarizer",
+    description: "Summarize long articles, research papers, or reports into concise overviews. Get the main ideas in seconds.",
+    features: [
+      "Adjustable summary length",
+      "Key point extraction",
+      "Bullet point or paragraph format",
+      "Multiple language support",
+      "Citation preservation"
+    ],
+    useCases: ["Researchers", "Students", "Executives", "Journalists"],
+    imageType: "screenshot"
+  },
+  {
+    title: "PDF Summarizer",
+    description: "Upload any PDF file and get a clear summary of its content. Perfect for study notes, business reports, and research material.",
+    features: [
+      "PDF text extraction",
+      "Chapter-wise summarization",
+      "Key statistics highlighting",
+      "Academic paper analysis",
+      "Batch processing support"
+    ],
+    useCases: ["Academics", "Legal professionals", "Business analysts", "Researchers"],
+    imageType: "screenshot"
+  },
+  {
+    title: "PDF Extractor",
+    description: "Extract raw text from any PDF file and optionally generate a summarized version. Useful for documents that are too long to read.",
+    features: [
+      "Text and image extraction",
+      "Format preservation",
+      "Table and chart recognition",
+      "OCR for scanned documents",
+      "Export to multiple formats"
+    ],
+    useCases: ["Data entry professionals", "Researchers", "Archivists", "Content managers"],
+    imageType: "video"
+  },
+  {
+    title: "Hashtag Generator",
+    description: "Get AI-powered hashtag suggestions for your blog posts and social media content to increase visibility and engagement.",
+    features: [
+      "Trending hashtag analysis",
+      "Platform-specific suggestions",
+      "Engagement probability scoring",
+      "Hashtag performance tracking",
+      "Seasonal trend incorporation"
+    ],
+    useCases: ["Social media managers", "Influencers", "Brands", "Content creators"],
+    imageType: "screenshot"
+  }
+]
 
-  const templates = [
-    { id: "blog", name: "Blog Post", icon: <FileText size={18} /> },
-    { id: "creative", name: "Creative Story", icon: <PenTool size={18} /> },
-    { id: "academic", name: "Academic Paper", icon: <BookOpen size={18} /> },
-    { id: "marketing", name: "Marketing Copy", icon: <Type size={18} /> },
-  ];
+export default function FeaturesPage() {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [activeTool, setActiveTool] = useState(0)
 
-  const features = [
-    {
-      title: "AI-Powered Content",
-      description:
-        "Advanced language models for high-quality content generation",
-      icon: (
-        <Brain className="text-indigo-600 dark:text-indigo-400" size={24} />
-      ),
-    },
-    {
-      title: "Lightning Fast",
-      description: "Generate content in seconds, not hours",
-      icon: <Zap className="text-indigo-600 dark:text-indigo-400" size={24} />,
-    },
-    {
-      title: "SEO Optimized",
-      description: "Content optimized for search engines",
-      icon: (
-        <BarChart3 className="text-indigo-600 dark:text-indigo-400" size={24} />
-      ),
-    },
-  ];
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, []);
-  console.log(isOnline);
-
- 
-useEffect(() => {
-    if (isOnline) {
-      setShowOffNetStatus(false)
-      setShowNetStatus(true);
-      const timeout = setTimeout(() => setShowNetStatus(false), 4000);
-      return () => clearTimeout(timeout);
-    } 
-    if (!isOnline) {
-      setShowOffNetStatus(true);
-      // const timeout = setTimeout(() => setShowOffNetStatus(false), 4000);
-    }
-    else {
-      setShowNetStatus(false);
-    }
-  }, [isOnline]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!input.trim()) {
-      setError("Please enter a topic or description");
-      return;
-    }
-
-    setIsGenerating(true);
-    setError("");
-    setOutput("");
-
-    try {
-      const response = await fetch("/api/generate-content", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prompt: input,
-          template: selectedTemplate,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setOutput(data.content);
-      } else {
-        setError("Failed to generate content. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setError("Failed to generate content. Please try again.");
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(output);
-      toast.success("Content copied to clipboard!", {
-        className:
-          "bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium shadow-lg rounded-lg",
-        bodyClassName: "text-sm",
-        progressClassName: "bg-white",
-        position: "top-right",
-        autoClose: 800,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
-    } catch (err) {
-      console.error("Failed to copy: ", err);
-      toast.error("Failed to copy content", {
-        className:
-          "bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium shadow-lg rounded-lg",
-        bodyClassName: "text-sm",
-        progressClassName: "bg-white",
-        position: "top-right",
-        autoClose: 2000,
-      });
-    }
-  };
+  const filteredTools = tools.filter(tool =>
+    tool.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    tool.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    tool.useCases.some(useCase => useCase.toLowerCase().includes(searchTerm.toLowerCase()))
+  )
 
   return (
-    
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200">
-      {/* if network switch from off line to online this banner will be shown for 4 seconds */}
-      {showNetStatus && (
-        <div className="py-4 px-8 text-center bg-green-400" >
-          <h1 className="text-xl">You are online ✅</h1>
-        </div>
-      )}
-     {/* if network falls,this banner will be shown */}
-      {showOffNetStatus && (
-        <div className="py-4 px-8 text-center bg-red-500" >
-          <h1 className="text-xl">You are offline,request will be synced when Network is back ✅</h1>
-        </div>
-      )}
-    
-      <main className="container mx-auto px-4 py-8 relative z-10">
-        {/* Hero Section */}
-        <section className="text-center mb-16">
-          <div className="inline-flex mb-4 md:mb-6 justify-center w-full">
-            <span className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-xs md:text-sm font-medium px-3 py-1 md:px-4 md:py-2 rounded-full shadow-md hover:shadow-lg dark:hover:shadow-purple-600/20 transition-shadow duration-300 flex items-center">
-              <Sparkles className="w-3 h-3 md:w-4 md:h-4 mr-1 md:mr-2" />
-              AI Writing Assistant
-            </span>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Header Section */}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center rounded-full bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 mb-4">
+            <Zap className="h-4 w-4 mr-2" />
+            AI-Powered Tools
           </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            Powerful Tools for <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">Content Creators</span>
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
+            Discover our suite of AI tools designed to streamline your content creation process, 
+            enhance quality, and boost your online presence.
+          </p>
 
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="text-4xl sm:text-5xl font-bold mb-4"
-          >
-            Transform Your Ideas Into
-            <span className="block bg-clip-text pb-2 text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-              <AuroraText>Masterful Writing</AuroraText>
-            </span>
-          </motion.h2>
+          {/* Search Bar */}
+          <div className="max-w-md mx-auto relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <input
+              type="text"
+              placeholder="Search tools..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+        </div>
 
-          <TextAnimate
-            animation="slideLeft"
-            by="character"
-            className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto mb-8"
-          >
-            Our AI writing assistant helps you create compelling content, from
-            blog posts to professional documents, in seconds.
-          </TextAnimate>
-        </section>
-        {/* Writer Interface */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.6 }}
-          className="rounded-2xl shadow-xl dark:shadow-gray-900/50 p-8 border border-indigo-100/50 dark:border-gray-700/50 hover:shadow-2xl dark:hover:shadow-indigo-900/20 transition-all duration-300 mb-16 backdrop-blur-sm bg-white/95 dark:bg-gray-800/95"
-        >
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Input Section */}
-            <div className="flex-1">
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  What would you like to write about?
-                </h3>
-
-                {/* Template Selector */}
-                <div className="relative mb-6">
-                  <div className="flex items-center mb-2">
-                    <Sparkles className="w-4 h-4 text-indigo-500 mr-2" />
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                      Content Type
-                    </span>
-                  </div>
+        {/* Tools Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+          {filteredTools.map((tool, index) => (
+            <div
+              key={index}
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
+            >
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-4">
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    {tool.title}
+                  </h3>
                   <button
-                    onClick={() => setShowTemplates(!showTemplates)}
-                    className="flex items-center space-x-2 px-4 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 rounded-xl w-full justify-between border border-indigo-200/50 dark:border-gray-600 hover:border-indigo-300 dark:hover:border-gray-500 transition-all duration-200 group"
+                    onClick={() => setActiveTool(index)}
+                    className="flex items-center gap-1 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 text-sm font-medium"
                   >
-                    <div className="flex items-center">
-                      <span className="text-indigo-600 dark:text-indigo-300">
-                        {templates.find((t) => t.id === selectedTemplate)?.icon}
-                      </span>
-                      <span className="ml-3 font-medium text-gray-800 dark:text-white">
-                        {templates.find((t) => t.id === selectedTemplate)?.name}
-                      </span>
-                    </div>
-                    <ChevronDown
-                      size={18}
-                      className={`transition-transform duration-300 text-indigo-400 ${
-                        showTemplates ? "rotate-180" : ""
-                      }`}
-                    />
+                    View Details <ArrowRight className="h-4 w-4" />
                   </button>
+                </div>
+                
+                <p className="text-gray-600 dark:text-gray-300 mb-4">
+                  {tool.description}
+                </p>
 
-                  <AnimatePresence>
-                    {showTemplates && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-xl overflow-hidden z-20 border border-indigo-100 dark:border-gray-700 shadow-2xl"
-                      >
-                        {templates.map((template) => (
-                          <button
-                            key={template.id}
-                            onClick={() => {
-                              setSelectedTemplate(template.id);
-                              setShowTemplates(false);
-                            }}
-                            className={`flex items-center w-full px-4 py-3 text-left hover:bg-indigo-50 dark:hover:bg-gray-700 transition-all duration-200 group ${
-                              selectedTemplate === template.id
-                                ? "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300"
-                                : "text-gray-700 dark:text-gray-300"
-                            }`}
-                          >
-                            <span className="text-indigo-500 dark:text-indigo-400 group-hover:scale-110 transition-transform">
-                              {template.icon}
-                            </span>
-                            <span className="ml-3 font-medium">
-                              {template.name}
-                            </span>
-                          </button>
-                        ))}
-                      </motion.div>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {tool.useCases.slice(0, 3).map((useCase, i) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-xs font-medium"
+                    >
+                      {useCase}
+                    </span>
+                  ))}
+                  {tool.useCases.length > 3 && (
+                    <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full text-xs">
+                      +{tool.useCases.length - 3} more
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                  <span className="flex items-center gap-1">
+                    {tool.imageType === "video" ? (
+                      <Play className="h-4 w-4" />
+                    ) : (
+                      <ImageIcon className="h-4 w-4" />
                     )}
-                  </AnimatePresence>
+                    {tool.imageType === "video" ? "Video demo" : "Screenshot"}
+                  </span>
+                  <span>{tool.features.length} features</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Detailed Tool View */}
+        {filteredTools.length > 0 && (
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden mb-16">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Content Side */}
+              <div className="p-8">
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                  {filteredTools[activeTool]?.title}
+                </h2>
+                
+                <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
+                  {filteredTools[activeTool]?.description}
+                </p>
+
+                <div className="mb-8">
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Key Features</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {filteredTools[activeTool]?.features.map((feature, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                        <span className="text-gray-600 dark:text-gray-300">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Perfect For</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {filteredTools[activeTool]?.useCases.map((useCase, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full text-sm font-medium"
+                      >
+                        {useCase}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-8 flex gap-4">
+                  <button className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-medium hover:shadow-lg transition-all duration-200">
+                    Try Now
+                  </button>
+                  <button className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200">
+                    View Documentation
+                  </button>
                 </div>
               </div>
 
-              <form onSubmit={handleSubmit}>
-                <div className="relative">
-                  <div className="flex items-center mb-2">
-                    <PenTool className="w-4 h-4 text-indigo-500 mr-2" />
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                      Your Topic
-                    </span>
-                  </div>
-                  <textarea
-                    value={input}
-                    onChange={(e) => {
-                      setInput(e.target.value);
-                      setError("");
-                    }}
-                    placeholder="Describe what you want to write about... (e.g., 'A blog post about sustainable gardening practices')"
-                    className="w-full h-48 bg-white dark:bg-gray-700/80 border-2 border-indigo-100/70 dark:border-gray-600 rounded-2xl p-5 focus:outline-none focus:border-indigo-300 dark:focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200/50 dark:focus:ring-indigo-500/20 resize-none transition-all duration-300 placeholder-gray-400 dark:placeholder-gray-500 text-gray-800 dark:text-white font-medium"
-                    disabled={isGenerating}
-                  />
-
-                  <div className="absolute bottom-4 right-4 flex items-center">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      type="submit"
-                      disabled={isGenerating || !input.trim()}
-                      className={`p-3 rounded-full shadow-lg transition-all duration-300 ${
-                        isGenerating || !input.trim()
-                          ? "bg-gray-300 dark:bg-gray-600 cursor-not-allowed"
-                          : "bg-gradient-to-r from-indigo-600 to-purple-600 cursor-pointer hover:shadow-indigo-500/30 dark:hover:shadow-purple-500/20"
-                      }`}
-                    >
-                      {isGenerating ? (
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{
-                            duration: 1,
-                            repeat: Infinity,
-                            ease: "linear",
-                          }}
-                        >
-                          <Clock size={22} className="text-white" />
-                        </motion.div>
-                      ) : (
-                        <Send size={22} className="text-white" />
-                      )}
-                    </motion.button>
-                  </div>
-                </div>
-                <SpeechRecorder/>
-                {error && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-red-500 text-sm mt-3 flex items-center"
-                  >
-                    <span className="mr-1">⚠️</span> {error}
-                  </motion.p>
-                )}
-              </form>
-            </div>
-
-            {/* Divider */}
-            <div className="hidden lg:block">
-              <div className="w-px h-full bg-gradient-to-b from-transparent via-indigo-200/50 dark:via-gray-600 to-transparent mx-4"></div>
-            </div>
-
-            {/* Output Section */}
-            <div className="flex-1">
-              <div className="flex justify-between items-center mb-6">
-                <div>
-                  <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    Generated Content
-                  </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Powered by ByteStory AI • Professional quality
+              {/* Media Side */}
+              <div className="bg-gray-100 dark:bg-gray-700 flex items-center justify-center p-8">
+                <div className="text-center">
+                  {filteredTools[activeTool]?.imageType === "video" ? (
+                    <div className="relative">
+                      <div className="w-full h-64 bg-gray-300 dark:bg-gray-600 rounded-lg flex items-center justify-center">
+                        <Play className="h-16 w-16 text-white opacity-70" />
+                      </div>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <button className="bg-white/20 backdrop-blur-sm rounded-full p-4 hover:bg-white/30 transition-all duration-200">
+                          <Play className="h-8 w-8 text-white" />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="w-full h-64 bg-gray-300 dark:bg-gray-600 rounded-lg flex items-center justify-center">
+                      <ImageIcon className="h-16 w-16 text-gray-400 dark:text-gray-500" />
+                    </div>
+                  )}
+                  <p className="text-gray-500 dark:text-gray-400 mt-4">
+                    {filteredTools[activeTool]?.imageType === "video" 
+                      ? "Tool demonstration video" 
+                      : "Tool interface screenshot"}
                   </p>
                 </div>
-               {output && (
-                  <div className="flex items-center gap-3">
-                    <motion.button
-                      onClick={copyToClipboard}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="flex items-center px-4 py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all duration-200 border border-indigo-100 dark:border-indigo-700/30"
-                    >
-                      <Copy size={18} className="mr-2" />
-                      <span className="text-sm font-medium">Copy</span>
-                    </motion.button>
-                    
-                    {/* <Reader text={output}/> */}
-                  </div>
-                )}
               </div>
-
-              <div className="bg-gradient-to-br from-white to-indigo-50/50 dark:from-gray-700/80 dark:to-gray-800/80 border-2 border-indigo-100/50 dark:border-gray-600 rounded-2xl p-6 h-48 overflow-y-auto shadow-inner">
-                {isGenerating ? (
-                  <div className="flex items-center justify-center h-full">
-                    <motion.div
-                      initial={{ opacity: 0.5, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{
-                        repeat: Infinity,
-                        repeatType: "reverse",
-                        duration: 1.5,
-                      }}
-                      className="flex flex-col items-center text-center"
-                    >
-                      <div className="relative">
-                        <Sparkles className="text-indigo-500 mb-3 w-8 h-8" />
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                            ease: "linear",
-                          }}
-                          className="absolute -inset-2 border-2 border-indigo-200 border-t-indigo-500 rounded-full"
-                        />
-                      </div>
-                      <p className="text-gray-600 dark:text-gray-400 font-medium">
-                        Crafting your content...
-                      </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
-                        This may take a few moments
-                      </p>
-                    </motion.div>
-                  </div>
-                ) : output ? (
-                  <div className="prose prose-sm sm:prose dark:prose-invert max-w-none">
-                    <div className="text-gray-800 dark:text-gray-200 leading-relaxed font-light">
-                      {output.split("\n").map((paragraph, index) =>
-                        paragraph.trim() ? (
-                          <p key={index} className="mb-4 text-justify">
-                            {paragraph}
-                          </p>
-                        ) : null
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-full text-center">
-                    <div className="relative mb-4">
-                      <Type
-                        size={40}
-                        className="text-indigo-300 dark:text-indigo-500"
-                      />
-                      <Sparkles className="absolute -top-2 -right-2 w-5 h-5 text-indigo-500 animate-pulse" />
-                    </div>
-                    <h4 className="font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                      Awaiting Your Inspiration
-                    </h4>
-                    <p className="text-sm text-gray-500 dark:text-gray-500 max-w-xs">
-                      Enter your topic above and watch as AI transforms it into
-                      professional content
-                    </p>
-                  </div>
-                )}
-              </div>
-
-             {/* Word Count & Status Bar */}
-{output && (
-  <motion.div
-    initial={{ opacity: 0, y: 10 }}
-    animate={{ opacity: 1, y: 0 }}
-    className="mt-4 px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm shadow-sm flex items-center justify-between"
-  >
-    {/* Left side: Status dot + word count */}
-    <div className="flex items-center gap-2">
-      <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-ping" />
-      <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-        {output.split(/\s+/).filter((word) => word.length > 0).length} words
-      </span>
-    </div>
-
-    {/* Middle: Divider */}
-    <div className="w-px h-5 bg-gray-300 dark:bg-gray-600 mx-3" />
-
-    {/* Right side: Status icon */}
-    <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
-      <CheckCircle className="w-4 h-4 text-green-500" />
-      <span className="font-medium">Ready to use</span>
-    </div>
-
-    {/* Reader button/component */}
-    <div className="ml-3">
-      <Reader text={output} />
-    </div>
-  </motion.div>
-)}
-
             </div>
           </div>
-        </motion.div>
+        )}
+
         
-         {/* Features Grid */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.7, delay: 0.4 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16"
-        >
-          {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              whileHover={{ y: -5 }}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-md dark:shadow-gray-900/50 p-6 border border-indigo-100 dark:border-gray-700 hover:shadow-lg dark:hover:shadow-indigo-900/30 transition-all duration-300"
-            >
-              <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/20 rounded-lg flex items-center justify-center mb-4">
-                {feature.icon}
-              </div>
-              <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
-              <p className="text-gray-600 dark:text-gray-300 text-sm">
-                {feature.description}
-              </p>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        <GrammarChecker />
-
-      </main>
+      </div>
     </div>
-  );
+  )
 }
