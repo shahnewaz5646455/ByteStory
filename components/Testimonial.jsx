@@ -2,11 +2,12 @@
 
 import React from "react";
 import { Star, Quote, Sparkles } from "lucide-react";
-import Slider from "react-slick";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Pagination } from 'swiper/modules';
 
-// Import slick styles
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/pagination';
 import Image from "next/image";
 
 const testimonials = [
@@ -57,38 +58,9 @@ const TestimonialSection = () => {
     return Array.from({ length: 5 }, (_, i) => (
       <Star
         key={i}
-        className={`h-4 w-4 ${i < rating ? "text-amber-400 fill-amber-400" : "text-gray-300"
-          }`}
+        className={`h-4 w-4 ${i < rating ? "text-amber-400 fill-amber-400" : "text-gray-300"}`}
       />
     ));
-  };
-
-  const settings = {
-    dots: false,
-    arrows: false,
-    infinite: true,
-    autoplay: true,
-    autoplaySpeed: 4000,
-    speed: 1000,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    pauseOnHover: true,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-        }
-      },
-      {
-        breakpoint: 640,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        }
-      }
-    ],
   };
 
   return (
@@ -108,56 +80,75 @@ const TestimonialSection = () => {
           </p>
         </div>
 
-        {/* Testimonial Carousel */}
+        {/* Testimonial Carousel with Swiper */}
         <div className="relative">
-          <Slider {...settings}>
+          <Swiper
+            modules={[Autoplay, Pagination]}
+            spaceBetween={24}
+            loop={true}
+            autoplay={{
+              delay: 4000,
+              disableOnInteraction: false,
+            }}
+            slidesPerView={1}
+            breakpoints={{
+              640: {
+                slidesPerView: 1,
+              },
+              1024: {
+                slidesPerView: 3,
+              },
+            }}
+            className="mySwiper"
+          >
             {testimonials.map((testimonial) => (
-              <div key={testimonial.id} className="px-3 py-4">
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 h-[320px] transform">
+              <SwiperSlide key={testimonial.id}>
+                <div className="px-3 py-4">
+                  <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700 h-[320px] transform">
+                    <div className="flex flex-col h-full justify-between">
+                      <div>
+                        {/* Quote Icon */}
+                        <div className="mb-4">
+                          <Quote className="h-8 w-8 text-indigo-400 opacity-60" />
+                        </div>
 
-                  <div className="flex flex-col h-full justify-between">
-                    <div>
-                      {/* Quote Icon */}
-                      <div className="mb-4">
-                        <Quote className="h-8 w-8 text-indigo-400 opacity-60" />
+                        {/* Content */}
+                        <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+                          "{testimonial.content}"
+                        </p>
                       </div>
 
-                      {/* Content */}
-                      <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
-                        "{testimonial.content}"
-                      </p>
-                    </div>
+                      <div>
+                        {/* Rating */}
+                        <div className="flex items-center mb-4">
+                          {renderStars(testimonial.rating)}
+                        </div>
 
-                    <div>
-                      {/* Rating */}
-                      <div className="flex items-center mb-4">
-                        {renderStars(testimonial.rating)}
-                      </div>
-
-                      {/* Author */}
-                      <div className="flex items-center">
-                        <Image
-                          src={`/${testimonial.avatar}`}
-                          alt={testimonial.name}
-                          height={48}
-                          width={48}
-                          className="rounded-full object-cover mr-4"
-                        />
-                        <div>
-                          <h4 className="font-semibold text-gray-900 dark:text-white">
-                            {testimonial.name}
-                          </h4>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {testimonial.role}
-                          </p>
+                        {/* Author */}
+                        <div className="flex items-center">
+                          <Image
+                            src={`/${testimonial.avatar}`}
+                            alt={testimonial.name}
+                            height={48}
+                            width={48}
+                            className="rounded-full object-cover mr-4"
+                          />
+                          <div>
+                            <h4 className="font-semibold text-gray-900 dark:text-white">
+                              {testimonial.name}
+                            </h4>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                              {testimonial.role}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </SwiperSlide>
             ))}
-          </Slider>
+          </Swiper>
         </div>
       </div>
     </section>

@@ -97,7 +97,7 @@ const HowItWorks = () => {
 
                 {/* Card */}
                 <div
-                  className={`w-full md:w-5/12 dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 ${
+                  className={`w-full md:w-5/12 dark:bg-gray-800 bg-white p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 ${
                     index % 2 === 0 ? "ml-0 mr-auto" : "ml-auto mr-0"
                   }`}
                 >

@@ -33,6 +33,7 @@ export default function RootLayout({ children }) {
           enableSystem
           disableTransitionOnChange
         >
+          
           <GlobalStoreProvider>
             <Navbar/>
             {children}

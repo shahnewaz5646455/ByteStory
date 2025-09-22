@@ -51,6 +51,10 @@ bg-gradient-to-br from-indigo-50 via-white to-purple-50 (background)
 
 
 GEMINI_API_KEY=AIzaSyBFWXBdf57XWExzv4K7edNux_KuM2LUloU
+
+
+
+RUBAID_GEMINI_API_KEY=AIzaSyBewQB-uKyYJpBwvLLmvcU8BautEN_E78k
 MONGODB_URI="mongodb+srv://ecom-bazar:voTBmMgag2mU6KbT@cluster0.duyrjao.mongodb.net/nextjs-ecom-bazar?retryWrites=true&w=majority&appName=Cluster0"
 
 SECRET_KEY="CZJZR5rylm7AdlnDx6ZxXToasPVBAJAzGhf+fKIZh5M"
@@ -63,3 +67,5 @@ NODEMAILER_PASSWORD="yoazrwdzfrnpaguu"
 NEXT_PUBLIC_BASE_URL="http://localhost:3000" 
 NODE_ENV="development"
 RUBAID_GEMINI_API_KEY=AIzaSyBewQB-uKyYJpBwvLLmvcU8BautEN_E78k
+
+NEWAZ_GEMINI_API_KEY=AIzaSyCfcD8M398Lin0F4J4l0aw34VIMYyq0BPM
