@@ -3,6 +3,7 @@ import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import { ThemeProvider } from "../../components/theme-provider";
 import GlobalStoreProvider from "@/components/ui/Application/GlobalStoreProvider";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 
@@ -28,20 +29,23 @@ export default function RootLayout({ children }) {
         suppressHydrationWarning={true}
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
+        <GoogleOAuthProvider
+          clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
         >
-          
-          <GlobalStoreProvider>
-            <Navbar/>
-            {children}
-            <Footer />
-          </GlobalStoreProvider>
-          <ToastContainer />
-        </ThemeProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <GlobalStoreProvider>
+              <Navbar />
+              {children}
+              <Footer />
+            </GlobalStoreProvider>
+            <ToastContainer />
+          </ThemeProvider>
+        </GoogleOAuthProvider>
       </body>
     </html>
   );

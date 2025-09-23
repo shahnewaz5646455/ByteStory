@@ -228,17 +228,19 @@ export default function PdfSummarizePage() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4">
       <div className="max-w-2xl mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-6 md:p-8">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-4">
-              <FileText className="h-8 w-8 text-white" />
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              PDF Summarizer
-            </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              Upload a PDF file to generate an AI-powered summary
-            </p>
-          </div>
+       {/* Header */}
+<div className="text-center mb-12">
+  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-6">
+    <FileText className="h-8 w-8 text-white" />
+  </div>
+  <h1 className="text-4xl font-bold pb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+    PDF Summarizer
+  </h1>
+  <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+    Upload a PDF file to generate an AI-powered summary
+  </p>
+</div>
+
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex flex-col items-center justify-center border-2 border-dashed border-indigo-200 dark:border-indigo-500/30 rounded-xl p-8 text-center transition-colors hover:border-indigo-400 dark:hover:border-indigo-400 bg-indigo-50/50 dark:bg-indigo-900/20">
@@ -246,7 +248,7 @@ export default function PdfSummarizePage() {
               <p className="text-sm text-indigo-600 dark:text-indigo-300 mb-2">
                 {fileName || "Drag & drop your PDF here or click to browse"}
               </p>
-              <label htmlFor="file-upload" className="cursor-pointer">
+              <label htmlFor="file-upload" className="cursor-pointer my-2">
                 <span className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:from-purple-600 hover:to-indigo-600 transition duration-300 shadow-md hover:shadow-lg cursor-pointer">
                   Browse Files
                 </span>
