@@ -74,7 +74,7 @@ export async function POST(request) {
       expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 mins
     });
     await newOtpData.save();
-    console.log("OTP saved in DB:", newOtpData);
+    // console.log("OTP saved in DB:", newOtpData);
 
     const otpEmailStatus = await sendMailer(
       "Your login verification code",

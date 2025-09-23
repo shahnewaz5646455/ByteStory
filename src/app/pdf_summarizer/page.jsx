@@ -38,10 +38,6 @@ async function extractTextFromPDF(file) {
 }
 
 export default function PdfSummarizePage() {
-   const [isOnline, setIsOnline] = useState(navigator.onLine); // Initialize with current status
-const [showNetStatus, setShowNetStatus] = useState(false);
-const [showOffNetStatus, setShowOffNetStatus] = useState(false);
-const [hasNetworkChanged, setHasNetworkChanged] = useState(false); 
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState("");
   const [pageCount, setPageCount] = useState(0);
@@ -55,46 +51,6 @@ const [hasNetworkChanged, setHasNetworkChanged] = useState(false);
   const fileInputRef = useRef(null);
   const utteranceRef = useRef(null);
 
-
-  useEffect(() => {
-  const handleOnline = () => {
-    setIsOnline(true);
-    setHasNetworkChanged(true); // Mark that network state has changed
-  };
-  
-  const handleOffline = () => {
-    setIsOnline(false);
-    setHasNetworkChanged(true); // Mark that network state has changed
-  };
-
-  window.addEventListener("online", handleOnline);
-  window.addEventListener("offline", handleOffline);
-
-  return () => {
-    window.removeEventListener("online", handleOnline);
-    window.removeEventListener("offline", handleOffline);
-  };
-}, []);
-
-// Handle network status display
-useEffect(() => {
-  // Only show status if network has actually changed (not on initial load)
-  if (!hasNetworkChanged) {
-    return;
-  }
-
-  if (isOnline) {
-    // Network came back online
-    setShowOffNetStatus(false);
-    setShowNetStatus(true);
-    const timeout = setTimeout(() => setShowNetStatus(false), 4000);
-    return () => clearTimeout(timeout);
-  } else {
-    // Network went offline
-    setShowNetStatus(false);
-    setShowOffNetStatus(true);
-  }
-}, [isOnline, hasNetworkChanged]);
   // Fetch voices for speech synthesis
   useEffect(() => {
     const loadVoices = () => {
@@ -269,39 +225,22 @@ useEffect(() => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4">
-   {showNetStatus && (
-  <div className="sticky top-0 z-50 py-3 px-4 text-center bg-green-500 shadow-lg animate-slideDown">
-    <div className="flex items-center justify-center gap-2">
-      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-      <h1 className="text-lg font-semibold text-white">You are back online ✅</h1>
-    </div>
-    <p className="text-sm text-green-100 mt-1">All systems are working normally</p>
-  </div>
-)}
-
-{showOffNetStatus && (
-  <div className="sticky top-0 z-50 py-3 px-4 text-center bg-red-600 shadow-lg animate-slideDown">
-    <div className="flex items-center justify-center gap-2">
-      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-      <h1 className="text-lg font-semibold text-white">You are currently offline</h1>
-    </div>
-    <p className="text-sm text-red-100 mt-1">Requests will be synced when network is back</p>
-  </div>
-)}
-      <div className="max-w-2xl mx-auto pt-16">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4">
+      <div className="max-w-2xl mx-auto">
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-6 md:p-8">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-4">
-              <FileText className="h-8 w-8 text-white" />
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              PDF Summarizer
-            </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              Upload a PDF file to generate an AI-powered summary
-            </p>
-          </div>
+       {/* Header */}
+<div className="text-center mb-12">
+  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-6">
+    <FileText className="h-8 w-8 text-white" />
+  </div>
+  <h1 className="text-4xl font-bold pb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+    PDF Summarizer
+  </h1>
+  <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+    Upload a PDF file to generate an AI-powered summary
+  </p>
+</div>
+
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="flex flex-col items-center justify-center border-2 border-dashed border-indigo-200 dark:border-indigo-500/30 rounded-xl p-8 text-center transition-colors hover:border-indigo-400 dark:hover:border-indigo-400 bg-indigo-50/50 dark:bg-indigo-900/20">
@@ -309,7 +248,7 @@ useEffect(() => {
               <p className="text-sm text-indigo-600 dark:text-indigo-300 mb-2">
                 {fileName || "Drag & drop your PDF here or click to browse"}
               </p>
-              <label htmlFor="file-upload" className="cursor-pointer">
+              <label htmlFor="file-upload" className="cursor-pointer my-2">
                 <span className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:from-purple-600 hover:to-indigo-600 transition duration-300 shadow-md hover:shadow-lg cursor-pointer">
                   Browse Files
                 </span>

@@ -1,12 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Sparkles, Hash, Copy, CheckCircle, RotateCw, Settings, TrendingUp, BarChart3, Download, Plus, Minus } from "lucide-react";
 
 export default function Home() {
-   const [isOnline, setIsOnline] = useState(navigator.onLine); // Initialize with current status
-const [showNetStatus, setShowNetStatus] = useState(false);
-const [showOffNetStatus, setShowOffNetStatus] = useState(false);
-const [hasNetworkChanged, setHasNetworkChanged] = useState(false); 
   const [category, setCategory] = useState("");
   const [title, setTitle] = useState("");
   const [platform, setPlatform] = useState("instagram");
@@ -26,46 +22,6 @@ const [hasNetworkChanged, setHasNetworkChanged] = useState(false);
     { id: "facebook", name: "Facebook", maxHashtags: 10 },
     { id: "general", name: "General", maxHashtags: 15 }
   ];
-// Handle network status display
-useEffect(() => {
-  const handleOnline = () => {
-    setIsOnline(true);
-    setHasNetworkChanged(true); // Mark that network state has changed
-  };
-  
-  const handleOffline = () => {
-    setIsOnline(false);
-    setHasNetworkChanged(true); // Mark that network state has changed
-  };
-
-  window.addEventListener("online", handleOnline);
-  window.addEventListener("offline", handleOffline);
-
-  return () => {
-    window.removeEventListener("online", handleOnline);
-    window.removeEventListener("offline", handleOffline);
-  };
-}, []);
-
-// Handle network status display
-useEffect(() => {
-  // Only show status if network has actually changed (not on initial load)
-  if (!hasNetworkChanged) {
-    return;
-  }
-
-  if (isOnline) {
-    // Network came back online
-    setShowOffNetStatus(false);
-    setShowNetStatus(true);
-    const timeout = setTimeout(() => setShowNetStatus(false), 4000);
-    return () => clearTimeout(timeout);
-  } else {
-    // Network went offline
-    setShowNetStatus(false);
-    setShowOffNetStatus(true);
-  }
-}, [isOnline, hasNetworkChanged]);
 
   const handleGenerate = async () => {
     setLoading(true);
@@ -78,11 +34,11 @@ useEffect(() => {
       const res = await fetch("/api/hashtags", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          category, 
-          title, 
+        body: JSON.stringify({
+          category,
+          title,
           limit: hashtagLimit,
-          platform 
+          platform
         }),
       });
 
@@ -102,10 +58,10 @@ useEffect(() => {
   };
 
   const copyToClipboard = async (specificTags = null) => {
-    const tagsToCopy = specificTags || Array.from(selectedHashtags).length > 0 
-      ? Array.from(selectedHashtags) 
+    const tagsToCopy = specificTags || Array.from(selectedHashtags).length > 0
+      ? Array.from(selectedHashtags)
       : hashtags;
-    
+
     const text = tagsToCopy.map(tag => `#${tag}`).join(' ');
     await navigator.clipboard.writeText(text);
     setCopied(true);
@@ -156,37 +112,17 @@ useEffect(() => {
   const maxHashtags = currentPlatform?.maxHashtags || 15;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900  px-4">
-   {showNetStatus && (
-  <div className="sticky top-0 z-50 py-3 px-4 text-center bg-green-500 shadow-lg animate-slideDown">
-    <div className="flex items-center justify-center gap-2">
-      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-      <h1 className="text-lg font-semibold text-white">You are back online ✅</h1>
-    </div>
-    <p className="text-sm text-green-100 mt-1">All systems are working normally</p>
-  </div>
-)}
-
-{showOffNetStatus && (
-  <div className="sticky top-0 z-50 py-3 px-4 text-center bg-red-600 shadow-lg animate-slideDown">
-    <div className="flex items-center justify-center gap-2">
-      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-      <h1 className="text-lg font-semibold text-white">You are currently offline</h1>
-    </div>
-    <p className="text-sm text-red-100 mt-1">Requests will be synced when network is back</p>
-  </div>
-)}
-<div className="max-w-2xl mx-auto">
-       
+    <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4">
+      <div className="max-w-2xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-4">
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-6">
             <Hash className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-4xl md:text-5xl font-bold pb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             AI Hashtag Generator
           </h1>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Generate perfect, platform-optimized hashtags for your content
           </p>
         </div>
@@ -296,7 +232,7 @@ useEffect(() => {
                   </>
                 )}
               </button>
-              
+
               {(category || title) && (
                 <button
                   onClick={clearForm}
@@ -348,11 +284,10 @@ useEffect(() => {
               {hashtags.map((tag, idx) => (
                 <span
                   key={idx}
-                  className={`px-3 py-2 rounded-full text-sm font-medium border transition-all cursor-pointer ${
-                    selectedHashtags.has(tag)
+                  className={`px-3 py-2 rounded-full text-sm font-medium border transition-all cursor-pointer ${selectedHashtags.has(tag)
                       ? "bg-indigo-600 text-white border-indigo-600"
                       : "bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-700/50 hover:scale-105"
-                  }`}
+                    }`}
                   onClick={() => toggleHashtagSelection(tag)}
                 >
                   #{tag}
