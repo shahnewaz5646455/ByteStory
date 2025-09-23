@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import UserSidebar from "@/components/ui/Application/website/UserSidebar";
+import UserRoute from "@/components/routes/UserRoute";
 
 const WebsiteLayout = ({ children }) => {
   useEffect(() => {
@@ -17,14 +18,16 @@ const WebsiteLayout = ({ children }) => {
   }, []);
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex flex-col bg-gray-50">
-        <UserSidebar />
-        <main className="flex-1 p-6">{children}</main>
+    <UserRoute>
+      <SidebarProvider>
+        <div className="min-h-screen flex flex-col bg-gray-50">
+          <UserSidebar />
+          <main className="flex-1 p-6">{children}</main>
 
-        {/* ShadCN UI toaster for notifications */}
-      </div>
-    </SidebarProvider>
+          {/* ShadCN UI toaster for notifications */}
+        </div>
+      </SidebarProvider>
+    </UserRoute>
   );
 };
 

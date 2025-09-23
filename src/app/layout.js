@@ -42,6 +42,7 @@ export default function RootLayout({ children }) {
             <GlobalStoreProvider>
               <Navbar />
               {children}
+              <Footer />
             </GlobalStoreProvider>
             <ToastContainer />
             <Toaster position="top-center" richColors closeButton />

@@ -2,6 +2,11 @@
 import React, { useState } from 'react';
 import { Zap, ArrowRight, Sparkles, Users, Rocket, Star } from 'lucide-react';
 import { Meteors } from '@/components/ui/meteors';
+const userImages = [
+    "https://randomuser.me/api/portraits/men/47.jpg",
+    "https://randomuser.me/api/portraits/men/50.jpg",
+    "https://randomuser.me/api/portraits/men/78.jpg",
+];
 
 const Cta = () => {
     const [isHovered, setIsHovered] = useState(false);
@@ -10,7 +15,7 @@ const Cta = () => {
         <section className="mx-auto max-w-7xl px-4 pb-20 py-16">
 
             <div
-                className="relative bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 rounded-3xl p-8 md:p-12 text-center border border-indigo-100/50 dark:border-purple-900/30 hover:shadow-2xl dark:hover:shadow-purple-900/30 transition-all duration-500 shadow-lg overflow-hidden"
+                className="relative bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 rounded-3xl p-8 md:p-12 text-center border border-indigo-100/50 dark:border-purple-900/30 dark:hover:shadow-purple-900/30 transition-all duration-500 shadow-md overflow-hidden"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
@@ -35,7 +40,7 @@ const Cta = () => {
                     </div>
 
                     {/* Main Heading */}
-                    <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 dark:from-indigo-400 dark:via-purple-400 dark:to-blue-400 bg-clip-text text-transparent">
+                    <h2 className="text-4xl md:text-5xl font-bold pb-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 dark:from-indigo-400 dark:via-purple-400 dark:to-blue-400 bg-clip-text text-transparent">
                         Supercharge Your Content
                     </h2>
 
@@ -79,8 +84,13 @@ const Cta = () => {
                         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-4 max-w-md border border-gray-100 dark:border-gray-700">
                             <div className="flex items-center gap-3">
                                 <div className="flex -space-x-2">
-                                    {[1, 2, 3].map((i) => (
-                                        <div key={i} className="w-8 h-8 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-full border-2 border-white dark:border-gray-800"></div>
+                                    {userImages.map((imageUrl, index) => (
+                                        <img
+                                            key={index}
+                                            src={imageUrl}
+                                            alt={`User avatar ${index + 1}`}
+                                            className="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800 object-cover"
+                                        />
                                     ))}
                                 </div>
                                 <div>

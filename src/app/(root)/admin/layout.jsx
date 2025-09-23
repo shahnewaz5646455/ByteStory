@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AdminSidebar from "@/components/ui/Application/Admin/AdminSidebar";
+import AdminRoute from "@/components/routes/AdminRoute";
 
 const AdminLayout = ({ children }) => {
   useEffect(() => {
@@ -15,15 +16,17 @@ const AdminLayout = ({ children }) => {
   }, []);
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen">
-        {/* Sidebar */}
-        <AdminSidebar />
+    <AdminRoute>
+      <SidebarProvider>
+        <div className="flex min-h-screen">
+          {/* Sidebar */}
+          <AdminSidebar />
 
-        {/* Main content */}
-        <main className="flex-1 p-6">{children}</main>
-      </div>
-    </SidebarProvider>
+          {/* Main content */}
+          <main className="flex-1 p-6">{children}</main>
+        </div>
+      </SidebarProvider>
+    </AdminRoute>
   );
 };
 
