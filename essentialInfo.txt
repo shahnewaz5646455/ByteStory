@@ -63,9 +63,6 @@ RUBAID_GEMINI_API_KEY=AIzaSyBewQB-uKyYJpBwvLLmvcU8BautEN_E78k
 
 
 //new added 
-# Google OAuth
-NEXT_PUBLIC_GOOGLE_CLIENT_ID=869376994113-q1ntbnnhi0ipgcnpis75fnhd231jc97i.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=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
 
 MONGODB_URI="mongodb+srv://byteStore:nKN1MUlk7EqrDMeb@cluster0.pyfrv5r.mongodb.net/BYTE_STORY?retryWrites=true&w=majority&appName=Cluster0"
 
