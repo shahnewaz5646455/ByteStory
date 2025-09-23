@@ -89,19 +89,15 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50">
+    <div className="min-h-screen flex items-center justify-center ">
       <Card className="max-w-md w-full overflow-hidden shadow-xl">
         <CardContent className="p-8">
           {!otpEmail ? (
             <>
               {/* Heading */}
               <div className="mb-6 text-center">
-                <h2 className="text-3xl font-bold text-gray-900">
-                  Reset Password
-                </h2>
-                <p className="text-sm text-slate-600">
-                  Enter your Email to receive OTP
-                </p>
+                <h2 className="text-3xl font-bold mb-2">Reset Password</h2>
+                <p className="text-sm">Enter your Email to receive OTP</p>
               </div>
 
               {/* Form */}
@@ -135,7 +131,7 @@ const ResetPassword = () => {
                   <Button
                     type="submit"
                     disabled={emailVerificationLoading}
-                    className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl hover:from-purple-600 hover:to-indigo-600 transition duration-150 flex justify-center"
+                    className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl hover:from-purple-600 hover:to-indigo-600 transition duration-150 flex justify-center cursor-pointer"
                   >
                     {emailVerificationLoading ? (
                       <div className="flex items-center gap-2">

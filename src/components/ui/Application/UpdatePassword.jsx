@@ -82,7 +82,7 @@ export default function UpdatePassword({ email }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50">
+    <div className="min-h-screen flex items-center justify-center ">
       <Card className="max-w-md w-full shadow-xl">
         <CardContent className="p-8">
           <div className="mb-2 text-center">
@@ -108,13 +108,13 @@ export default function UpdatePassword({ email }) {
               onSubmit={form.handleSubmit(handleUpdatePassword)}
               className="space-y-3"
             >
-              {/* Password */}
+              {/* New Password */}
               <FormField
                 control={form.control}
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>New Password</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
@@ -141,13 +141,13 @@ export default function UpdatePassword({ email }) {
                 )}
               />
 
-              {/* Confirm Password */}
+              {/* New Confirm Password */}
               <FormField
                 control={form.control}
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
+                    <FormLabel>New Confirm Password</FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
