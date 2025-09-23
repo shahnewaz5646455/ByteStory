@@ -29,12 +29,15 @@ import { showToast } from "@/lib/showToast";
 import axios from "axios";
 import OtpVerification from "@/components/ui/Application/OtpVerification";
 import { useDispatch } from "react-redux";
-import { login } from "@/store/reducer/authReducer";
+// import { login } from "@/store/reducer/authReducer";
 import GoogleG from "../../../components/GoogleG";
+import { GoogleLogin } from "@react-oauth/google";
+import { login } from "@/store/reducer/authReducer";
 
 function LoginPage() {
   const router = useRouter();
   const dispatch = useDispatch();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [otpVerifyLoading, setOtpVerifyLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -100,11 +103,67 @@ function LoginPage() {
       showToast("success", otpResponse.message);
       dispatch(login(otpResponse.data));
 
-      router.push("/");
+      if (searchParams.has("callback")) {
+        router.push(searchParams.get("callback"));
+      } else {
+        otpResponse.data.role === "admin"
+          ? router.push("/admin/adminDashboard")
+          : router.push("/website/my-account");
+      }
     } catch (error) {
       showToast("error", error.message);
     } finally {
       setOtpVerifyLoading(false);
+    }
+  };
+
+  // Google login success handler
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setLoading(true);
+
+      // 1️⃣ Send credential to backend
+      const response = await axios.post("/api/test/auth/google", {
+        credential: credentialResponse.credential,
+      });
+
+      // 2️⃣ Destructure response data
+      const { data } = response;
+
+      // 3️⃣ Check if login was successful
+      if (!data.success) {
+        throw new Error(data.message || "Google login failed");
+      }
+
+      // 4️⃣ Store user info in Redux
+      // Assuming your login reducer expects the full user object including role and token
+      dispatch(login(data.data));
+
+      // 5️⃣ Show success toast
+      showToast("success", data.message || "Logged in successfully");
+
+      // 6️⃣ Redirect logic
+      if (searchParams.has("callback")) {
+        // If there is a callback query param, redirect there
+        router.push(searchParams.get("callback"));
+      } else {
+        // Role-based redirect
+        const role = data.data.role; // ✅ Ensure role comes from backend
+        if (role === "admin") {
+          router.push("/admin/adminDashboard");
+        } else if (role === "user") {
+          router.push("/website/my-account");
+        } else {
+          // Default fallback
+          router.push("/");
+        }
+      }
+    } catch (error) {
+      // 7️⃣ Handle errors
+      showToast("error", error.message || "Google login failed");
+      console.error("Google login error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -132,19 +191,24 @@ function LoginPage() {
 
               {/* Google Button */}
               <Button
-                onClick={() => signIn("google")}
                 className="w-full flex items-center gap-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-2 border-gray-200 dark:border-gray-600 font-semibold px-6 py-3 rounded-lg hover:border-indigo-300 dark:hover:border-indigo-400 hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-300 justify-center"
                 variant="outline"
                 aria-label="Sign in with Google"
               >
                 <GoogleG className="w-5 h-5" />
-                <span>Continue with Google</span>
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => console.log("Google Login Failed")}
+                  text="continue_with"
+                />
               </Button>
 
               {/* Separator */}
               <div className="flex items-center gap-3 my-6">
                 <Separator className="flex-1 bg-gray-200 dark:bg-gray-700" />
-                <span className="text-xs text-gray-500 dark:text-gray-400">or</span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  or
+                </span>
                 <Separator className="flex-1 bg-gray-200 dark:bg-gray-700" />
               </div>
 
@@ -160,7 +224,9 @@ function LoginPage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700 dark:text-gray-300">Email</FormLabel>
+                        <FormLabel className="text-gray-700 dark:text-gray-300">
+                          Email
+                        </FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
@@ -183,7 +249,9 @@ function LoginPage() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-700 dark:text-gray-300">Password</FormLabel>
+                        <FormLabel className="text-gray-700 dark:text-gray-300">
+                          Password
+                        </FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
