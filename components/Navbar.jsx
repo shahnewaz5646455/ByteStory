@@ -102,7 +102,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-6 text-black dark:text-gray-200 font-medium">
+          <div className="hidden lg:flex space-x-6 text-black dark:text-gray-200 font-medium">
             {/* Home Link */}
             <NavigationMenu>
               <NavigationMenuList>
@@ -163,18 +163,6 @@ export default function Navbar() {
                   </NavigationMenuLink>
                 </NavigationMenuItem>
 
-                {/* Blogs Link */}
-                <NavigationMenuItem>
-                  <NavigationMenuLink
-                    href="/blogs"
-                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/blogs"
-                      ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
-                      : ""
-                      }`}
-                  >
-                    Blogs
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
                 {/* Learn */}
                 <NavigationMenuItem>
                   <NavigationMenuLink

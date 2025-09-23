@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, AlertCircle, Loader2, Copy, Edit3, Sparkles, BookOpen, ArrowRight, X, ChevronRight, Star, Zap, Shield, Languages, Moon, Sun, Monitor } from 'lucide-react';
 import { useTheme } from 'next-themes';
@@ -8,10 +8,6 @@ import { AuroraText } from '@/components/ui/aurora-text';
 import { TextAnimate } from '@/components/ui/text-animate';
 
 const GrammarChecker = () => {
-   const [isOnline, setIsOnline] = useState(navigator.onLine); // Initialize with current status
-const [showNetStatus, setShowNetStatus] = useState(false);
-const [showOffNetStatus, setShowOffNetStatus] = useState(false);
-const [hasNetworkChanged, setHasNetworkChanged] = useState(false); 
   const [text, setText] = useState('');
   const [results, setResults] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -19,47 +15,6 @@ const [hasNetworkChanged, setHasNetworkChanged] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const textAreaRef = useRef(null);
   const { theme, setTheme } = useTheme();
-
-
-  useEffect(() => {
-  const handleOnline = () => {
-    setIsOnline(true);
-    setHasNetworkChanged(true); // Mark that network state has changed
-  };
-  
-  const handleOffline = () => {
-    setIsOnline(false);
-    setHasNetworkChanged(true); // Mark that network state has changed
-  };
-
-  window.addEventListener("online", handleOnline);
-  window.addEventListener("offline", handleOffline);
-
-  return () => {
-    window.removeEventListener("online", handleOnline);
-    window.removeEventListener("offline", handleOffline);
-  };
-}, []);
-
-// Handle network status display
-useEffect(() => {
-  // Only show status if network has actually changed (not on initial load)
-  if (!hasNetworkChanged) {
-    return;
-  }
-
-  if (isOnline) {
-    // Network came back online
-    setShowOffNetStatus(false);
-    setShowNetStatus(true);
-    const timeout = setTimeout(() => setShowNetStatus(false), 4000);
-    return () => clearTimeout(timeout);
-  } else {
-    // Network went offline
-    setShowNetStatus(false);
-    setShowOffNetStatus(true);
-  }
-}, [isOnline, hasNetworkChanged]);
 
   const checkGrammar = async () => {
     if (!text.trim()) {
@@ -148,25 +103,7 @@ useEffect(() => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-  {showNetStatus && (
-  <div className="sticky top-0 z-50 py-3 px-4 text-center bg-green-500 shadow-lg animate-slideDown">
-    <div className="flex items-center justify-center gap-2">
-      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-      <h1 className="text-lg font-semibold text-white">You are back online ✅</h1>
-    </div>
-  </div>
-)}
-
-{showOffNetStatus && (
-  <div className="sticky top-0 z-50 py-3 px-4 text-center bg-red-600 shadow-lg animate-slideDown">
-    <div className="flex items-center justify-center gap-2">
-      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-      <h1 className="text-lg font-semibold text-white">You are currently offline</h1>
-    </div>
-    <p className="text-sm text-red-100 mt-1">Requests will be synced when network is back</p>
-  </div>
-)}
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <motion.div 

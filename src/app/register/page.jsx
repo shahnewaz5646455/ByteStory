@@ -98,16 +98,29 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          {/* Google Button */}
-          <Button
-            onClick={() => signIn("google")}
-            className="w-full flex items-center gap-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-2 border-gray-200 dark:border-gray-600 font-semibold px-6 py-3 rounded-lg hover:border-indigo-300 dark:hover:border-indigo-400 hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-300 justify-center"
-            variant="outline"
-            aria-label="Sign in with Google"
+          {/* Google Register Button */}
+
+          <button
+            onClick={() =>
+              (window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_BASE_URL}/api/test/auth/google/callback&response_type=code&scope=openid%20profile%20email`)
+            }
+            className="w-full flex items-center justify-center gap-3 px-6 py-1 
+             rounded-md font-medium text-gray-700 dark:text-gray-100 
+             border border-gray-300 dark:border-gray-600 
+             bg-white dark:bg-gray-800 
+             hover:shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 
+             transition-all duration-300 cursor-pointer"
           >
-            <GoogleG className="w-5 h-5" />
-            <span>Continue with Google</span>
-          </Button>
+            {/* Google Icon */}
+            <div className="p-2 bg-white rounded-full shadow-sm dark:bg-gray-700 group-hover:scale-110 transition-transform">
+              <GoogleG className="w-5 h-5 text-[#4285F4]" />
+            </div>
+
+            {/* Text */}
+            <span className="text-sm md:text-base text-center">
+              Continue with <span className="font-semibold">Google</span>
+            </span>
+          </button>
 
           {/* Separator */}
           <div className="flex items-center gap-3 my-6">
@@ -128,7 +141,9 @@ export default function RegisterPage() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700 dark:text-gray-300">Name</FormLabel>
+                    <FormLabel className="text-gray-700 dark:text-gray-300">
+                      Name
+                    </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
@@ -150,7 +165,9 @@ export default function RegisterPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700 dark:text-gray-300">Email</FormLabel>
+                    <FormLabel className="text-gray-700 dark:text-gray-300">
+                      Email
+                    </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
@@ -173,7 +190,9 @@ export default function RegisterPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700 dark:text-gray-300">Password</FormLabel>
+                    <FormLabel className="text-gray-700 dark:text-gray-300">
+                      Password
+                    </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
@@ -206,7 +225,9 @@ export default function RegisterPage() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-gray-700 dark:text-gray-300">Confirm Password</FormLabel>
+                    <FormLabel className="text-gray-700 dark:text-gray-300">
+                      Confirm Password
+                    </FormLabel>
                     <FormControl>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
@@ -255,8 +276,8 @@ export default function RegisterPage() {
 
           <p className="text-sm text-center mt-6 text-gray-600 dark:text-gray-400">
             Already have an account?{" "}
-            <Link 
-              href="/login" 
+            <Link
+              href="/login"
               className="text-indigo-600 dark:text-indigo-400 font-medium hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
             >
               Sign in

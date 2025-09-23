@@ -140,7 +140,7 @@ export const otpEmail = (otp) => {
 															<td class="pad" style="text-align:center;width:100%;">
 																<h1
 																	style="margin: 0; color: #393d47; direction: ltr; font-family: Tahoma, Verdana, Segoe, sans-serif; font-size: 25px; font-weight: normal; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 30px;">
-																	<strong>Email Verification</strong>
+																	<strong>OTP Verification</strong>
 																</h1>
 															</td>
 														</tr>

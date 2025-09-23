@@ -4,6 +4,10 @@ Indigo: #4f46e5 (indigo-600)
 
 Purple: #7c3aed (purple-600)
 
+openssl rand -base64 32
+jose package
+nodemailer
+
 Color Palette:
 Light Mode:
 Background: bg-white or gradient from-indigo-50 via-white to-purple-50
@@ -55,7 +59,12 @@ GEMINI_API_KEY=AIzaSyBFWXBdf57XWExzv4K7edNux_KuM2LUloU
 
 
 RUBAID_GEMINI_API_KEY=AIzaSyBewQB-uKyYJpBwvLLmvcU8BautEN_E78k
-MONGODB_URI="mongodb+srv://ecom-bazar:voTBmMgag2mU6KbT@cluster0.duyrjao.mongodb.net/nextjs-ecom-bazar?retryWrites=true&w=majority&appName=Cluster0"
+
+
+
+//new added 
+
+MONGODB_URI="mongodb+srv://byteStore:nKN1MUlk7EqrDMeb@cluster0.pyfrv5r.mongodb.net/BYTE_STORY?retryWrites=true&w=majority&appName=Cluster0"
 
 SECRET_KEY="CZJZR5rylm7AdlnDx6ZxXToasPVBAJAzGhf+fKIZh5M"
 
