@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
+import { FileText, Upload, AlertCircle, RotateCw, Sparkles, Copy, Download, Pause, Volume2, Square, File, X } from 'lucide-react';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 
@@ -30,22 +31,21 @@ export default function PdfConverter() {
 
     const loadVoices = () => {
       const availableVoices = window.speechSynthesis.getVoices();
-      console.log(`Loaded ${availableVoices.length} voices`); // Debug log
+      console.log(`Loaded ${availableVoices.length} voices`);
       setVoices(availableVoices);
       
       if (availableVoices.length > 0) {
-        // Prefer an English voice for better compatibility
         const englishVoice = availableVoices.find(voice => voice.lang.startsWith('en'));
         setSelectedVoice(englishVoice || availableVoices[0]);
       }
     };
 
-    loadVoices(); // Initial load
-    window.speechSynthesis.onvoiceschanged = loadVoices; // Handle async voice loading
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
 
     return () => {
       window.speechSynthesis.onvoiceschanged = null;
-      window.speechSynthesis.cancel(); // Clean up on unmount
+      window.speechSynthesis.cancel();
     };
   }, []);
 
@@ -160,7 +160,7 @@ export default function PdfConverter() {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
-    window.speechSynthesis.cancel(); // Stop any ongoing speech
+    window.speechSynthesis.cancel();
     setIsSpeaking(false);
   };
 
@@ -170,15 +170,13 @@ export default function PdfConverter() {
       return;
     }
 
-    // Validate text: Ensure it's not empty and trim whitespace
     const cleanSummary = summary.trim();
     if (!cleanSummary) {
       setError('Summary text is empty. Cannot speak.');
       return;
     }
 
-    // Safeguard: Limit text length to avoid browser limits (e.g., Chrome ~10k chars)
-    const maxLength = 5000; // Adjust as needed
+    const maxLength = 5000;
     const textToSpeak = cleanSummary.length > maxLength ? cleanSummary.substring(0, maxLength) + '...' : cleanSummary;
 
     if (isSpeaking) {
@@ -193,68 +191,33 @@ export default function PdfConverter() {
       return;
     }
 
-    // Cancel any pending utterances to avoid queue issues
     window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
     utterance.voice = selectedVoice;
-    
-    // Set language to match voice to prevent 'language-unavailable' error
     utterance.lang = selectedVoice.lang;
-    
-    // Default utterance settings for better compatibility
     utterance.volume = 1;
     utterance.rate = 1;
     utterance.pitch = 1;
 
     utterance.onend = () => {
-      console.log('Speech synthesis ended successfully');
       setIsSpeaking(false);
     };
 
     utterance.onerror = (event) => {
-      console.error('Speech error details:', {
-        error: event.error || 'unknown (empty event)',
-        utterance: textToSpeak.substring(0, 100) + '...', // First 100 chars for debug
-        voice: selectedVoice ? `${selectedVoice.name} (${selectedVoice.lang})` : 'none',
-        event: event // Full event object
-      });
-      
       let errorMsg = 'Error during speech synthesis';
       if (event.error) {
         errorMsg += `: ${event.error}`;
-        // Map common errors to user-friendly messages
-        switch (event.error) {
-          case 'invalid-voice':
-            errorMsg += '. Try selecting a different voice.';
-            break;
-          case 'language-unavailable':
-            errorMsg += '. The voice language may not match the text. Try another voice.';
-            break;
-          case 'network':
-            errorMsg += '. Check your internet connection (some voices require online access).';
-            break;
-          case 'canceled':
-            errorMsg += '. Speech was canceled.';
-            break;
-          default:
-            break;
-        }
-      } else if (Object.keys(event).length === 0) {
-        errorMsg += '. Empty error event (browser quirk—try refreshing or another browser).';
       }
-      
       setError(errorMsg);
       setIsSpeaking(false);
     };
 
     utterance.onstart = () => {
-      console.log('Speech synthesis started');
       setIsSpeaking(true);
     };
 
     utteranceRef.current = utterance;
-
     window.speechSynthesis.speak(utterance);
   };
 
@@ -273,22 +236,31 @@ export default function PdfConverter() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Header Section */}
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">PDF Text Extractor & Summarizer</h1>
-          <p className="text-lg text-gray-600">Upload a PDF file to extract its text content and generate a summary</p>
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-6 shadow-lg">
+            <FileText className="h-10 w-10 text-white" />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            PDF Text Extractor & Summarizer
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            Upload a PDF file to extract its text content and generate an AI-powered summary
+          </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-6 mb-8">
-          <div className="flex items-center justify-center w-full mb-4">
-            <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-2xl cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-200">
+        {/* Upload Card */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 mb-8 border border-gray-100 dark:border-gray-700 backdrop-blur-sm">
+          <div className="flex flex-col items-center justify-center w-full mb-4">
+            <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-indigo-300 dark:border-indigo-500/30 rounded-2xl cursor-pointer bg-indigo-50/30 dark:bg-indigo-900/20 hover:bg-indigo-100/50 dark:hover:bg-indigo-900/30 transition-all duration-300 hover:border-indigo-400 dark:hover:border-indigo-400">
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                <svg className="w-12 h-12 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                </svg>
-                <p className="mb-2 text-lg text-gray-500"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                <p className="text-sm text-gray-500">PDF (MAX. 10MB)</p>
+                <Upload className="w-16 h-16 mb-4 text-indigo-400 dark:text-indigo-500" />
+                <p className="mb-2 text-lg font-medium text-indigo-600 dark:text-indigo-300">
+                  <span className="font-semibold">Click to upload</span> or drag and drop
+                </p>
+                <p className="text-sm text-indigo-500 dark:text-indigo-400">PDF files up to 10MB</p>
               </div>
               <input 
                 id="dropzone-file" 
@@ -302,43 +274,40 @@ export default function PdfConverter() {
           </div>
 
           {fileName && (
-            <div className="flex items-center justify-between bg-blue-50 p-4 rounded-lg mb-4">
+            <div className="flex items-center justify-between bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg mb-4 border border-indigo-100 dark:border-indigo-800/30">
               <div className="flex items-center">
-                <svg className="w-6 h-6 text-blue-600 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 20">
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 18a.969.969 0 0 0 .933 1h12.134A.97.97 0 0 0 15 18M1 7V5.828a2 2 0 0 1 .586-1.414l2.828-2.828A2 2 0 0 1 5.828 1h8.239A.97.97 0 0 1 15 2v5M6 1v4a1 1 0 0 1-1 1H1m14 6h-6m6 0-3-3m3 3-3 3"/>
-                </svg>
-                <span className="text-blue-700 font-medium truncate max-w-xs">{fileName}</span>
-                {pageCount > 0 && (
-                  <span className="ml-3 px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
-                    {pageCount} page{pageCount !== 1 ? 's' : ''}
-                  </span>
-                )}
+                <File className="w-6 h-6 text-indigo-600 dark:text-indigo-400 mr-3" />
+                <div>
+                  <span className="text-indigo-700 dark:text-indigo-300 font-medium truncate max-w-xs block">{fileName}</span>
+                  {pageCount > 0 && (
+                    <span className="text-xs text-indigo-500 dark:text-indigo-400 mt-1">
+                      {pageCount} page{pageCount !== 1 ? 's' : ''}
+                    </span>
+                  )}
+                </div>
               </div>
               <button 
                 onClick={handleClearAll}
-                className="text-gray-500 hover:text-gray-700 transition-colors duration-200"
+                className="text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors duration-200 p-1 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 rounded-md"
+                title="Clear file"
               >
-                <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m5 5 8 8m0-8-8 8"/>
-                </svg>
+                <X className="w-5 h-5" />
               </button>
             </div>
           )}
 
           {isLoading && (
             <div className="flex flex-col items-center justify-center py-8">
-              <div className="w-12 h-12 rounded-full animate-spin border-4 border-solid border-blue-500 border-t-transparent mb-4"></div>
-              <p className="text-gray-600">Processing PDF...</p>
+              <div className="w-12 h-12 rounded-full animate-spin border-4 border-solid border-indigo-500 border-t-transparent mb-4"></div>
+              <p className="text-gray-600 dark:text-gray-300">Processing PDF...</p>
             </div>
           )}
 
           {error && (
-            <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg mb-4">
+            <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 rounded-lg mb-4">
               <div className="flex items-center">
-                <svg className="w-5 h-5 text-red-500 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-                </svg>
-                <span className="text-red-700 font-medium">{error}</span>
+                <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
+                <span className="text-red-700 dark:text-red-300 font-medium">{error}</span>
               </div>
             </div>
           )}
@@ -346,143 +315,138 @@ export default function PdfConverter() {
 
         {text && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-2xl shadow-xl p-6">
+            {/* Extracted Text Panel */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">Extracted Text</h2>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
+                  <FileText className="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400" />
+                  Extracted Text
+                </h2>
                 <div className="flex space-x-2">
                   <button
                     onClick={handleSummarize}
                     disabled={isSummarizing}
-                    className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 disabled:opacity-50"
+                    className="flex items-center px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-purple-600 hover:to-indigo-600 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 font-medium"
                   >
                     {isSummarizing ? (
                       <>
-                        <svg className="w-4 h-4 mr-2 animate-spin" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
-                        </svg>
-                        Summarizing...
+                        <RotateCw className="w-4 h-4 mr-2 animate-spin" />
+                        Processing...
                       </>
                     ) : (
                       <>
-                        <svg className="w-5 h-5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16v-5.5C11 9 10 8 8.5 8m3.5 8H5v-5.5C5 9 6 8 7.5 8m3.5 8v4M8 8V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M8 8V7c0-.6.4-1 1-1h6c.6 0 1 .4 1 1v1"/>
-                        </svg>
+                        <Sparkles className="w-5 h-5 mr-2" />
                         Summarize
                       </>
                     )}
                   </button>
                   <button
                     onClick={handleCopyText}
-                    className={`flex items-center px-4 py-2 rounded-lg transition-colors duration-200 ${
-                      copied ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                    className={`flex items-center px-4 py-2 rounded-lg transition-all duration-300 font-medium ${
+                      copied 
+                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800' 
+                        : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/50 border border-indigo-200 dark:border-indigo-800'
                     }`}
                   >
                     {copied ? (
                       <>
-                        <svg className="w-5 h-5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
-                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5.917 5.724 10.5 15 1.5"/>
-                        </svg>
+                        <Copy className="w-4 h-4 mr-2" />
                         Copied!
                       </>
                     ) : (
                       <>
-                        <svg className="w-5 h-5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 20">
-                          <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 9V4a1 1 0 0 0-1-1H1.5a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1H4a1 1 0 0 0 1-1ZM9 7h6m-6 4h6m-6 4h6M4 5h9a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/>
-                        </svg>
+                        <Copy className="w-4 h-4 mr-2" />
                         Copy
                       </>
                     )}
                   </button>
                 </div>
               </div>
-              <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 h-96 overflow-y-auto">
-                <pre className="whitespace-pre-wrap text-sm text-gray-800 font-sans">{text}</pre>
+              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900/50 h-96 overflow-y-auto">
+                <pre className="whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200 font-sans leading-relaxed">
+                  {text}
+                </pre>
               </div>
-              <div className="mt-4 text-sm text-gray-500 flex items-center">
-                <svg className="w-4 h-4 mr-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                  <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9h2v5m-2 0h4M9.408 5.5h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-                </svg>
+              <div className="mt-4 text-sm text-gray-500 dark:text-gray-400 flex items-center bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+                <AlertCircle className="w-4 h-4 mr-2 text-blue-500" />
                 Only the first 5 pages are processed for performance reasons.
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-xl p-6">
+            {/* AI Summary Panel */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">AI Summary</h2>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
+                  <Sparkles className="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400" />
+                  AI Summary
+                </h2>
                 {summary && (
                   <div className="flex space-x-2">
                     <button
                       onClick={handleCopySummary}
-                      className={`flex items-center px-4 py-2 rounded-lg transition-colors duration-200 ${
-                        summaryCopied ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                      className={`flex items-center px-4 py-2 rounded-lg transition-all duration-300 font-medium ${
+                        summaryCopied 
+                          ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800' 
+                          : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/50 border border-indigo-200 dark:border-indigo-800'
                       }`}
                     >
                       {summaryCopied ? (
                         <>
-                          <svg className="w-5 h-5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 12">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5.917 5.724 10.5 15 1.5"/>
-                          </svg>
+                          <Copy className="w-4 h-4 mr-2" />
                           Copied!
                         </>
                       ) : (
                         <>
-                          <svg className="w-5 h-5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 20">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 9V4a1 1 0 0 0-1-1H1.5a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1H4a1 1 0 0 0 1-1ZM9 7h6m-6 4h6m-6 4h6M4 5h9a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/>
-                          </svg>
+                          <Copy className="w-4 h-4 mr-2" />
                           Copy
                         </>
                       )}
                     </button>
                     <button
                       onClick={handleSpeak}
-                      className={`flex items-center px-4 py-2 rounded-lg transition-colors duration-200 ${
-                        isSpeaking ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-700 hover:bg-green-200'
+                      className={`flex items-center px-4 py-2 rounded-lg transition-all duration-300 font-medium ${
+                        isSpeaking 
+                          ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800' 
+                          : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/50 border border-indigo-200 dark:border-indigo-800'
                       }`}
                       disabled={!summary || !selectedVoice || !window.speechSynthesis}
                     >
                       {isSpeaking ? (
                         <>
-                          <svg className="w-5 h-5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 9v6m4-6v6"/>
-                          </svg>
+                          <Pause className="w-4 h-4 mr-2" />
                           Pause
                         </>
                       ) : (
                         <>
-                          <svg className="w-5 h-5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                            <path fillRule="evenodd" d="M8.6 5.2A1 1 0 0 0 7 6v12a1 1 0 0 0 1.6.8l8-6a1 1 0 0 0 0-1.6l-8-6Z" clipRule="evenodd"/>
-                          </svg>
+                          <Volume2 className="w-4 h-4 mr-2" />
                           Speak
                         </>
                       )}
                     </button>
                     <button
                       onClick={handleStopSpeech}
-                      className="flex items-center px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors duration-200"
+                      className="flex items-center px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-all duration-300 font-medium border border-red-200 dark:border-red-800"
                       disabled={!isSpeaking}
                     >
-                      <svg className="w-5 h-5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 6h12v12H6V6Z"/>
-                      </svg>
-                      Stop
+                      <Square className="w-4 h-4" />
                     </button>
                   </div>
                 )}
               </div>
+              
               <div className="mb-4">
-                <label htmlFor="voice-select" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="voice-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Select Voice:
                 </label>
                 <select
                   id="voice-select"
                   value={voices.findIndex((voice) => voice === selectedVoice)}
                   onChange={handleVoiceChange}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-colors"
                   disabled={voices.length === 0}
                 >
                   {voices.length === 0 ? (
-                    <option value="">Loading voices... (or not supported)</option>
+                    <option value="">Loading voices...</option>
                   ) : (
                     voices.map((voice, index) => (
                       <option key={index} value={index}>
@@ -492,26 +456,38 @@ export default function PdfConverter() {
                   )}
                 </select>
               </div>
-              <div className="border border-gray-200 rounded-lg p-4 bg-gray-50 h-80 overflow-y-auto">
+              
+              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900/50 h-80 overflow-y-auto">
                 {isSummarizing ? (
                   <div className="flex flex-col items-center justify-center h-full">
-                    <div className="w-12 h-12 rounded-full animate-spin border-4 border-solid border-purple-500 border-t-transparent mb-4"></div>
-                    <p className="text-gray-600">Generating summary...</p>
+                    <div className="w-12 h-12 rounded-full animate-spin border-4 border-solid border-indigo-500 border-t-transparent mb-4"></div>
+                    <p className="text-gray-600 dark:text-gray-300">Generating AI summary...</p>
                   </div>
                 ) : summary ? (
-                  <p className="whitespace-pre-wrap text-sm text-gray-800">{summary}</p>
+                  <div className="space-y-4">
+                    <p className="whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200 leading-relaxed">
+                      {summary}
+                    </p>
+                    <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 pt-2 border-t border-gray-200 dark:border-gray-700">
+                      <span>{summary.length} characters</span>
+                      <span>{summary.split(/\s+/).length} words</span>
+                    </div>
+                  </div>
                 ) : (
-                  <div className="flex flex-col items-center justify-center h-full text-gray-500">
-                    <svg className="w-16 h-16 mb-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 16v-5.5C11 9 10 8 8.5 8m3.5 8H5v-5.5C5 9 6 8 7.5 8m3.5 8v4M8 8V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M8 8V7c0-.6.4-1 1-1h6c.6 0 1 .4 1 1v1"/>
-                    </svg>
-                    <p className="text-center">Click the Summarize button to generate an AI-powered summary of your PDF content.</p>
+                  <div className="flex flex-col items-center justify-center h-full text-gray-500 dark:text-gray-400 text-center">
+                    <Sparkles className="w-16 h-16 mb-4 text-indigo-300 dark:text-indigo-600" />
+                    <p>Click the Summarize button to generate an AI-powered summary of your PDF content.</p>
                   </div>
                 )}
               </div>
             </div>
           </div>
         )}
+
+        {/* Footer Note */}
+        <div className="mt-8 text-center text-sm text-indigo-600 dark:text-indigo-400">
+          <p>Powered by AI • Maximum file size: 10MB • Processes first 5 pages</p>
+        </div>
       </div>
     </div>
   );

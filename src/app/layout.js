@@ -5,7 +5,7 @@ import { ThemeProvider } from "../../components/theme-provider";
 import GlobalStoreProvider from "@/components/ui/Application/GlobalStoreProvider";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import Navbar from "../../components/Navbar";
-import { Toaster } from "@/components/ui/sonner";
+import Footer from "../../components/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,7 +43,6 @@ export default function RootLayout({ children }) {
               {children}
             </GlobalStoreProvider>
             <ToastContainer />
-            <Toaster />
           </ThemeProvider>
         </GoogleOAuthProvider>
       </body>

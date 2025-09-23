@@ -60,7 +60,7 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section className="py-24 dark:bg-gray-900 relative overflow-hidden0">
+    <section className="py-16 dark:bg-gray-900 relative overflow-hidden0">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
@@ -97,7 +97,7 @@ const HowItWorks = () => {
 
                 {/* Card */}
                 <div
-                  className={`w-full md:w-5/12 dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 ${
+                  className={`w-full md:w-5/12 dark:bg-gray-800 bg-white p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 transition-all duration-300 ${
                     index % 2 === 0 ? "ml-0 mr-auto" : "ml-auto mr-0"
                   }`}
                 >

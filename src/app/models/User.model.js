@@ -52,7 +52,7 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// 🔒 password hashing - only if password exists
+// 🔒 password hashing with the help of bcrypt
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password") || !this.password) return next();
   this.password = await bcrypt.hash(this.password, 10);

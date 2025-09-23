@@ -11,6 +11,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 import { useTheme } from "next-themes";
 // import { useRouter } from "next/router";
 export default function Navbar() {
@@ -68,6 +76,21 @@ export default function Navbar() {
     // TODO: route to your search page or handle query
     // e.g., router.push(`/search?q=${encodeURIComponent(query)}`)
     setIsSearchOpen(false);
+  }
+
+  function ListItem({ title, children, href, ...props }) {
+    return (
+      <li>
+        <NavigationMenuLink asChild>
+          <Link href={href}>
+            <div className="text-sm font-medium leading-none">{title}</div>
+            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+              {children}
+            </p>
+          </Link>
+        </NavigationMenuLink>
+      </li>
+    );
   }
 
   return (
