@@ -7,13 +7,15 @@ import UserRoute from "@/components/routes/UserRoute";
 
 const WebsiteLayout = ({ children }) => {
   useEffect(() => {
-    // Hide Navbar on dashboard/user pages
     const navbar = document.querySelector("nav");
-    if (navbar) navbar.style.display = "none";
+    const footer = document.querySelector("footer");
 
-    // Restore Navbar when leaving dashboard
+    if (navbar) navbar.style.display = "none";
+    if (footer) footer.style.display = "none";
+
     return () => {
       if (navbar) navbar.style.display = "";
+      if (footer) footer.style.display = "";
     };
   }, []);
 
