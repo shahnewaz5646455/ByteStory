@@ -101,3 +101,38 @@ For major changes, please open an issue first to discuss what you would like to 
 ---
 
 > ByteStory: Write smarter, reach farther, and create with AI! ✍️✨
+Visit [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## 🧠 Technologies Used
+
+- **Next.js**  
+- **React**  
+- **pdfjs-dist**  
+- **Google Gemini AI**  
+- **Tailwind CSS**  
+
+---
+
+## 📜 License
+
+Licensed under the [Apache 2.0 License](LICENSE).
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome!  
+For major changes, please open an issue first to discuss what you would like to change.
+
+---
+
+## 🙏 Acknowledgements
+
+- [Mozilla PDF.js](https://github.com/mozilla/pdf.js)
+- [Google Generative AI](https://ai.google.dev/)
+
+---
+
+> ByteStory: Write smarter, reach farther, and create with AI! ✍️✨

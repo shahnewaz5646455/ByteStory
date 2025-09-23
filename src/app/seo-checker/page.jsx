@@ -1,13 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Search, Loader2, Sparkles, TrendingUp, Target, Zap, BarChart3 } from "lucide-react";
 
 export default function SEOChecker() {
-   const [isOnline, setIsOnline] = useState(navigator.onLine); // Initialize with current status
-const [showNetStatus, setShowNetStatus] = useState(false);
-const [showOffNetStatus, setShowOffNetStatus] = useState(false);
-const [hasNetworkChanged, setHasNetworkChanged] = useState(false); 
   const [input, setInput] = useState("");
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,46 +21,6 @@ const [hasNetworkChanged, setHasNetworkChanged] = useState(false);
     }
   };
 
-  // trigger the network state
-useEffect(() => {
-  const handleOnline = () => {
-    setIsOnline(true);
-    setHasNetworkChanged(true); // Mark that network state has changed
-  };
-  
-  const handleOffline = () => {
-    setIsOnline(false);
-    setHasNetworkChanged(true); // Mark that network state has changed
-  };
-
-  window.addEventListener("online", handleOnline);
-  window.addEventListener("offline", handleOffline);
-
-  return () => {
-    window.removeEventListener("online", handleOnline);
-    window.removeEventListener("offline", handleOffline);
-  };
-}, []);
-
-// Handle network status display on basis on online or offline state
-useEffect(() => {
-  // Only show status if network has actually changed (not on initial load)
-  if (!hasNetworkChanged) {
-    return;
-  
-}
-  if (isOnline) {
-    // Network came back online
-    setShowOffNetStatus(false);
-    setShowNetStatus(true);
-    const timeout = setTimeout(() => setShowNetStatus(false), 4000);
-    return () => clearTimeout(timeout);
-  } else {
-    // Network went offline
-    setShowNetStatus(false);
-    setShowOffNetStatus(true);
-  }
-}, [isOnline, hasNetworkChanged]);
   const handleCheck = async () => {
     if (!input.trim()) return;
 
@@ -112,33 +68,14 @@ useEffect(() => {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white transition-colors duration-200 px-4">
-     {showNetStatus && (
-  <div className="sticky top-0 z-50 py-3 px-4 text-center bg-green-500 shadow-lg animate-slideDown">
-    <div className="flex items-center justify-center gap-2">
-      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-      <h1 className="text-lg font-semibold text-white">You are back online ✅</h1>
-    </div>
-    <p className="text-sm text-green-100 mt-1">All systems are working normally</p>
-  </div>
-)}
-
-{showOffNetStatus && (
-  <div className="sticky top-0 z-50 py-3 px-4 text-center bg-red-600 shadow-lg animate-slideDown">
-    <div className="flex items-center justify-center gap-2">
-      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-      <h1 className="text-lg font-semibold text-white">You are currently offline</h1>
-    </div>
-    <p className="text-sm text-red-100 mt-1">Requests will be synced when network is back</p>
-  </div>
-)}
+    <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white transition-colors duration-200 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-6">
             <TrendingUp className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold pb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             SEO Score Analyzer
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">

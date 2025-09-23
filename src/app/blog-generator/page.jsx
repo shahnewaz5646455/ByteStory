@@ -199,7 +199,7 @@ useEffect(() => {
   </div>
 )}
     
-      <main className="container mx-auto px-4 py-8 relative z-10">
+      <main className="max-w-7xl mx-auto px-4 py-8 relative z-10">
         {/* Hero Section */}
         <section className="text-center mb-16">
           <div className="inline-flex mb-4 md:mb-6 justify-center w-full">

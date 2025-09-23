@@ -33,7 +33,7 @@ export default function PdfConverter() {
       const availableVoices = window.speechSynthesis.getVoices();
       console.log(`Loaded ${availableVoices.length} voices`);
       setVoices(availableVoices);
-      
+
       if (availableVoices.length > 0) {
         const englishVoice = availableVoices.find(voice => voice.lang.startsWith('en'));
         setSelectedVoice(englishVoice || availableVoices[0]);
@@ -239,11 +239,11 @@ export default function PdfConverter() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         {/* Header Section */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-6 shadow-lg">
-            <FileText className="h-10 w-10 text-white" />
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-6">
+            <FileText className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold pb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             PDF Text Extractor & Summarizer
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
@@ -262,12 +262,12 @@ export default function PdfConverter() {
                 </p>
                 <p className="text-sm text-indigo-500 dark:text-indigo-400">PDF files up to 10MB</p>
               </div>
-              <input 
-                id="dropzone-file" 
-                type="file" 
-                accept=".pdf" 
-                onChange={handleFileUpload} 
-                className="hidden" 
+              <input
+                id="dropzone-file"
+                type="file"
+                accept=".pdf"
+                onChange={handleFileUpload}
+                className="hidden"
                 ref={fileInputRef}
               />
             </label>
@@ -286,7 +286,7 @@ export default function PdfConverter() {
                   )}
                 </div>
               </div>
-              <button 
+              <button
                 onClick={handleClearAll}
                 className="text-indigo-500 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors duration-200 p-1 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 rounded-md"
                 title="Clear file"
@@ -342,11 +342,10 @@ export default function PdfConverter() {
                   </button>
                   <button
                     onClick={handleCopyText}
-                    className={`flex items-center px-4 py-2 rounded-lg transition-all duration-300 font-medium ${
-                      copied 
-                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800' 
+                    className={`flex items-center px-4 py-2 rounded-lg transition-all duration-300 font-medium ${copied
+                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800'
                         : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/50 border border-indigo-200 dark:border-indigo-800'
-                    }`}
+                      }`}
                   >
                     {copied ? (
                       <>
@@ -384,11 +383,10 @@ export default function PdfConverter() {
                   <div className="flex space-x-2">
                     <button
                       onClick={handleCopySummary}
-                      className={`flex items-center px-4 py-2 rounded-lg transition-all duration-300 font-medium ${
-                        summaryCopied 
-                          ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800' 
+                      className={`flex items-center px-4 py-2 rounded-lg transition-all duration-300 font-medium ${summaryCopied
+                          ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800'
                           : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/50 border border-indigo-200 dark:border-indigo-800'
-                      }`}
+                        }`}
                     >
                       {summaryCopied ? (
                         <>
@@ -404,11 +402,10 @@ export default function PdfConverter() {
                     </button>
                     <button
                       onClick={handleSpeak}
-                      className={`flex items-center px-4 py-2 rounded-lg transition-all duration-300 font-medium ${
-                        isSpeaking 
-                          ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800' 
+                      className={`flex items-center px-4 py-2 rounded-lg transition-all duration-300 font-medium ${isSpeaking
+                          ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800'
                           : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/50 border border-indigo-200 dark:border-indigo-800'
-                      }`}
+                        }`}
                       disabled={!summary || !selectedVoice || !window.speechSynthesis}
                     >
                       {isSpeaking ? (
@@ -433,7 +430,7 @@ export default function PdfConverter() {
                   </div>
                 )}
               </div>
-              
+
               <div className="mb-4">
                 <label htmlFor="voice-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Select Voice:
@@ -456,7 +453,7 @@ export default function PdfConverter() {
                   )}
                 </select>
               </div>
-              
+
               <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900/50 h-80 overflow-y-auto">
                 {isSummarizing ? (
                   <div className="flex flex-col items-center justify-center h-full">
