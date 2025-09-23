@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ByteStory 🚀
 
-## Getting Started
+ByteStory is an **AI-driven blogging platform** that empowers creators with smart tools for content creation, optimization, and sharing.  
+From **SEO scoring** to **spell checking**, **hashtag generation**, and **PDF summarization**, ByteStory helps you write better, reach more people, and save time!
 
-First, run the development server:
+🌐 **Live Demo:** [bytestory.vercel.app](https://bytestory.vercel.app)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## ✨ Features
+
+- 📝 **AI Blog Creator:** Write and publish blogs with the help of AI suggestions.
+- 📈 **SEO Checker & Score:** Instantly analyze your blog’s SEO and get actionable feedback.
+- 🔍 **Spell Checker:** Detect and fix spelling mistakes in your content.
+- #️⃣ **Hashtag Generator:** Generate trending hashtags for your posts using AI.
+- 📄 **PDF Summarizer:** Upload PDFs and get concise AI-powered summaries.
+- 🗣️ **Speech Synthesis:** Listen to your summaries and blog posts.
+- 📋 **Copy & Download:** Easily copy or download your content and summaries.
+- 🌙 **Responsive & Modern UI:** Enjoy a beautiful experience on any device.
+
+---
+
+## 🚦 How It Works
+
+1. **Create:** Start a new blog post or upload a PDF.
+2. **Optimize:** Use the SEO checker, spell checker, and hashtag generator to improve your content.
+3. **Summarize:** Get instant summaries of your PDFs or long articles.
+4. **Share:** Copy, download, or listen to your content and share it with the world!
+
+---
+
+## 🛠️ Getting Started
+
+### 1. Clone the repository
+
+```sh
+git clone https://github.com/yourusername/bytestory.git
+cd bytestory
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install dependencies
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```sh
+npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Set up your Gemini API key
 
-## Learn More
+Create a `.env.local` file:
 
-To learn more about Next.js, take a look at the following resources:
+```
+GEMINI_API_KEY=your_google_gemini_api_key
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4. Add PDF.js worker
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Copy `pdf.worker.min.js` from `node_modules/pdfjs-dist/build/pdf.worker.min.js` to your `public` folder:
 
-## Deploy on Vercel
+```
+cp node_modules/pdfjs-dist/build/pdf.worker.min.js public/pdf.worker.min.js
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 5. Run the development server
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```sh
+npm run dev
+```
+
+Visit [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## 🧠 Technologies Used
+
+- **Next.js**  
+- **React**  
+- **pdfjs-dist**  
+- **Google Gemini AI**  
+- **Tailwind CSS**  
+
+---
+
+## 📜 License
+
+Licensed under the [Apache 2.0 License](LICENSE).
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome!  
+For major changes, please open an issue first to discuss what you would like to change.
+
+---
+
+## 🙏 Acknowledgements
+
+- [Mozilla PDF.js](https://github.com/mozilla/pdf.js)
+- [Google Generative AI](https://ai.google.dev/)
+
+---
+
+> ByteStory: Write smarter, reach farther, and create with AI! ✍️✨

@@ -175,6 +175,18 @@ export default function Navbar() {
                     Blogs
                   </NavigationMenuLink>
                 </NavigationMenuItem>
+                {/* Learn */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="/learn"
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/learn"
+                      ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                      : ""
+                      }`}
+                  >
+                    Learn
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
 
                 {/* About Link */}
                 <NavigationMenuItem>
