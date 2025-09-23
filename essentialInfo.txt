@@ -4,6 +4,10 @@ Indigo: #4f46e5 (indigo-600)
 
 Purple: #7c3aed (purple-600)
 
+openssl rand -base64 32
+jose package
+nodemailer
+
 Color Palette:
 Light Mode:
 Background: bg-white or gradient from-indigo-50 via-white to-purple-50
