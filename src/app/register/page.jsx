@@ -99,13 +99,27 @@ export default function RegisterPage() {
           </div>
 
           {/* Google Register Button */}
+
           <button
             onClick={() =>
               (window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_BASE_URL}/api/test/auth/google/callback&response_type=code&scope=openid%20profile%20email`)
             }
-            className="bg-red-500 text-white px-4 py-2 rounded"
+            className="w-full flex items-center justify-center gap-3 px-6 py-1 
+             rounded-md font-medium text-gray-700 dark:text-gray-100 
+             border border-gray-300 dark:border-gray-600 
+             bg-white dark:bg-gray-800 
+             hover:shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 
+             transition-all duration-300 cursor-pointer"
           >
-            Continue with Google
+            {/* Google Icon */}
+            <div className="p-2 bg-white rounded-full shadow-sm dark:bg-gray-700 group-hover:scale-110 transition-transform">
+              <GoogleG className="w-5 h-5 text-[#4285F4]" />
+            </div>
+
+            {/* Text */}
+            <span className="text-sm md:text-base text-center">
+              Continue with <span className="font-semibold">Google</span>
+            </span>
           </button>
 
           {/* Separator */}

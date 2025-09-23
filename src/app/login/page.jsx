@@ -117,49 +117,36 @@ function LoginPage() {
     }
   };
 
-  // Google login success handler
+  // Google login success
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       setLoading(true);
 
-      // 1️⃣ Send credential to backend
-      const response = await axios.post("/api/test/auth/google", {
-        credential: credentialResponse.credential,
-      });
+      const { data: googleResponse } = await axios.post(
+        "/api/test/auth/google",
+        { credential: credentialResponse.credential }
+      );
 
-      // 2️⃣ Destructure response data
-      const { data } = response;
-
-      // 3️⃣ Check if login was successful
-      if (!data.success) {
-        throw new Error(data.message || "Google login failed");
+      console.log(googleResponse, "google login");
+      if (!googleResponse.success) {
+        throw new Error(googleResponse.message);
       }
 
-      // 4️⃣ Store user info in Redux
-      // Assuming your login reducer expects the full user object including role and token
-      dispatch(login(data.data));
+      // Store user in Redux
+      dispatch(login(googleResponse.data));
 
-      // 5️⃣ Show success toast
-      showToast("success", data.message || "Logged in successfully");
+      // Show success toast
+      showToast("success", googleResponse.message || "Logged in successfully");
 
-      // 6️⃣ Redirect logic
+      // Redirect logic
       if (searchParams.has("callback")) {
-        // If there is a callback query param, redirect there
         router.push(searchParams.get("callback"));
       } else {
-        // Role-based redirect
-        const role = data.data.role; // ✅ Ensure role comes from backend
-        if (role === "admin") {
-          router.push("/admin/adminDashboard");
-        } else if (role === "user") {
-          router.push("/website/my-account");
-        } else {
-          // Default fallback
-          router.push("/");
-        }
+        googleResponse.data.role === "admin"
+          ? router.push("/admin/adminDashboard")
+          : router.push("/website/my-account");
       }
     } catch (error) {
-      // 7️⃣ Handle errors
       showToast("error", error.message || "Google login failed");
       console.error("Google login error:", error);
     } finally {
@@ -190,18 +177,12 @@ function LoginPage() {
               </div>
 
               {/* Google Button */}
-              <Button
-                className="w-full flex items-center gap-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-2 border-gray-200 dark:border-gray-600 font-semibold px-6 py-3 rounded-lg hover:border-indigo-300 dark:hover:border-indigo-400 hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-300 justify-center"
-                variant="outline"
-                aria-label="Sign in with Google"
-              >
-                <GoogleG className="w-5 h-5" />
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={() => console.log("Google Login Failed")}
-                  text="continue_with"
-                />
-              </Button>
+
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => console.log("Google Login Failed")}
+                text="continue_with"
+              />
 
               {/* Separator */}
               <div className="flex items-center gap-3 my-6">
