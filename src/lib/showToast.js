@@ -1,34 +1,21 @@
-import { toast, Bounce } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "sonner";
 
 export const showToast = (type, message) => {
-  const options = {
-    position: "top-right",
-    autoClose: 5000,
-    hideProgressBar: false,
-    closeOnClick: false,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
-    theme: "light",
-    transition: Bounce,
-  };
-
   switch (type) {
     case "info":
-      toast.info(message, options);
+      toast(message, { description: "ℹ️ Info message" });
       break;
     case "success":
-      toast.success(message, options);
+      toast.success(message);
       break;
     case "warning":
-      toast.warning(message, options);
+      toast.warning(message);
       break;
     case "error":
-      toast.error(message, options);
+      toast.error(message);
       break;
     default:
-      toast.info(message, options);
+      toast(message);
       break;
   }
 };
