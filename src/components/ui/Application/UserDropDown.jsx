@@ -1,14 +1,14 @@
 "use client";
+
 import React from "react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSelector } from "react-redux";
 import Link from "next/link";
 import LogoutButton from "./LogoutButton";
@@ -16,6 +16,12 @@ import { Shield, User } from "lucide-react";
 
 const UserDropDown = () => {
   const auth = useSelector((store) => store.authStore.auth);
+
+  // role-based logo
+  const roleLogo =
+    auth?.role === "admin"
+      ? "https://i.ibb.co.com/9kMtXFKN/admin-3d-illustration-icon-png-removebg-preview.png"
+      : "https://i.ibb.co.com/jvjJkzkX/user-photo-removebg-preview.png";
 
   // Role icon
   const roleIcon = (role) => {
@@ -40,11 +46,11 @@ const UserDropDown = () => {
     <DropdownMenu>
       {/* Avatar Trigger */}
       <DropdownMenuTrigger asChild>
-        <Avatar className="cursor-pointer w-10 h-10">
-          <AvatarImage
-            src={auth?.photoURL || "https://github.com/shadcn.png"}
-          />
-          <AvatarFallback>{auth?.name?.[0]}</AvatarFallback>
+        <Avatar className="cursor-pointer w-10 h-10 border shadow-sm">
+          <AvatarImage src={auth?.photoURL || roleLogo} alt="User avatar" />
+          <AvatarFallback>
+            {auth?.name?.[0] || (auth?.role === "admin" ? "A" : "U")}
+          </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
 
@@ -67,17 +73,17 @@ const UserDropDown = () => {
         </div>
 
         {/* Menu Items */}
-        <DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link href="/profile" className="w-full block">
             Profile
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link href="/billing" className="w-full block">
             Billing
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link href="/team" className="w-full block">
             Team
           </Link>
@@ -86,7 +92,7 @@ const UserDropDown = () => {
         <DropdownMenuSeparator />
 
         {/* Logout */}
-        <DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <LogoutButton />
         </DropdownMenuItem>
       </DropdownMenuContent>

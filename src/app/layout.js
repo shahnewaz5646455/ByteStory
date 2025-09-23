@@ -6,6 +6,7 @@ import GlobalStoreProvider from "@/components/ui/Application/GlobalStoreProvider
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,6 +45,7 @@ export default function RootLayout({ children }) {
               <Footer />
             </GlobalStoreProvider>
             <ToastContainer />
+            <Toaster position="top-center" richColors closeButton />
           </ThemeProvider>
         </GoogleOAuthProvider>
       </body>

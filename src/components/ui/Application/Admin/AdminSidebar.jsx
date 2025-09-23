@@ -11,7 +11,7 @@ import Link from "next/link";
 import LogoutButton from "../LogoutButton";
 import UserDropDown from "../UserDropDown";
 
-const AppSidebar = () => {
+const AdminSidebar = () => {
   return (
     <Sidebar>
       {/* Header */}
@@ -67,4 +67,4 @@ const AppSidebar = () => {
   );
 };
 
-export default AppSidebar;
+export default AdminSidebar;
