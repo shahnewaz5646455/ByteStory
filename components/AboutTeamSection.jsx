@@ -5,7 +5,7 @@ import { Users, Target, Heart, Zap, ArrowRight } from "lucide-react";
 
 export default function AboutTeamSection() {
   return (
-    <section className="py-10 px-4 ">
+    <section className="py-10 px-6 ">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
@@ -34,9 +34,6 @@ export default function AboutTeamSection() {
 
             {/* Mission Statement */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
               className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-2xl p-6 border border-indigo-100 dark:border-indigo-800/30"
             >
               <div className="flex items-start gap-4">
@@ -57,9 +54,7 @@ export default function AboutTeamSection() {
             {/* Values Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
+               
                 className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700"
               >
                 <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
@@ -72,9 +67,6 @@ export default function AboutTeamSection() {
               </motion.div>
 
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
                 className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700"
               >
                 <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
@@ -87,9 +79,6 @@ export default function AboutTeamSection() {
               </motion.div>
 
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.5 }}
                 className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700"
               >
                 <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
@@ -102,9 +91,6 @@ export default function AboutTeamSection() {
               </motion.div>
 
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.6 }}
                 className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700"
               >
                 <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
@@ -133,9 +119,6 @@ export default function AboutTeamSection() {
 
           {/* Right Image */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
             className="relative"
           >
             {/* Decorative background elements */}
