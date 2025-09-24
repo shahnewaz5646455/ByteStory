@@ -20,6 +20,7 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { useTheme } from "next-themes";
+import { useSelector } from "react-redux";
 // import { useRouter } from "next/router";
 export default function Navbar() {
   const { setTheme } = useTheme();
@@ -30,6 +31,10 @@ export default function Navbar() {
   const searchInputRef = useRef(null);
   const searchCardRef = useRef(null);
   const router = useRouter();  // ✅ call the hook inside your component
+  const auth = useSelector((store) => store.authStore.auth);
+  const profileLink = auth?.role === "admin" 
+    ? "/admin/adminDashboard" 
+    : "/website/my-account";
 
   // Focus the input when opening
   useEffect(() => {
@@ -253,17 +258,35 @@ export default function Navbar() {
             </DropdownMenu>
 
             {/* Button */}
-            <div className="hidden md:flex">
-              <Link
-                href="/login"
-                className="group/button relative inline-flex items-center justify-center overflow-hidden rounded-md bg-gray-800 backdrop-blur-lg px-6 py-2 text-base font-semibold text-white transition-all duration-150 ease-in-out hover:shadow-lg hover:shadow-gray-600/50 dark:hover:shadow-indigo-600/30 border border-white/20 dark:border-indigo-400/20 h-max"
-              >
-                <span>Sign In</span>
-                <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]">
-                  <div className="relative h-full w-10 bg-white/20 dark:bg-indigo-300/20"></div>
+              {auth ? (
+              <Link href={profileLink}>
+                <div className="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
+                  <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                    {auth?.photoURL ? (
+                      <img
+                        src={auth.photoURL}
+                        alt="avatar"
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      auth?.name?.charAt(0) || "U"
+                    )}
+                  </div>
                 </div>
               </Link>
-            </div>
+            ) : (
+              <div className="hidden md:flex">
+                <Link
+                  href="/login"
+                  className="group/button relative inline-flex items-center justify-center overflow-hidden rounded-md bg-gray-800 px-6 py-2 text-base font-semibold text-white transition-all hover:shadow-lg border border-white/20 dark:border-indigo-400/20"
+                >
+                  <span>Sign In</span>
+                  <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]">
+                    <div className="relative h-full w-10 bg-white/20 dark:bg-indigo-300/20"></div>
+                  </div>
+                </Link>
+              </div>
+            )}
 
             {/* menu button */}
             <div className="md:hidden flex items-center">
