@@ -12,6 +12,7 @@ import {
   Lightbulb,
   ChevronRight,
   Sparkles,
+  X
 } from "lucide-react";
 import LogoutButton from "../LogoutButton";
 
@@ -23,16 +24,17 @@ const menuItems = [
   { name: "Settings", href: "/admin/settings", icon: Settings, badge: null },
 ];
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ onClose }) {
   const pathname = usePathname();
 
   return (
-    <aside className="h-screen w-64 bg-white/95 dark:bg-gray-900/95 border-r border-gray-200/50 dark:border-gray-800/50 backdrop-blur-md flex flex-col shadow-xl">
+    <aside className="h-screen w-full bg-white/95 dark:bg-gray-900/95 border-r border-gray-200/50 dark:border-gray-800/50 backdrop-blur-md flex flex-col shadow-xl">
       {/* Header */}
-      <div className="flex items-center justify-between h-20 px-6 border-b border-gray-100/50 dark:border-gray-800/50">
+      <div className="flex items-center justify-between h-20 px-4 md:px-6 border-b border-gray-100/50 dark:border-gray-800/50">
         <Link
           href="/admin"
           className="group flex items-center gap-3 cursor-pointer transition-all duration-300"
+          onClick={onClose}
         >
           <div className="relative">
             <div className="w-10 h-10 rounded-full flex items-center justify-center 
@@ -52,19 +54,26 @@ export default function AdminSidebar() {
   bg-gray-100 dark:bg-gray-800 max-w-max">
               Admin Panel
             </p>
-
           </div>
         </Link>
 
-        {/* Status indicator */}
-        <div className="flex items-center gap-2">
+        {/* Close button for mobile */}
+        <button 
+          onClick={onClose}
+          className="md:hidden p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+        >
+          <X size={20} />
+        </button>
+
+        {/* Status indicator - hidden on mobile */}
+        <div className="hidden md:flex items-center gap-2">
           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
           <span className="text-xs text-gray-500 dark:text-gray-400">Live</span>
         </div>
       </div>
 
       {/* Menu */}
-      <nav className="flex-1 px-4 py-8 space-y-1">
+      <nav className="flex-1 px-2 md:px-4 py-4 md:py-8 space-y-1 overflow-y-auto">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
@@ -73,9 +82,10 @@ export default function AdminSidebar() {
             <Link
               key={item.name}
               href={item.href}
-              className={`group flex items-center justify-between gap-3 px-4 py-3 rounded-xl transition-all duration-300 relative overflow-hidden ${isActive
+              onClick={onClose}
+              className={`group flex items-center justify-between gap-3 px-3 md:px-4 py-3 rounded-xl transition-all duration-300 relative overflow-hidden ${isActive
                 ? "bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/30 dark:to-indigo-900/30 text-purple-700 dark:text-purple-300 shadow-md shadow-purple-500/10 border-l-4 border-purple-500"
-                : "text-gray-600 dark:text-gray-400 hover:bg-gray-50/80 dark:hover:bg-gray-800/80 hover:text-gray-900 dark:hover:text-gray-100 hover:shadow-md hover:translate-x-1"
+                : "text-gray-600 dark:text-gray-400 hover:bg-gray-50/80 dark:hover:bg-gray-800/80 hover:text-gray-900 dark:hover:text-gray-100 hover:shadow-md md:hover:translate-x-1"
                 }`}
             >
               <div className="flex items-center gap-3">
@@ -112,9 +122,9 @@ export default function AdminSidebar() {
       </nav>
 
       {/* Footer Section */}
-      <div className="px-4 py-6 border-t border-gray-100/50 dark:border-gray-800/50">
-        {/* Quick Stats */}
-        <div className="mb-4 p-3 bg-gradient-to-r from-purple-50/50 to-indigo-50/50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-lg backdrop-blur-sm">
+      <div className="px-2 md:px-4 py-4 md:py-6 border-t border-gray-100/50 dark:border-gray-800/50">
+        {/* Quick Stats - hidden on mobile */}
+        <div className="hidden md:block mb-4 p-3 bg-gradient-to-r from-purple-50/50 to-indigo-50/50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-lg backdrop-blur-sm">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">Today's Activity</span>
             <Sparkles className="h-3 w-3 text-purple-500" />
