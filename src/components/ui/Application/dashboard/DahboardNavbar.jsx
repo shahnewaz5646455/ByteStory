@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Menu,
-  X,
   Bell,
   Search,
   User,
@@ -15,31 +14,26 @@ import {
   Sun,
   Moon,
   MessageSquare,
-  Lightbulb
 } from "lucide-react";
 import { useSelector } from "react-redux";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button"
+import { useTheme } from "next-themes";
 
-const DashboardNavbar = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+const DashboardNavbar = ({ onMenuClick }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const { setTheme } = useTheme();
+  const [isMobile, setIsMobile] = useState(false);
   const pathname = usePathname();
   const auth = useSelector((store) => store.authStore.auth);
-
-  useEffect(() => {
-    // Check system preference for dark mode
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setIsDarkMode(true);
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle('dark');
-  };
 
   const notifications = [
     { id: 1, text: "New user registration completed", time: "5 min ago", unread: true, type: "user" },
@@ -49,72 +43,67 @@ const DashboardNavbar = () => {
 
   const unreadCount = notifications.filter(n => n.unread).length;
 
-  const userData = {
-    name: "John Doe",
-    email: "john@bytestory.com",
-    role: "Admin",
-    avatar: "/api/placeholder/32/32"
-  };
-
   return (
     <>
-      <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-800/50 sticky top-0 z-50 shadow-sm">
+      <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-800/50 sticky top-0 z-40 shadow-sm">
         <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-20">
-            {/* Left Section - Logo and Mobile Menu */}
+          <div className="flex justify-between items-center h-16 md:h-20">
+            {/* Left Section - Mobile Menu Button */}
             <div className="flex items-center">
-              {/* Mobile menu button */}
               <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                onClick={onMenuClick}
+                className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors md:hidden"
               >
-                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                <Menu size={24} />
               </button>
-
-
-            </div>
-
-            {/* Center Section - Search Bar (Desktop) */}
-            <div className="hidden md:flex items-center flex-1 max-w-lg mx-8">
-              <div className="relative w-full">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search anything..."
-                  className="block w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50/50 dark:bg-gray-800/50 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent backdrop-blur-sm transition-all duration-300"
-                />
-              </div>
             </div>
 
             {/* Right Section - Actions */}
-            <div className="flex items-center space-x-2">
-              {/* Dark Mode Toggle */}
-              <button
-                onClick={toggleDarkMode}
-                className="p-2.5 rounded-xl text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 hover:scale-105"
-                title={isDarkMode ? "Light mode" : "Dark mode"}
-              >
-                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-              </button>
-
-              {/* Search Button (Mobile) */}
-              <button className="md:hidden p-2.5 rounded-xl text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                <Search size={20} />
-              </button>
+            <div className="flex items-center space-x-4">
+              {/* theme toggle */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="md:flex border-gray-300 dark:border-gray-600 bg-transparent dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                  <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+                  <span className="sr-only">Toggle theme</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                <DropdownMenuItem
+                  onClick={() => setTheme("light")}
+                  className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
+                >
+                  Light
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setTheme("dark")}
+                  className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
+                >
+                  Dark
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setTheme("system")}
+                  className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
+                >
+                  System
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
               {/* Notifications */}
               <div className="relative">
                 <button
                   onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-                  className="p-2.5 rounded-xl text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 hover:scale-105 relative"
+                  className="p-2 rounded-xl text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 hover:scale-105 relative"
                 >
                   <Bell size={20} />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium border-2 border-white dark:border-gray-900">
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 md:h-5 md:w-5 flex items-center justify-center font-medium border-2 border-white dark:border-gray-900 text-[10px] md:text-xs">
                       {unreadCount}
                     </span>
                   )}
@@ -163,22 +152,13 @@ const DashboardNavbar = () => {
                   </div>
                 )}
               </div>
-
-              {/* Messages */}
-              <button className="p-2.5 rounded-xl text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-300 hover:scale-105 relative">
-                <MessageSquare size={20} />
-                <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium border-2 border-white dark:border-gray-900">
-                  3
-                </span>
-              </button>
-
               {/* User Profile */}
               <div className="relative">
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  className="flex items-center space-x-2 md:space-x-3 p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 >
-                  {/* Avatar (First letter or photo) */}
+                  {/* Avatar */}
                   <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                     {auth?.photoURL ? (
                       <img
@@ -191,7 +171,7 @@ const DashboardNavbar = () => {
                     )}
                   </div>
 
-                  {/* Name & Role */}
+                  {/* Name & Role - Hidden on mobile */}
                   <div className="hidden md:block text-left">
                     <p className="text-sm font-medium text-gray-900 dark:text-white">
                       {auth?.name || "Guest User"}
@@ -201,7 +181,7 @@ const DashboardNavbar = () => {
                     </p>
                   </div>
 
-                  <ChevronDown size={16} className="text-gray-400" />
+                  <ChevronDown size={16} className="text-gray-400 hidden md:block" />
                 </button>
 
                 {/* Profile Dropdown */}
@@ -247,23 +227,7 @@ const DashboardNavbar = () => {
         </div>
       </div>
 
-      {/* Mobile Search Bar */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 p-4">
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-gray-400" />
-            </div>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search anything..."
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
-          </div>
-        </div>
-      )}
+      {/* Mobile Search Bar - Implement as needed */}
     </>
   );
 };
