@@ -120,7 +120,7 @@ export default function Navbar() {
 
                 {/* AI Tools Dropdown */}
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                  <NavigationMenuTrigger className="hover:text-indigo-600 dark:bg-gray-900 dark:hover:text-indigo-400 transition-colors">
                     AI Tools
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
