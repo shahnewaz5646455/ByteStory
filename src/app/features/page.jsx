@@ -1,4 +1,3 @@
-// src/app/page.jsx or similar
 "use client"
 
 import { useState } from "react"
@@ -103,14 +102,6 @@ const tools = [
 ]
 
 export default function FeaturesPage() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [activeTool, setActiveTool] = useState(0)
-
-  const filteredTools = tools.filter(tool =>
-    tool.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    tool.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    tool.useCases.some(useCase => useCase.toLowerCase().includes(searchTerm.toLowerCase()))
-  )
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200 py-12">
@@ -132,101 +123,106 @@ export default function FeaturesPage() {
         </div>
 
         {/* Detailed Tool View */}
-        {filteredTools.length > 0 && (
-          <div className="space-y-16">
-            {filteredTools.map((tool, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center"
-              >
-                {/* Content Side */}
-                <div className={`bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 
-          ${index % 2 === 0 ? "order-1" : "order-2"}`}>
-                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                    {tool.title}
-                  </h2>
-                  <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
-                    {tool.description}
-                  </p>
 
-                  <div className="mb-8">
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Key Features</h4>
-                    <ul className="space-y-2">
-                      {tool.features.map((feature, fIndex) => (
-                        <li key={fIndex} className="flex items-center gap-2">
-                          <CheckCircle className="h-5 w-5 text-green-500" />
-                          <span className="text-gray-600 dark:text-gray-300">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+        <div className="space-y-16">
+          {tools.map((tool, index) => (
+            <div
+              key={index}
+              className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch"
+            >
+              {/* Content Side */}
+              <div className={`
+      bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8
+      order-1
+      ${index % 2 === 0 ? "lg:order-1" : "lg:order-2"}
+    `}>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                  {tool.title}
+                </h2>
+                <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
+                  {tool.description}
+                </p>
 
-                  <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Perfect For</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {tool.useCases.map((useCase, uIndex) => (
-                        <span
-                          key={uIndex}
-                          className="px-3 py-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full text-sm font-medium"
-                        >
-                          {useCase}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+                <div className="mb-8">
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Key Features</h4>
+                  <ul className="space-y-2">
+                    {tool.features.map((feature, fIndex) => (
+                      <li key={fIndex} className="flex items-center gap-2">
+                        <CheckCircle className="h-5 w-5 text-green-500" />
+                        <span className="text-gray-600 dark:text-gray-300">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
-                {/* Media Side */}
-                <div
-                  className={`relative py-16 flex items-center justify-center 
-    ${index % 2 === 0 ? "order-2" : "order-1"}`}
-                >
-                  {/* Gradient Background */}
-                  <div className="absolute inset-0">
-                    <div className="w-full h-full bg-gradient-to-br from-indigo-100 via-purple-100 to-blue-100 dark:from-indigo-900/20 dark:via-purple-900/20 dark:to-blue-900/20" />
-                  </div>
-
-                  {/* Safari Component wrapper */}
-                  <div className="relative z-10 w-full max-w-2xl">
-                    <Safari
-                      url={`https://app.yourwebsite.com/${tool.title.toLowerCase().replace(/\s/g, '-')}`}
-                      className="shadow-lg"
-                    >
-                      {/* Properly contained content */}
-                      <div className="w-full h-full bg-white dark:bg-gray-900 overflow-hidden">
-                        {tool.imageType === "screenshot" && tool.imageUrl ? (
-                          <div className="relative w-full h-full">
-                            <NextImage
-                              src={tool.imageUrl}
-                              alt={tool.title}
-                              fill
-                              className="object-cover object-top"
-                              sizes="(max-width: 768px) 100vw, 50vw"
-                            />
-                          </div>
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
-                            <div className="text-center p-8">
-                              <div className="w-16 h-16 mx-auto mb-4 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                                <Zap className="h-8 w-8 text-gray-400" />
-                              </div>
-                              <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
-                                {tool.title}
-                              </h3>
-                              <p className="text-sm text-gray-500 dark:text-gray-400">
-                                Demo interface coming soon
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </Safari>
+                <div>
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Perfect For</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {tool.useCases.map((useCase, uIndex) => (
+                      <span
+                        key={uIndex}
+                        className="px-3 py-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full text-sm font-medium"
+                      >
+                        {useCase}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+
+              {/* Media Side */}
+              <div
+                className={`
+      relative flex items-center justify-center
+      order-2
+      ${index % 2 === 0 ? "lg:order-2" : "lg:order-1"}
+    `}
+              >
+                {/* Gradient Background */}
+                <div className="absolute inset-0 ">
+                  <div className="w-full h-full bg-gradient-to-br from-indigo-100 via-purple-100 to-blue-100 dark:from-indigo-900/20 dark:via-purple-900/20 dark:to-blue-900/20 rounded-2xl" />
+                </div>
+
+                {/* Safari Component wrapper */}
+                <div className="relative z-10 w-full max-w-2xl ">
+                  <Safari
+                    url={`https://app.yourwebsite.com/${tool.title.toLowerCase().replace(/\s/g, '-')}`}
+                    className="shadow-lg"
+                  >
+                    <div className="w-full h-full bg-white dark:bg-gray-900 overflow-hidden">
+                      {tool.imageType === "screenshot" && tool.imageUrl ? (
+                        <div className="relative w-full h-full">
+                          <NextImage
+                            src={tool.imageUrl}
+                            alt={tool.title}
+                            fill
+                            className="object-cover object-top"
+                            sizes="(max-width: 768px) 100vw, 50vw"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
+                          <div className="text-center p-8">
+                            <div className="w-16 h-16 mx-auto mb-4 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                              <Zap className="h-8 w-8 text-gray-400" />
+                            </div>
+                            <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
+                              {tool.title}
+                            </h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                              Demo interface coming soon
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </Safari>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
       </div>
     </div>
   )
