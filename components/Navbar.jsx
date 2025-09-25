@@ -20,6 +20,7 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { useTheme } from "next-themes";
+import { useSelector } from "react-redux";
 // import { useRouter } from "next/router";
 export default function Navbar() {
   const { setTheme } = useTheme();
@@ -30,6 +31,9 @@ export default function Navbar() {
   const searchInputRef = useRef(null);
   const searchCardRef = useRef(null);
   const router = useRouter(); // ✅ call the hook inside your component
+  const auth = useSelector((store) => store.authStore.auth);
+  const profileLink =
+    auth?.role === "admin" ? "/admin/adminDashboard" : "/website/my-account";
 
   // Focus the input when opening
   useEffect(() => {
@@ -95,7 +99,7 @@ export default function Navbar() {
 
   return (
     <nav className="bg-white dark:bg-gray-900 shadow-md dark:shadow-gray-800/20 sticky top-0 z-50 transition-colors duration-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-0">
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
           <Link
@@ -112,57 +116,116 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-6 text-black dark:text-gray-200 font-medium">
-            <Link
-              href="/"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${
-                pathname === "/"
-                  ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
-            >
-              Home
-            </Link>
-            <Link
-              href="/features"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${
-                pathname === "/features"
-                  ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
-            >
-              Features
-            </Link>
-            <Link
-              href="/blogs"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${
-                pathname === "/blogs"
-                  ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
-            >
-              Blogs
-            </Link>
-            <Link
-              href="/about"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${
-                pathname === "/about"
-                  ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
-            >
-              About
-            </Link>
-            <Link
-              href="/contact"
-              className={`hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors ${
-                pathname === "/contact"
-                  ? "text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-              }`}
-            >
-              Contact
-            </Link>
+          <div className="hidden lg:flex space-x-6 text-black dark:text-gray-200 font-medium">
+            {/* Home Link */}
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="/"
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${
+                      pathname === "/"
+                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                        : ""
+                    }`}
+                  >
+                    Home
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                {/* AI Tools Dropdown */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="hover:text-indigo-600 dark:bg-gray-900 dark:hover:text-indigo-400 transition-colors">
+                    AI Tools
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="grid w-[300px] gap-2 p-4 md:w-[400px] md:grid-cols-2 lg:w-[500px]">
+                      <ListItem href="/seo-checker" title="SEO Checker">
+                        Analyze and optimize your website for search engines.
+                      </ListItem>
+                      <ListItem href="/grammar-checker" title="Grammar Checker">
+                        Check for grammar, spelling, and punctuation errors.
+                      </ListItem>
+                      <ListItem
+                        href="/blog-generator"
+                        title="Blog Post Generator"
+                      >
+                        Generate a full blog post from a simple title.
+                      </ListItem>
+                      <ListItem href="/AIsummarizer" title="AI Summarizer">
+                        Summarize long articles and texts quickly.
+                      </ListItem>
+                      <ListItem href="/pdf_summarizer" title="PDF Summarizer">
+                        Quickly get the main points from any PDF document.
+                      </ListItem>
+                      <ListItem href="/pdf-converter" title="PDF Extractor">
+                        Extract text from a PDF and generate a summarized
+                        version instantly.
+                      </ListItem>
+                      <ListItem href="/hashtag" title="Hashtag Generator">
+                        Get suggested hashtags for your blog posts and content.
+                      </ListItem>
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                {/* Features Link */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="/features"
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${
+                      pathname === "/features"
+                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                        : ""
+                    }`}
+                  >
+                    Features
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                {/* Learn */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="/learn"
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${
+                      pathname === "/learn"
+                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                        : ""
+                    }`}
+                  >
+                    Learn
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                {/* About Link */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="/about"
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${
+                      pathname === "/about"
+                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                        : ""
+                    }`}
+                  >
+                    About
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+
+                {/* Contact Link */}
+                <NavigationMenuItem>
+                  <NavigationMenuLink
+                    href="/contact"
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${
+                      pathname === "/contact"
+                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                        : ""
+                    }`}
+                  >
+                    Contact
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
           </div>
 
           <div className="flex gap-3 items-center">
@@ -219,17 +282,35 @@ export default function Navbar() {
             </DropdownMenu>
 
             {/* Button */}
-            <div className="hidden md:flex">
-              <Link
-                href="/login"
-                className="group/button relative inline-flex items-center justify-center overflow-hidden rounded-md bg-gray-800 backdrop-blur-lg px-6 py-2 text-base font-semibold text-white transition-all duration-150 ease-in-out hover:shadow-lg hover:shadow-gray-600/50 dark:hover:shadow-indigo-600/30 border border-white/20 dark:border-indigo-400/20 h-max"
-              >
-                <span>Sign In</span>
-                <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]">
-                  <div className="relative h-full w-10 bg-white/20 dark:bg-indigo-300/20"></div>
+            {auth ? (
+              <Link href={profileLink}>
+                <div className="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
+                  <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                    {auth?.photoURL ? (
+                      <img
+                        src={auth.photoURL}
+                        alt="avatar"
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      auth?.name?.charAt(0) || "U"
+                    )}
+                  </div>
                 </div>
               </Link>
-            </div>
+            ) : (
+              <div className="hidden md:flex">
+                <Link
+                  href="/login"
+                  className="group/button relative inline-flex items-center justify-center overflow-hidden rounded-md bg-gray-800 px-6 py-2 text-base font-semibold text-white transition-all hover:shadow-lg border border-white/20 dark:border-indigo-400/20"
+                >
+                  <span>Sign In</span>
+                  <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]">
+                    <div className="relative h-full w-10 bg-white/20 dark:bg-indigo-300/20"></div>
+                  </div>
+                </Link>
+              </div>
+            )}
 
             {/* menu button */}
             <div className="md:hidden flex items-center">

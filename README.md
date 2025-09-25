@@ -3,7 +3,7 @@
 ByteStory is an **AI-driven blogging platform** that empowers creators with smart tools for content creation, optimization, and sharing.  
 From **SEO scoring** to **spell checking**, **hashtag generation**, and **PDF summarization**, ByteStory helps you write better, reach more people, and save time!
 
-🌐 **Live Demo:** [bytestory.vercel.app](https://bytestory.vercel.app)
+🌐 **Live Demo:** [bytestory.vercel.app](https://byte-story.vercel.app/)
 
 ---
 

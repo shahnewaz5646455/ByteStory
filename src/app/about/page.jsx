@@ -4,6 +4,8 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Sparkles, Feather, Lightbulb, Rocket, Users, CheckCircle2, ArrowRight } from "lucide-react";
+import TeamOrbitCarousel from "../../../components/OrbitCarousel";
+import AboutTeamSection from "../../../components/AboutTeamSection";
 
 const features = [
   {
@@ -216,6 +218,8 @@ export default function About() {
           </div>
         </div>
       </section>
+         <AboutTeamSection />
+          <TeamOrbitCarousel/>
     </div>
   );
 }

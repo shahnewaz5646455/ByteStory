@@ -36,10 +36,13 @@ const LogoutButton = () => {
   return (
     <Button
       onClick={handleLogoutButton}
-      className="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-red-100 text-red-600 transition"
+      className="group/button relative inline-flex items-center justify-center overflow-hidden rounded-md hover:bg-gray-800 bg-gray-800 backdrop-blur-lg px-6 py-2 text-base font-semibold text-white transition-all duration-150 ease-in-out hover:shadow-lg hover:shadow-gray-600/50 dark:hover:shadow-indigo-600/30 border border-white/20 dark:border-indigo-400/20 w-full cursor-pointer"
     >
       <LogOut size={20} />
       <span>Logout</span>
+      <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]">
+        <div className="relative h-full w-10 bg-white/20 dark:bg-indigo-300/20"></div>
+      </div>
     </Button>
   );
 };

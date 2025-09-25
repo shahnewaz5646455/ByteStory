@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Zap, ArrowRight, Sparkles, Users, Rocket, Star } from 'lucide-react';
 import { Meteors } from '@/components/ui/meteors';
+import Link from 'next/link';
 const userImages = [
     "https://randomuser.me/api/portraits/men/47.jpg",
     "https://randomuser.me/api/portraits/men/50.jpg",
@@ -67,11 +68,11 @@ const Cta = () => {
 
                     {/* CTA Buttons */}
                     <div className="flex gap-4 justify-center items-center mb-6">
-                        <button className="group relative bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 hover:shadow-2xl hover:scale-105 flex items-center gap-2">
+                        <Link href="/login" className="group relative bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 hover:shadow-2xl hover:scale-105 flex items-center gap-2 cursor-pointer">
                             <span className="whitespace-nowrap">Get Started Free</span>
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
                             <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                        </button>
+                        </Link>
                     </div>
 
                     {/* Additional Info */}
