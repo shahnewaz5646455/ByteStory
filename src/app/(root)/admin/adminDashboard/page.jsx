@@ -1,11 +1,11 @@
-import ActiveUsersCard from "@/components/ActiveUsersCard";
+import { VisitorStats } from "@/components/admin/VisitorStats";
 import React from "react";
 
 const AdminDashboard = () => {
   return (
     <div>
       AdminDashboard
-      <ActiveUsersCard />
+      <VisitorStats />
     </div>
   );
 };
