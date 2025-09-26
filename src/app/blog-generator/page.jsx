@@ -266,7 +266,7 @@ useEffect(() => {
                       </span>
                     </div>
                     <ChevronDown
-                      size={18}
+                      size={19}
                       className={`transition-transform duration-300 text-indigo-400 ${
                         showTemplates ? "rotate-180" : ""
                       }`}
