@@ -45,6 +45,7 @@ export default function RootLayout({ children }) {
               <Footer />
             </GlobalStoreProvider>
             <ToastContainer />
+
             <Toaster position="top-center" richColors closeButton />
           </ThemeProvider>
         </GoogleOAuthProvider>

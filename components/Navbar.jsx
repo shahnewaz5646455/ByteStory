@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Lightbulb, Menu, Moon, Search, Sun, X } from "lucide-react";
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,29 +21,26 @@ import {
 } from "@/components/ui/navigation-menu";
 import { useTheme } from "next-themes";
 import { useSelector } from "react-redux";
-// import { useRouter } from "next/router";
+
 export default function Navbar() {
   const { setTheme } = useTheme();
-  const [isOpen, setIsOpen] = useState(false); // mobile menu
-  const [isSearchOpen, setIsSearchOpen] = useState(false); // search box
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const pathname = usePathname();
   const searchInputRef = useRef(null);
   const searchCardRef = useRef(null);
-  const router = useRouter();  // ✅ call the hook inside your component
+  const router = useRouter();
   const auth = useSelector((store) => store.authStore.auth);
-  const profileLink = auth?.role === "admin" 
-    ? "/admin/adminDashboard" 
-    : "/website/my-account";
+  const profileLink =
+    auth?.role === "admin" ? "/admin/adminDashboard" : "/website/my-account";
 
-  // Focus the input when opening
   useEffect(() => {
     if (isSearchOpen && searchInputRef.current) {
       searchInputRef.current.focus();
     }
   }, [isSearchOpen]);
 
-  // Close search when clicking outside
   useEffect(() => {
     function onClickOutside(e) {
       if (
@@ -59,20 +56,17 @@ export default function Navbar() {
   }, [isSearchOpen]);
 
   function onSubmitSearch(e) {
-
     e.preventDefault();
-    const searchTerm = e.value
-    if (searchTerm === "seo" || "SEO" || "se") {
-      router.push("/seo-checker")
+    const searchTerm = query.trim().toLowerCase();
+    
+    if (searchTerm === "seo") {
+      router.push("/seo-checker");
+    } else if (searchTerm.includes("grammar") || searchTerm.includes("grammer")) {
+      router.push("/grammar-checker");
     }
-    if (searchTerm === "grammar" || "GRAMMAR" || "grammer" || "gramar" || " grammer") {
-      router.push(document.getElementById("grammerChecker").scrollIntoView({ behavior: "smooth" }));
-    }
-
-
-    // TODO: route to your search page or handle query
-    // e.g., router.push(`/search?q=${encodeURIComponent(query)}`)
+    
     setIsSearchOpen(false);
+    setQuery("");
   }
 
   function ListItem({ title, children, href, ...props }) {
@@ -99,31 +93,32 @@ export default function Navbar() {
             href="/"
             className="flex-shrink-0 font-bold text-2xl flex items-center gap-2 cursor-pointer transition-colors"
           >
-            <div className="w-10 h-10 rounded-full flex items-center justify-center 
-                  bg-gradient-to-r from-purple-500 to-indigo-500 shadow-md">
+            <div
+              className="w-10 h-10 rounded-full flex items-center justify-center 
+                  bg-gradient-to-r from-purple-500 to-indigo-500 shadow-md"
+            >
               <Lightbulb className="w-6 h-6 text-white" />
             </div>
             <p className="text-gray-800 dark:text-gray-100">ByteStory</p>
           </Link>
 
-          {/* Desktop Menu */}
+          {/* Desktop Menu - unchanged */}
           <div className="hidden lg:flex space-x-6 text-black dark:text-gray-200 font-medium">
-            {/* Home Link */}
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
                   <NavigationMenuLink
                     href="/"
-                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/"
-                      ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
-                      : ""
-                      }`}
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${
+                      pathname === "/"
+                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                        : ""
+                    }`}
                   >
                     Home
                   </NavigationMenuLink>
                 </NavigationMenuItem>
 
-                {/* AI Tools Dropdown */}
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="hover:text-indigo-600 dark:bg-gray-900 dark:hover:text-indigo-400 transition-colors">
                     AI Tools
@@ -136,7 +131,10 @@ export default function Navbar() {
                       <ListItem href="/grammar-checker" title="Grammar Checker">
                         Check for grammar, spelling, and punctuation errors.
                       </ListItem>
-                      <ListItem href="/blog-generator" title="Blog Post Generator">
+                      <ListItem
+                        href="/blog-generator"
+                        title="Blog Post Generator"
+                      >
                         Generate a full blog post from a simple title.
                       </ListItem>
                       <ListItem href="/AIsummarizer" title="AI Summarizer">
@@ -146,7 +144,8 @@ export default function Navbar() {
                         Quickly get the main points from any PDF document.
                       </ListItem>
                       <ListItem href="/pdf-converter" title="PDF Extractor">
-                        Extract text from a PDF and generate a summarized version instantly.
+                        Extract text from a PDF and generate a summarized
+                        version instantly.
                       </ListItem>
                       <ListItem href="/hashtag" title="Hashtag Generator">
                         Get suggested hashtags for your blog posts and content.
@@ -155,53 +154,53 @@ export default function Navbar() {
                   </NavigationMenuContent>
                 </NavigationMenuItem>
 
-                {/* Features Link */}
                 <NavigationMenuItem>
                   <NavigationMenuLink
                     href="/features"
-                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/features"
-                      ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
-                      : ""
-                      }`}
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${
+                      pathname === "/features"
+                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                        : ""
+                    }`}
                   >
                     Features
                   </NavigationMenuLink>
                 </NavigationMenuItem>
 
-                {/* Learn */}
                 <NavigationMenuItem>
                   <NavigationMenuLink
                     href="/learn"
-                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/learn"
-                      ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
-                      : ""
-                      }`}
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${
+                      pathname === "/learn"
+                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                        : ""
+                    }`}
                   >
                     Learn
                   </NavigationMenuLink>
                 </NavigationMenuItem>
 
-                {/* About Link */}
                 <NavigationMenuItem>
                   <NavigationMenuLink
                     href="/about"
-                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/about"
-                      ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
-                      : ""
-                      }`}
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${
+                      pathname === "/about"
+                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                        : ""
+                    }`}
                   >
                     About
                   </NavigationMenuLink>
                 </NavigationMenuItem>
 
-                {/* Contact Link */}
                 <NavigationMenuItem>
                   <NavigationMenuLink
                     href="/contact"
-                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${pathname === "/contact"
-                      ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
-                      : ""
-                      }`}
+                    className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${
+                      pathname === "/contact"
+                        ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
+                        : ""
+                    }`}
                   >
                     Contact
                   </NavigationMenuLink>
@@ -211,7 +210,7 @@ export default function Navbar() {
           </div>
 
           <div className="flex gap-3 items-center">
-            {/* Search trigger (desktop) */}
+            {/* Desktop Search */}
             <Button
               variant="outline"
               size="icon"
@@ -219,10 +218,10 @@ export default function Navbar() {
               onClick={() => setIsSearchOpen((s) => !s)}
               aria-label="Open search"
             >
-              <Search onClick={onSubmitSearch} className="h-[1.2rem] w-[1.2rem]" />
+              <Search className="h-[1.2rem] w-[1.2rem]" />
             </Button>
 
-            {/* theme toggle */}
+            {/* Desktop Theme Toggle */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -235,7 +234,10 @@ export default function Navbar() {
                   <span className="sr-only">Toggle theme</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+              <DropdownMenuContent
+                align="end"
+                className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+              >
                 <DropdownMenuItem
                   onClick={() => setTheme("light")}
                   className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
@@ -257,9 +259,9 @@ export default function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Button */}
-              {auth ? (
-              <Link href={profileLink}>
+            {/* Desktop Auth Section */}
+            {auth ? (
+              <Link href={profileLink} className="hidden md:flex">
                 <div className="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
                   <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                     {auth?.photoURL ? (
@@ -275,7 +277,7 @@ export default function Navbar() {
                 </div>
               </Link>
             ) : (
-              <div className="hidden md:flex">
+              <div className="hidden lg:flex">
                 <Link
                   href="/login"
                   className="group/button relative inline-flex items-center justify-center overflow-hidden rounded-md bg-gray-800 px-6 py-2 text-base font-semibold text-white transition-all hover:shadow-lg border border-white/20 dark:border-indigo-400/20"
@@ -288,79 +290,98 @@ export default function Navbar() {
               </div>
             )}
 
-            {/* menu button */}
-            <div className="md:hidden flex items-center">
-              {/* Mobile: search + theme + menu */}
-              <div className="md:hidden flex items-center">
-                {/* mobile search trigger */}
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="mr-3 border-gray-300 dark:border-gray-600 bg-transparent dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  onClick={() => setIsSearchOpen((s) => !s)}
-                  aria-label="Open search"
-                >
-                  <Search className="h-[1.2rem] w-[1.2rem]" />
-                </Button>
+            {/* Mobile Section */}
+            <div className="flex lg:hidden items-center gap-2">
+             
+              {/* Mobile Search */}
+              <Button
+                variant="outline"
+                size="icon"
+                className="md:hidden border-gray-300 dark:border-gray-600 bg-transparent dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
+                onClick={() => setIsSearchOpen((s) => !s)}
+                aria-label="Open search"
+              >
+                <Search className="h-[1.2rem] w-[1.2rem]" />
+              </Button>
 
-                {/* mobile theme toggle */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="mr-3 border-gray-300 dark:border-gray-600 bg-transparent dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                      <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                      <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                      <span className="sr-only">Toggle theme</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align="end"
-                    className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+              {/* Mobile Theme Toggle */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="md:hidden border-gray-300 dark:border-gray-600 bg-transparent dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
-                    <DropdownMenuItem
-                      onClick={() => setTheme("light")}
-                      className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
-                    >
-                      Light
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => setTheme("dark")}
-                      className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
-                    >
-                      Dark
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => setTheme("system")}
-                      className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
-                    >
-                      System
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-                <button
-                  onClick={() => setIsOpen(!isOpen)}
-                  className="text-black dark:text-white focus:outline-none transition-colors"
-                  aria-label="Toggle menu"
+                    <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                    <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+                    <span className="sr-only">Toggle theme</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                 >
-                  {isOpen ? <X size={28} /> : <Menu size={28} />}
-                </button>
-              </div>
+                  <DropdownMenuItem
+                    onClick={() => setTheme("light")}
+                    className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
+                  >
+                    Light
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setTheme("dark")}
+                    className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
+                  >
+                    Dark
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setTheme("system")}
+                    className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
+                  >
+                    System
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+               {auth && (
+                <Link href={profileLink} className="flex md:hidden">
+                  <div className="flex items-center p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
+                    <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                      {auth?.photoURL ? (
+                        <img
+                          src={auth.photoURL}
+                          alt="avatar"
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                      ) : (
+                        auth?.name?.charAt(0) || "U"
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              )}
+
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="text-black dark:text-white focus:outline-none transition-colors p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                aria-label="Toggle menu"
+              >
+                {isOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Search box (overlay card) */}
+        {/* Search Box */}
         {isSearchOpen && (
           <div className="absolute inset-x-0 top-16 z-[60] flex justify-center px-4">
             <div
               ref={searchCardRef}
               className="w-full max-w-2xl rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl"
             >
-              <form onSubmit={onSubmitSearch} className="flex items-center gap-2 p-3">
+              <form
+                onSubmit={onSubmitSearch}
+                className="flex items-center gap-2 p-3"
+              >
                 <Search className="h-5 w-5 text-gray-500 dark:text-gray-400" />
                 <input
                   ref={searchInputRef}
@@ -373,12 +394,17 @@ export default function Navbar() {
                 <Button
                   type="button"
                   variant="ghost"
+                  size="icon"
                   className="text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                   onClick={() => setIsSearchOpen(false)}
                 >
                   <X className="h-5 w-5" />
                 </Button>
-                <Button type="submit" className="bg-black dark:bg-indigo-600 text-white hover:bg-gray-800">
+                <Button
+                  type="submit"
+                  size="sm"
+                  className="bg-black dark:bg-indigo-600 text-white hover:bg-gray-800 dark:hover:bg-indigo-700"
+                >
                   Search
                 </Button>
               </form>
@@ -386,69 +412,83 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* Mobile Menu Dropdown */}
+        {/* Mobile Menu Dropdown - Improved Design */}
         {isOpen && (
-          <div className="md:hidden absolute right-4 top-16 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 w-56 transition-colors z-50">
-            <div className="px-2 pt-2 pb-3 space-y-1 text-black dark:text-gray-200 font-medium">
+          <div className="lg:hidden absolute left-0 right-0 top-16 bg-white dark:bg-gray-800 shadow-xl border-t border-gray-200 dark:border-gray-700 transition-all duration-300 z-50">
+            <div className="px-4 py-3 space-y-1 text-black dark:text-gray-200 font-medium">
+              {/* Main Navigation Links */}
               <Link
                 href="/"
-                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-                  }`}
+                className={`flex items-center px-3 py-3 rounded-lg transition-colors ${
+                  pathname === "/"
+                    ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
+                    : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                }`}
                 onClick={() => setIsOpen(false)}
               >
-                Home
+                <span className="ml-2">Home</span>
               </Link>
-              <Link
-                href="/features"
-                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/features"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-                  }`}
-                onClick={() => setIsOpen(false)}
-              >
-                Features
-              </Link>
-              <Link
-                href="/blog"
-                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/blog"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-                  }`}
-                onClick={() => setIsOpen(false)}
-              >
-                Blogs
-              </Link>
-              <Link
-                href="/about"
-                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/about"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-                  }`}
-                onClick={() => setIsOpen(false)}
-              >
-                About
-              </Link>
-              <Link
-                href="/contact"
-                className={`block px-3 py-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${pathname === "/contact"
-                  ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                  : ""
-                  }`}
-                onClick={() => setIsOpen(false)}
-              >
-                Contact
-              </Link>
-              <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+
+              {/* AI Tools Section with Better Visual Hierarchy */}
+              <div className="px-3 py-2">
+                <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2 font-semibold">
+                  AI Tools
+                </p>
+                <div className="grid grid-cols-1 gap-1">
+                  {[
+                    { href: "/seo-checker", label: "SEO Checker" },
+                    { href: "/grammar-checker", label: "Grammar Checker" },
+                    { href: "/blog-generator", label: "Blog Post Generator" },
+                    { href: "/AIsummarizer", label: "AI Summarizer" },
+                    { href: "/pdf_summarizer", label: "PDF Summarizer" },
+                    { href: "/pdf-converter", label: "PDF Extractor" },
+                    { href: "/hashtag", label: "Hashtag Generator" },
+                  ].map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setIsOpen(false)}
+                      className="block px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Other Navigation Links */}
+              {[
+                { href: "/features", label: "Features" },
+                { href: "/learn", label: "Learn" },
+                { href: "/about", label: "About" },
+                { href: "/contact", label: "Contact" },
+              ].map((item) => (
                 <Link
-                  href="/login"
-                  className="block bg-black dark:bg-indigo-600 text-white px-3 py-2 rounded shadow hover:bg-gray-800 transition-colors text-center"
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center px-3 py-3 rounded-lg transition-colors ${
+                    pathname === item.href
+                      ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
+                      : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
                   onClick={() => setIsOpen(false)}
                 >
-                  Get Started
+                  <span className="ml-2">{item.label}</span>
                 </Link>
-              </div>
+              ))}
+
+              {/* Sign In Button for Mobile */}
+              {!auth && (
+                <div className="pt-3 border-t border-gray-200 dark:border-gray-700 mt-3">
+                  <Link
+                    href="/login"
+                    className="flex items-center justify-center bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-3 py-3 rounded-lg shadow hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 font-semibold"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Get Started
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         )}
