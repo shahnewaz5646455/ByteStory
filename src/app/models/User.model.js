@@ -49,7 +49,10 @@ const userSchema = new mongoose.Schema(
       type: String, // Google's user ID
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    collection: "users",
+  }
 );
 
 // 🔒 password hashing with the help of bcrypt

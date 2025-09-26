@@ -1,7 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Search, Zap, CheckCircle, ArrowRight, Play, Image as ImageIcon } from "lucide-react"
+import { Zap, CheckCircle, } from "lucide-react"
+import NextImage from "next/image"
+import { Safari } from "@/components/ui/safari"
+
 
 const tools = [
   {
@@ -15,7 +18,8 @@ const tools = [
       "Competitor analysis insights"
     ],
     useCases: ["Bloggers", "E-commerce sites", "Content marketers", "Small businesses"],
-    imageType: "screenshot" // or "video"
+    imageType: "screenshot",
+    imageUrl: "/screenshots/seo.png"
   },
   {
     title: "Grammar Checker",
@@ -98,19 +102,11 @@ const tools = [
 ]
 
 export default function FeaturesPage() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [activeTool, setActiveTool] = useState(0)
-
-  const filteredTools = tools.filter(tool =>
-    tool.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    tool.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    tool.useCases.some(useCase => useCase.toLowerCase().includes(searchTerm.toLowerCase()))
-  )
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Header Section */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center rounded-full bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 mb-4">
@@ -121,111 +117,50 @@ export default function FeaturesPage() {
             Powerful Tools for <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">Content Creators</span>
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
-            Discover our suite of AI tools designed to streamline your content creation process, 
+            Discover our suite of AI tools designed to streamline your content creation process,
             enhance quality, and boost your online presence.
           </p>
-
-          {/* Search Bar */}
-          <div className="max-w-md mx-auto relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-            <input
-              type="text"
-              placeholder="Search tools..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-          </div>
-        </div>
-
-        {/* Tools Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
-          {filteredTools.map((tool, index) => (
-            <div
-              key={index}
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden"
-            >
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {tool.title}
-                  </h3>
-                  <button
-                    onClick={() => setActiveTool(index)}
-                    className="flex items-center gap-1 text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 text-sm font-medium"
-                  >
-                    View Details <ArrowRight className="h-4 w-4" />
-                  </button>
-                </div>
-                
-                <p className="text-gray-600 dark:text-gray-300 mb-4">
-                  {tool.description}
-                </p>
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {tool.useCases.slice(0, 3).map((useCase, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-full text-xs font-medium"
-                    >
-                      {useCase}
-                    </span>
-                  ))}
-                  {tool.useCases.length > 3 && (
-                    <span className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full text-xs">
-                      +{tool.useCases.length - 3} more
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-                  <span className="flex items-center gap-1">
-                    {tool.imageType === "video" ? (
-                      <Play className="h-4 w-4" />
-                    ) : (
-                      <ImageIcon className="h-4 w-4" />
-                    )}
-                    {tool.imageType === "video" ? "Video demo" : "Screenshot"}
-                  </span>
-                  <span>{tool.features.length} features</span>
-                </div>
-              </div>
-            </div>
-          ))}
         </div>
 
         {/* Detailed Tool View */}
-        {filteredTools.length > 0 && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden mb-16">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+        <div className="space-y-16">
+          {tools.map((tool, index) => (
+            <div
+              key={index}
+              className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch"
+            >
               {/* Content Side */}
-              <div className="p-8">
+              <div className={`
+      bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8
+      order-1
+      ${index % 2 === 0 ? "lg:order-1" : "lg:order-2"}
+    `}>
                 <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                  {filteredTools[activeTool]?.title}
+                  {tool.title}
                 </h2>
-                
                 <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
-                  {filteredTools[activeTool]?.description}
+                  {tool.description}
                 </p>
 
                 <div className="mb-8">
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Key Features</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {filteredTools[activeTool]?.features.map((feature, index) => (
-                      <div key={index} className="flex items-center gap-2">
-                        <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                  <ul className="space-y-2">
+                    {tool.features.map((feature, fIndex) => (
+                      <li key={fIndex} className="flex items-center gap-2">
+                        <CheckCircle className="h-5 w-5 text-green-500" />
                         <span className="text-gray-600 dark:text-gray-300">{feature}</span>
-                      </div>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
 
                 <div>
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-3">Perfect For</h4>
                   <div className="flex flex-wrap gap-2">
-                    {filteredTools[activeTool]?.useCases.map((useCase, index) => (
+                    {tool.useCases.map((useCase, uIndex) => (
                       <span
-                        key={index}
+                        key={uIndex}
                         className="px-3 py-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full text-sm font-medium"
                       >
                         {useCase}
@@ -233,48 +168,61 @@ export default function FeaturesPage() {
                     ))}
                   </div>
                 </div>
-
-                <div className="mt-8 flex gap-4">
-                  <button className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-medium hover:shadow-lg transition-all duration-200">
-                    Try Now
-                  </button>
-                  <button className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200">
-                    View Documentation
-                  </button>
-                </div>
               </div>
 
               {/* Media Side */}
-              <div className="bg-gray-100 dark:bg-gray-700 flex items-center justify-center p-8">
-                <div className="text-center">
-                  {filteredTools[activeTool]?.imageType === "video" ? (
-                    <div className="relative">
-                      <div className="w-full h-64 bg-gray-300 dark:bg-gray-600 rounded-lg flex items-center justify-center">
-                        <Play className="h-16 w-16 text-white opacity-70" />
-                      </div>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <button className="bg-white/20 backdrop-blur-sm rounded-full p-4 hover:bg-white/30 transition-all duration-200">
-                          <Play className="h-8 w-8 text-white" />
-                        </button>
-                      </div>
+              <div
+                className={`
+      relative flex items-center justify-center
+      order-2
+      ${index % 2 === 0 ? "lg:order-2" : "lg:order-1"}
+    `}
+              >
+                {/* Gradient Background */}
+                <div className="absolute inset-0 ">
+                  <div className="w-full h-full bg-gradient-to-br from-indigo-100 via-purple-100 to-blue-100 dark:from-indigo-900/20 dark:via-purple-900/20 dark:to-blue-900/20 rounded-2xl" />
+                </div>
+
+                {/* Safari Component wrapper */}
+                <div className="relative z-10 w-full max-w-2xl ">
+                  <Safari
+                    url={`https://app.yourwebsite.com/${tool.title.toLowerCase().replace(/\s/g, '-')}`}
+                    className="shadow-lg"
+                  >
+                    <div className="w-full h-full bg-white dark:bg-gray-900 overflow-hidden">
+                      {tool.imageType === "screenshot" && tool.imageUrl ? (
+                        <div className="relative w-full h-full">
+                          <NextImage
+                            src={tool.imageUrl}
+                            alt={tool.title}
+                            fill
+                            className="object-cover object-top"
+                            sizes="(max-width: 768px) 100vw, 50vw"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
+                          <div className="text-center p-8">
+                            <div className="w-16 h-16 mx-auto mb-4 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                              <Zap className="h-8 w-8 text-gray-400" />
+                            </div>
+                            <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
+                              {tool.title}
+                            </h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                              Demo interface coming soon
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    <div className="w-full h-64 bg-gray-300 dark:bg-gray-600 rounded-lg flex items-center justify-center">
-                      <ImageIcon className="h-16 w-16 text-gray-400 dark:text-gray-500" />
-                    </div>
-                  )}
-                  <p className="text-gray-500 dark:text-gray-400 mt-4">
-                    {filteredTools[activeTool]?.imageType === "video" 
-                      ? "Tool demonstration video" 
-                      : "Tool interface screenshot"}
-                  </p>
+                  </Safari>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          ))}
+        </div>
 
-        
       </div>
     </div>
   )
