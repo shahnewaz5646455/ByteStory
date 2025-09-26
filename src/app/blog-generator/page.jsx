@@ -20,6 +20,8 @@ import {
   WifiOff,
   AlertTriangle,
 } from "lucide-react";
+import Reader from "@/components/ui/Reader";
+import SpeechRecorder from "@/components/ui/speechRecorder";
 
 export default function AIWriterPage() {
   // ---- Network state ----
@@ -328,6 +330,7 @@ export default function AIWriterPage() {
                       )}
                     </motion.button>
                   </div>
+                  <SpeechRecorder/>
                 </div>
 
                 {/* Waiting for Network Badge */}
@@ -483,6 +486,7 @@ export default function AIWriterPage() {
                       {output.split(/\s+/).filter((w) => w.length > 0).length} words
                     </span>
                   </div>
+                  <Reader/>
                   <div className="mx-3 h-5 w-px bg-gray-300 dark:bg-gray-600" />
                   <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
                     <CheckCircle className="h-4 w-4 text-green-500" />

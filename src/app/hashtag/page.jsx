@@ -1,12 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Sparkles, Hash, Copy, CheckCircle, RotateCw, Settings, TrendingUp, BarChart3, Download, Plus, Minus } from "lucide-react";
+import { Sparkles, Hash, Copy, CheckCircle, RotateCw, Settings, TrendingUp, BarChart3, Download, Plus, Minus, Wifi, WifiOff, AlertTriangle } from "lucide-react";
 
 export default function Home() {
    const [isOnline, setIsOnline] = useState(navigator.onLine); // Initialize with current status
+     const [showWaitingButton, setShowWaitingButton] = useState(false);
+
 const [showNetStatus, setShowNetStatus] = useState(false);
 const [showOffNetStatus, setShowOffNetStatus] = useState(false);
 const [hasNetworkChanged, setHasNetworkChanged] = useState(false); 
+const [pendingRequest,setPendingRequest]= useState({})
   const [category, setCategory] = useState("");
   const [title, setTitle] = useState("");
   const [platform, setPlatform] = useState("instagram");
@@ -55,9 +58,14 @@ useEffect(() => {
   }
 
   if (isOnline) {
+
     // Network came back online
     setShowOffNetStatus(false);
     setShowNetStatus(true);
+    if(pendingRequest){
+      executeGenerate(pendingRequest.title,pendingRequest.category,pendingRequest.hashtagLimit,pendingRequest.platform)
+
+    }
     const timeout = setTimeout(() => setShowNetStatus(false), 4000);
     return () => clearTimeout(timeout);
   } else {
@@ -66,15 +74,8 @@ useEffect(() => {
     setShowOffNetStatus(true);
   }
 }, [isOnline, hasNetworkChanged]);
-
-  const handleGenerate = async () => {
-    setLoading(true);
-    setError("");
-    setHashtags([]);
-    setCopied(false);
-    setSelectedHashtags(new Set());
-
-    try {
+const executeGenerate =async (title,category,hashtagLimit,platform)=>{
+   try {
       const res = await fetch("/api/hashtags", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -99,7 +100,50 @@ useEffect(() => {
     } finally {
       setLoading(false);
     }
-  };
+
+}
+
+
+
+  const handleGenerate = async () => {
+    setLoading(true);
+    setError("");
+    setHashtags([]);
+    setCopied(false);
+    setSelectedHashtags(new Set());
+    if(!isOnline){
+      setPendingRequest(title,category,hashtagLimit,platform)
+    }
+else{
+   try {
+      const res = await fetch("/api/hashtags", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          category, 
+          title, 
+          limit: hashtagLimit,
+          platform 
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setHashtags(data.tags);
+      } else {
+        setError(data.error || "Failed to generate hashtags");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong! Please try again.");
+    } finally {
+      setLoading(false);
+    }
+
+}}
+   
+  
 
   const copyToClipboard = async (specificTags = null) => {
     const tagsToCopy = specificTags || Array.from(selectedHashtags).length > 0 
@@ -157,25 +201,27 @@ useEffect(() => {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900  px-4">
-   {showNetStatus && (
-  <div className="sticky top-0 z-50 py-3 px-4 text-center bg-green-500 shadow-lg animate-slideDown">
-    <div className="flex items-center justify-center gap-2">
-      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-      <h1 className="text-lg font-semibold text-white">You are back online ✅</h1>
-    </div>
-    <p className="text-sm text-green-100 mt-1">All systems are working normally</p>
-  </div>
-)}
+    {showNetStatus && (
+        <div className="sticky top-0 z-50 animate-pulse bg-green-500 py-3 px-4 text-center shadow-lg">
+          <div className="flex items-center justify-center gap-2">
+            <Wifi className="h-5 w-5 text-white" />
+            <h1 className="text-lg font-semibold text-white">You are back online ✅</h1>
+          </div>
+        </div>
+      )}
+      {/* Offline banner */}
+      {showOffNetStatus && (
+        <div className="sticky top-0 z-50 bg-red-600 py-3 px-4 text-center shadow-lg">
+          <div className="flex items-center justify-center gap-2">
+            <WifiOff className="h-5 w-5 text-white animate-pulse" />
+            <h1 className="text-lg font-semibold text-white">You are currently offline</h1>
+          </div>
+          <p className="mt-1 text-sm text-red-100">
+            Requests will be processed when network is restored
+          </p>
+        </div>
+      )}
 
-{showOffNetStatus && (
-  <div className="sticky top-0 z-50 py-3 px-4 text-center bg-red-600 shadow-lg animate-slideDown">
-    <div className="flex items-center justify-center gap-2">
-      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-      <h1 className="text-lg font-semibold text-white">You are currently offline</h1>
-    </div>
-    <p className="text-sm text-red-100 mt-1">Requests will be synced when network is back</p>
-  </div>
-)}
 <div className="max-w-2xl mx-auto">
        
         {/* Header */}
@@ -308,6 +354,51 @@ useEffect(() => {
               )}
             </div>
           </div>
+           {/* Waiting for Network Badge */}
+                {showWaitingButton && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-4 rounded-xl border-2 border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50 p-4 dark:border-yellow-700 dark:from-yellow-900/20 dark:to-orange-900/20"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0">
+                        <AlertTriangle className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="mb-2 text-lg font-semibold text-yellow-800 dark:text-yellow-200">
+                          Waiting for Network Connection
+                        </h4>
+                        <p className="mb-3 text-sm text-yellow-700 dark:text-yellow-300">
+                          Your request is queued and will be processed automatically when
+                          internet connection is restored.
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
+                            <motion.div
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ duration: 1.5, repeat: Infinity }}
+                              className="h-2 w-2 rounded-full bg-yellow-500"
+                            />
+                            <motion.div
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
+                              className="h-2 w-2 rounded-full bg-yellow-500"
+                            />
+                            <motion.div
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
+                              className="h-2 w-2 rounded-full bg-yellow-500"
+                            />
+                          </div>
+                          <span className="text-xs font-medium text-yellow-700 dark:text-yellow-300">
+                            Monitoring network status...
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
 
           {error && (
             <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
