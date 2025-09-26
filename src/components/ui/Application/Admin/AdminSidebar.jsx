@@ -28,9 +28,9 @@ export default function AdminSidebar({ onClose }) {
   const pathname = usePathname();
 
   return (
-    <aside className="h-screen w-full bg-white/95 dark:bg-gray-900/95 border-r border-gray-200/50 dark:border-gray-800/50 backdrop-blur-md flex flex-col shadow-xl">
+    <aside className="h-screen w-full bg-white/95 dark:bg-gray-900/95 border-r border-gray-200/50 dark:border-gray-600/50 backdrop-blur-md flex flex-col shadow-xl">
       {/* Header */}
-      <div className="flex items-center justify-between h-20 px-4 md:px-6 border-b border-gray-100/50 dark:border-gray-800/50">
+      <div className="flex items-center justify-between h-20 px-4 md:px-6 border-b border-gray-100/50 dark:border-gray-600/50">
         <Link
           href="/admin"
           className="group flex items-center gap-3 cursor-pointer transition-all duration-300"

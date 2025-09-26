@@ -5,8 +5,9 @@ import SkillAssessmentQuiz from "../../../components/SkillAssessmentQuiz";
 function BlogPage() {
   return (
     <>
-      <SkillAssessmentQuiz/>
+      
       <VideoGallery></VideoGallery>
+      <SkillAssessmentQuiz/>
     </>
   );
 }

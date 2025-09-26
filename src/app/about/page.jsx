@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Sparkles, Feather, Lightbulb, Rocket, Users, CheckCircle2, ArrowRight } from "lucide-react";
 import TeamOrbitCarousel from "../../../components/OrbitCarousel";
 import AboutTeamSection from "../../../components/AboutTeamSection";
+import { StickyScrollRevealDemo } from "../../../components/StickyScrollRevealDemo";
 
 const features = [
   {
@@ -220,6 +221,7 @@ export default function About() {
       </section>
          <AboutTeamSection />
           <TeamOrbitCarousel/>
+          <StickyScrollRevealDemo />
     </div>
   );
 }

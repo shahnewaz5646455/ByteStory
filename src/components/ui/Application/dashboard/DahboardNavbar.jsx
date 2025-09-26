@@ -1,19 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   Menu,
   Bell,
-  Search,
   User,
   Settings,
   LogOut,
   ChevronDown,
   Sun,
   Moon,
-  MessageSquare,
+  Home,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import {
@@ -26,13 +24,9 @@ import { Button } from "@/components/ui/button"
 import { useTheme } from "next-themes";
 
 const DashboardNavbar = ({ onMenuClick }) => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const { setTheme } = useTheme();
-  const [isMobile, setIsMobile] = useState(false);
-  const pathname = usePathname();
   const auth = useSelector((store) => store.authStore.auth);
 
   const notifications = [
@@ -45,7 +39,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
 
   return (
     <>
-      <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-800/50 sticky top-0 z-40 shadow-sm">
+      <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200/50 dark:border-gray-600/50 sticky top-0 z-40 shadow-sm">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             {/* Left Section - Mobile Menu Button */}
@@ -197,6 +191,13 @@ const DashboardNavbar = ({ onMenuClick }) => {
                     </div>
 
                     <div className="p-2">
+                        <Link
+                        href="/"
+                        className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                      >
+                        <Home size={16} />
+                        <span>Go To Home</span>
+                      </Link>
                       <Link
                         href="/dashboard/profile"
                         className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
@@ -204,13 +205,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                         <User size={16} />
                         <span>Profile</span>
                       </Link>
-                      <Link
-                        href="/dashboard/settings"
-                        className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                      >
-                        <Settings size={16} />
-                        <span>Settings</span>
-                      </Link>
+                    
                     </div>
 
                     <div className="p-2 border-t border-gray-200/50 dark:border-gray-700/50">
