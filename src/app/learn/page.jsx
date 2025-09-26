@@ -6,8 +6,8 @@ function BlogPage() {
   return (
     <>
       
-      <SkillAssessmentQuiz/>
       <VideoGallery></VideoGallery>
+      <SkillAssessmentQuiz/>
     </>
   );
 }
