@@ -95,7 +95,6 @@ export default function AIWriterPage() {
       setShowNetStatus(true);
 
       if (pendingRequest) {
-        // resume queued request
         executeGenerateContent(pendingRequest.input, pendingRequest.template);
         setPendingRequest(null);
       }
@@ -105,7 +104,7 @@ export default function AIWriterPage() {
     } else {
       setShowNetStatus(false);
       setShowOffNetStatus(true);
-      setIsGenerating(false); // stop spinner if any
+      setIsGenerating(false);
     }
   }, [isOnline, hasNetworkChanged, pendingRequest]);
 
@@ -234,7 +233,8 @@ export default function AIWriterPage() {
                   </div>
                   <button
                     onClick={() => setShowTemplates((v) => !v)}
-                    className="group flex w-full items-center justify-between rounded-xl border border-indigo-200/50 bg-gradient-to-r from-indigo-50 to-purple-50 px-4 py-3 transition-all duration-200 hover:border-indigo-300 dark:from-gray-700 dark:to-gray-600 dark:border-gray-600 dark:hover:border-gray-500"
+                    className="group flex w-full items-center justify-between rounded-xl border border-indigo-200/50 bg-gradient-to-r from-indigo-50 to-purple-50 px-4 py-3 transition-all duration-200 hover:border-indigo-300 dark:border-gray-600 dark:from-gray-700 dark:to-gray-600 dark:hover:border-gray-500"
+                    type="button"
                   >
                     <div className="flex items-center">
                       <span className="text-indigo-600 dark:text-indigo-300">
@@ -267,6 +267,7 @@ export default function AIWriterPage() {
                               setSelectedTemplate(template.id);
                               setShowTemplates(false);
                             }}
+                            type="button"
                             className={`group flex w-full items-center px-4 py-3 text-left transition-all duration-200 hover:bg-indigo-50 dark:hover:bg-gray-700 ${
                               selectedTemplate === template.id
                                 ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300"
@@ -285,110 +286,129 @@ export default function AIWriterPage() {
                 </div>
               </div>
 
-              {/* Use a FORM so onSubmit fires */}
-              <form onSubmit={handleSubmit}>
-                <div className="relative">
-                  <div className="mb-2 flex items-center">
-                    <PenTool className="mr-2 h-4 w-4 text-indigo-500" />
-                    <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                      Your Topic
-                    </span>
-                  </div>
+              {/* Form */}
+           {/* Form */}
+<form onSubmit={handleSubmit}>
+  {/* Label */}
+  <div className="mb-2 flex items-center">
+    <PenTool className="mr-2 h-4 w-4 text-indigo-500" />
+    <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+      Your Topic
+    </span>
+  </div>
 
-                  <textarea
-                    value={input}
-                    onChange={(e) => {
-                      setInput(e.target.value);
-                      setError("");
-                    }}
-                    placeholder="Describe what you want to write about... (e.g., 'A blog post about sustainable gardening practices')"
-                    className="h-48 w-full resize-none rounded-2xl border-2 border-indigo-100/70 bg-white p-5 font-medium text-gray-800 outline-none transition-all duration-300 placeholder-gray-400 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200/50 dark:border-gray-600 dark:bg-gray-700/80 dark:text-white dark:placeholder-gray-500 dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20"
-                    disabled={isGenerating}
-                  />
+  {/* ⬇️ Wrap ONLY the first textarea in a relative container */}
+  <div className="relative">
+    {/* First textarea */}
+    <textarea
+      value={input}
+      onChange={(e) => {
+        setInput(e.target.value);
+        setError("");
+      }}
+      placeholder="Describe what you want to write about... (e.g., 'A blog post about sustainable gardening practices')"
+      className="h-48 w-full resize-none rounded-2xl border-2 border-indigo-100/70 bg-white p-5 pr-16 pb-16 font-medium text-gray-800 outline-none transition-all duration-300 placeholder-gray-400 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-200/50 dark:border-gray-600 dark:bg-gray-700/80 dark:text-white dark:placeholder-gray-500 dark:focus:border-indigo-500 dark:focus:ring-indigo-500/20"
+      disabled={isGenerating}
+    />
 
-                  <div className="absolute bottom-4 right-4 flex items-center">
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      type="submit"
-                      disabled={isGenerating || !input.trim()}
-                      className={`rounded-full p-3 shadow-lg transition-all duration-300 ${
-                        isGenerating || !input.trim()
-                          ? "cursor-not-allowed bg-gray-300 dark:bg-gray-600"
-                          : "cursor-pointer bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-indigo-500/30 dark:hover:shadow-purple-500/20"
-                      }`}
+    {/* Send button OVERLAY (bottom-right of the first textarea) */}
+    <div className="absolute bottom-3 right-3 z-10">
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        type="submit"
+        aria-label="Send"
+        disabled={isGenerating || !input.trim()}
+        className={`rounded-full p-3 shadow-lg transition-all duration-300 ${
+          isGenerating || !input.trim()
+            ? "cursor-not-allowed bg-gray-300 dark:bg-gray-600"
+            : "cursor-pointer bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-indigo-500/30 dark:hover:shadow-purple-500/20"
+        }`}
+      >
+        {isGenerating ? (
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          >
+            <Clock size={22} className="text-white" />
+          </motion.div>
+        ) : (
+          <Send size={22} className="text-white" />
+        )}
+      </motion.button>
+    </div>
+  </div>
+
+  {/* Waiting badge (between textarea and SpeechRecorder) */}
+  {/* WAITING BADGE: between textarea and SpeechRecorder */}
+                  {showWaitingButton && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-3 rounded-xl border-2 border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50 p-4 dark:border-yellow-700 dark:from-yellow-900/20 dark:to-orange-900/20"
                     >
-                      {isGenerating ? (
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                        >
-                          <Clock size={22} className="text-white" />
-                        </motion.div>
-                      ) : (
-                        <Send size={22} className="text-white" />
-                      )}
-                    </motion.button>
-                  </div>
-                  <SpeechRecorder/>
-                </div>
-
-                {/* Waiting for Network Badge */}
-                {showWaitingButton && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-4 rounded-xl border-2 border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50 p-4 dark:border-yellow-700 dark:from-yellow-900/20 dark:to-orange-900/20"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0">
-                        <AlertTriangle className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="mb-2 text-lg font-semibold text-yellow-800 dark:text-yellow-200">
-                          Waiting for Network Connection
-                        </h4>
-                        <p className="mb-3 text-sm text-yellow-700 dark:text-yellow-300">
-                          Your request is queued and will be processed automatically when
-                          internet connection is restored.
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1">
-                            <motion.div
-                              animate={{ scale: [1, 1.2, 1] }}
-                              transition={{ duration: 1.5, repeat: Infinity }}
-                              className="h-2 w-2 rounded-full bg-yellow-500"
-                            />
-                            <motion.div
-                              animate={{ scale: [1, 1.2, 1] }}
-                              transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
-                              className="h-2 w-2 rounded-full bg-yellow-500"
-                            />
-                            <motion.div
-                              animate={{ scale: [1, 1.2, 1] }}
-                              transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
-                              className="h-2 w-2 rounded-full bg-yellow-500"
-                            />
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0">
+                          <AlertTriangle className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="mb-2 text-lg font-semibold text-yellow-800 dark:text-yellow-200">
+                            Waiting for Network Connection
+                          </h4>
+                          <p className="mb-3 text-sm text-yellow-700 dark:text-yellow-300">
+                            Your request is queued and will be processed automatically when
+                            internet connection is restored.
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
+                              <motion.div
+                                animate={{ scale: [1, 1.2, 1] }}
+                                transition={{ duration: 1.5, repeat: Infinity }}
+                                className="h-2 w-2 rounded-full bg-yellow-500"
+                              />
+                              <motion.div
+                                animate={{ scale: [1, 1.2, 1] }}
+                                transition={{
+                                  duration: 1.5,
+                                  repeat: Infinity,
+                                  delay: 0.3,
+                                }}
+                                className="h-2 w-2 rounded-full bg-yellow-500"
+                              />
+                              <motion.div
+                                animate={{ scale: [1, 1.2, 1] }}
+                                transition={{
+                                  duration: 1.5,
+                                  repeat: Infinity,
+                                  delay: 0.6,
+                                }}
+                                className="h-2 w-2 rounded-full bg-yellow-500"
+                              />
+                            </div>
+                            <span className="text-xs font-medium text-yellow-700 dark:text-yellow-300">
+                              Monitoring network status...
+                            </span>
                           </div>
-                          <span className="text-xs font-medium text-yellow-700 dark:text-yellow-300">
-                            Monitoring network status...
-                          </span>
                         </div>
                       </div>
-                    </div>
-                  </motion.div>
-                )}
+                    </motion.div>
+                  )}
+  {/* Speech Recorder (after waiting badge) */}
+  <div className="mt-3">
+    <SpeechRecorder />
+  </div>
 
-                {error && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-3 flex items-center text-sm text-red-500"
-                  >
-                    <span className="mr-1">⚠️</span> {error}
-                  </motion.p>
-                )}
-              </form>
+  {error && (
+    <motion.p
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mt-3 flex items-center text-sm text-red-500"
+    >
+      <span className="mr-1">⚠️</span> {error}
+    </motion.p>
+  )}
+</form>
+
             </div>
 
             {/* Divider */}
@@ -486,12 +506,12 @@ export default function AIWriterPage() {
                       {output.split(/\s+/).filter((w) => w.length > 0).length} words
                     </span>
                   </div>
-                  <Reader/>
                   <div className="mx-3 h-5 w-px bg-gray-300 dark:bg-gray-600" />
                   <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
                     <CheckCircle className="h-4 w-4 text-green-500" />
                     <span className="font-medium">Ready to use</span>
                   </div>
+                  <Reader />
                 </motion.div>
               )}
             </div>

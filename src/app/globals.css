@@ -76,7 +76,17 @@
     transform: rotate(3deg) scale(1.05);}
   100% {
     background-position: 0% 50%;
-    transform: rotate(-5deg) scale(0.9);}}}
+    transform: rotate(-5deg) scale(0.9);}}
+  --animate-meteor: meteor 5s linear infinite;
+  @keyframes meteor {
+  0% {
+    transform: rotate(var(--angle)) translateX(0);
+    opacity: 1;}
+  70% {
+    opacity: 1;}
+  100% {
+    transform: rotate(var(--angle)) translateX(-500px);
+    opacity: 0;}}}
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -162,3 +172,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+::view-transition-old(root), ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;}

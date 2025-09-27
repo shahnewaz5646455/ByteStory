@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Sparkles, Hash, Copy, CheckCircle, RotateCw, Settings, TrendingUp, BarChart3, Download, Plus, Minus, Wifi, WifiOff, AlertTriangle } from "lucide-react";
+import {motion} from "framer-motion"
 
 export default function Home() {
    const [isOnline, setIsOnline] = useState(navigator.onLine); // Initialize with current status
@@ -60,10 +61,11 @@ useEffect(() => {
   if (isOnline) {
 
     // Network came back online
+    setShowWaitingButton(false)
     setShowOffNetStatus(false);
     setShowNetStatus(true);
     if(pendingRequest){
-      executeGenerate(pendingRequest.title,pendingRequest.category,pendingRequest.hashtagLimit,pendingRequest.platform)
+      executeGenerate(title,category,hashtagLimit,platform)
 
     }
     const timeout = setTimeout(() => setShowNetStatus(false), 4000);
@@ -75,6 +77,7 @@ useEffect(() => {
   }
 }, [isOnline, hasNetworkChanged]);
 const executeGenerate =async (title,category,hashtagLimit,platform)=>{
+  console.log(category,title,hashtagLimit,platform)
    try {
       const res = await fetch("/api/hashtags", {
         method: "POST",
@@ -112,6 +115,7 @@ const executeGenerate =async (title,category,hashtagLimit,platform)=>{
     setCopied(false);
     setSelectedHashtags(new Set());
     if(!isOnline){
+      setShowWaitingButton(true)
       setPendingRequest(title,category,hashtagLimit,platform)
     }
 else{
@@ -119,11 +123,11 @@ else{
       const res = await fetch("/api/hashtags", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          category, 
-          title, 
+        body: JSON.stringify({
+          category,
+          title,
           limit: hashtagLimit,
-          platform 
+          platform
         }),
       });
 
@@ -146,10 +150,10 @@ else{
   
 
   const copyToClipboard = async (specificTags = null) => {
-    const tagsToCopy = specificTags || Array.from(selectedHashtags).length > 0 
-      ? Array.from(selectedHashtags) 
+    const tagsToCopy = specificTags || Array.from(selectedHashtags).length > 0
+      ? Array.from(selectedHashtags)
       : hashtags;
-    
+
     const text = tagsToCopy.map(tag => `#${tag}`).join(' ');
     await navigator.clipboard.writeText(text);
     setCopied(true);
@@ -225,14 +229,14 @@ else{
 <div className="max-w-2xl mx-auto">
        
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-4">
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-6">
             <Hash className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-4xl md:text-5xl font-bold pb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             AI Hashtag Generator
           </h1>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Generate perfect, platform-optimized hashtags for your content
           </p>
         </div>
@@ -342,7 +346,7 @@ else{
                   </>
                 )}
               </button>
-              
+
               {(category || title) && (
                 <button
                   onClick={clearForm}
@@ -439,11 +443,10 @@ else{
               {hashtags.map((tag, idx) => (
                 <span
                   key={idx}
-                  className={`px-3 py-2 rounded-full text-sm font-medium border transition-all cursor-pointer ${
-                    selectedHashtags.has(tag)
+                  className={`px-3 py-2 rounded-full text-sm font-medium border transition-all cursor-pointer ${selectedHashtags.has(tag)
                       ? "bg-indigo-600 text-white border-indigo-600"
                       : "bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-700/50 hover:scale-105"
-                  }`}
+                    }`}
                   onClick={() => toggleHashtagSelection(tag)}
                 >
                   #{tag}
