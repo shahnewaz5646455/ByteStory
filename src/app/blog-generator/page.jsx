@@ -163,7 +163,7 @@ export default function AIWriterPage() {
         <div className="sticky top-0 z-50 animate-pulse bg-green-500 py-3 px-4 text-center shadow-lg">
           <div className="flex items-center justify-center gap-2">
             <Wifi className="h-5 w-5 text-white" />
-            <h1 className="text-lg font-semibold text-white">You are back online ✅</h1>
+            <h1 className="text-lg font-semibold text-white">You are back online !✅</h1>
           </div>
         </div>
       )}
