@@ -55,18 +55,14 @@ export default function JourneyPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-indigo-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-900/20">
       {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 to-purple-500/5"></div>
-        <div className="absolute top-10 left-10 w-72 h-72 bg-purple-300/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-indigo-300/20 rounded-full blur-3xl"></div>
-        
+      <section className="py-20 overflow-hidden">
         <div className="relative max-w-6xl mx-auto px-4 text-center">
           <div className="inline-flex items-center gap-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-6 py-3 rounded-full text-sm font-medium mb-6">
             <Sparkles className="w-4 h-4" />
             Our Story
           </div>
           
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-5xl md:text-6xl font-bold pb-6 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
             Our Journey
           </h1>
           
@@ -146,36 +142,6 @@ export default function JourneyPage() {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Future Vision Section */}
-      <section className="py-20 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 text-indigo-600 dark:text-indigo-400 px-6 py-3 rounded-full text-sm font-medium mb-6">
-            <Lightbulb className="w-4 h-4" />
-            The Road Ahead
-          </div>
-          
-          <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-            And The Story Continues...
-          </h2>
-          
-          <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed mb-8 max-w-3xl mx-auto">
-            Our journey is not just about technology—it's about passion, teamwork, 
-            and the belief that we can make a difference. We're excited to continue 
-            growing, innovating, and achieving new milestones together.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button className="group inline-flex items-center justify-center px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-              Join Our Journey
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-            </button>
-            <button className="inline-flex items-center justify-center px-8 py-3 bg-white/80 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-white dark:hover:bg-gray-700 transition-all duration-300">
-              Learn More About Us
-            </button>
           </div>
         </div>
       </section>
