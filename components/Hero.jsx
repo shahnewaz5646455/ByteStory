@@ -37,14 +37,14 @@ const Hero = () => {
         </p>
 
         {/* Buttons */}
-        <div className="flex justify-center gap-4 mb-16">
+        <div className="flex flex-nowrap justify-center gap-4 mb-16">
           <Link
             href="/login"
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold px-6 py-3 md:px-8 md:py-4 rounded-lg shadow-lg hover:shadow-xl hover:from-purple-600 hover:to-indigo-600 transition duration-150 transform cursor-pointer flex items-center justify-center w-max"
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold text-sm md:text-base px-5 py-3 md:px-8 md:py-4 rounded-lg shadow-lg hover:shadow-xl hover:from-purple-600 hover:to-indigo-600 transition duration-150 transform cursor-pointer flex items-center justify-center w-max whitespace-nowrap"
           >
             Start Creating Now
           </Link>
-          <button className="bg-white dark:bg-gray-800 text-gray-800 dark:text-white border-2 border-indigo-100 dark:border-gray-700 font-semibold px-6 py-3 md:px-8 md:py-4 rounded-lg hover:border-indigo-200 dark:hover:border-indigo-400 hover:bg-indigo-50 dark:hover:bg-gray-700 transition duration-300 flex items-center justify-center cursor-pointer w-max">
+          <button className="bg-white dark:bg-gray-800 text-gray-800 dark:text-white border-2 border-indigo-100 dark:border-gray-700 font-semibold text-sm md:text-base px-5 py-3  md:px-8 md:py-4 rounded-lg hover:border-indigo-200 dark:hover:border-indigo-400 hover:bg-indigo-50 dark:hover:bg-gray-700 transition duration-300 flex items-center justify-center cursor-pointer w-max whitespace-nowrap">
             View All Features
           </button>
         </div>
