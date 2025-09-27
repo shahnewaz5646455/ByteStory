@@ -27,7 +27,24 @@ export function useTextToSpeech() {
       voices.find(v => opts.lang && v.lang?.startsWith(opts.lang)) ||
       voices[0];
 
-    const chunks = chunkText(text, 180); // ~180–220 chars per chunk is safe
+    const chunks = chunkText(text, 180);
+    function chunkText(text, maxLen) {
+  const safeText = (text || "").toString();
+  const sentences = safeText.match(/[^.!?]+[.!?]*/g) || [safeText];
+  const chunks = [];
+  let cur = "";
+  for (const s of sentences) {
+    if ((cur + s).length > maxLen && cur.length > 0) {
+      chunks.push(cur.trim());
+      cur = s;
+    } else {
+      cur += s;
+    }
+  }
+  if (cur.trim()) chunks.push(cur.trim());
+  return chunks;
+}
+ // ~180–220 chars per chunk is safe
     const utts = chunks.map(chunk => {
       const u = new SpeechSynthesisUtterance(chunk);
       if (voice) u.voice = voice;

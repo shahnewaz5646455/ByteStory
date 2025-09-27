@@ -1,8 +1,16 @@
 "use client";
-import { useState } from "react";
-import { Sparkles, Hash, Copy, CheckCircle, RotateCw, Settings, TrendingUp, BarChart3, Download, Plus, Minus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Sparkles, Hash, Copy, CheckCircle, RotateCw, Settings, TrendingUp, BarChart3, Download, Plus, Minus, Wifi, WifiOff, AlertTriangle } from "lucide-react";
+import {motion} from "framer-motion"
 
 export default function Home() {
+   const [isOnline, setIsOnline] = useState(navigator.onLine); // Initialize with current status
+     const [showWaitingButton, setShowWaitingButton] = useState(false);
+
+const [showNetStatus, setShowNetStatus] = useState(false);
+const [showOffNetStatus, setShowOffNetStatus] = useState(false);
+const [hasNetworkChanged, setHasNetworkChanged] = useState(false); 
+const [pendingRequest,setPendingRequest]= useState({})
   const [category, setCategory] = useState("");
   const [title, setTitle] = useState("");
   const [platform, setPlatform] = useState("instagram");
@@ -22,6 +30,83 @@ export default function Home() {
     { id: "facebook", name: "Facebook", maxHashtags: 10 },
     { id: "general", name: "General", maxHashtags: 15 }
   ];
+// Handle network status display
+useEffect(() => {
+  const handleOnline = () => {
+    setIsOnline(true);
+    setHasNetworkChanged(true); // Mark that network state has changed
+  };
+  
+  const handleOffline = () => {
+    setIsOnline(false);
+    setHasNetworkChanged(true); // Mark that network state has changed
+  };
+
+  window.addEventListener("online", handleOnline);
+  window.addEventListener("offline", handleOffline);
+
+  return () => {
+    window.removeEventListener("online", handleOnline);
+    window.removeEventListener("offline", handleOffline);
+  };
+}, []);
+
+// Handle network status display
+useEffect(() => {
+  // Only show status if network has actually changed (not on initial load)
+  if (!hasNetworkChanged) {
+    return;
+  }
+
+  if (isOnline) {
+
+    // Network came back online
+    setShowWaitingButton(false)
+    setShowOffNetStatus(false);
+    setShowNetStatus(true);
+    if(pendingRequest){
+      executeGenerate(title,category,hashtagLimit,platform)
+
+    }
+    const timeout = setTimeout(() => setShowNetStatus(false), 4000);
+    return () => clearTimeout(timeout);
+  } else {
+    // Network went offline
+    setShowNetStatus(false);
+    setShowOffNetStatus(true);
+  }
+}, [isOnline, hasNetworkChanged]);
+const executeGenerate =async (title,category,hashtagLimit,platform)=>{
+  console.log(category,title,hashtagLimit,platform)
+   try {
+      const res = await fetch("/api/hashtags", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          category, 
+          title, 
+          limit: hashtagLimit,
+          platform 
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setHashtags(data.tags);
+      } else {
+        setError(data.error || "Failed to generate hashtags");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong! Please try again.");
+    } finally {
+      setLoading(false);
+    }
+
+}
+
+
 
   const handleGenerate = async () => {
     setLoading(true);
@@ -29,8 +114,12 @@ export default function Home() {
     setHashtags([]);
     setCopied(false);
     setSelectedHashtags(new Set());
-
-    try {
+    if(!isOnline){
+      setShowWaitingButton(true)
+      setPendingRequest(title,category,hashtagLimit,platform)
+    }
+else{
+   try {
       const res = await fetch("/api/hashtags", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -55,7 +144,10 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  };
+
+}}
+   
+  
 
   const copyToClipboard = async (specificTags = null) => {
     const tagsToCopy = specificTags || Array.from(selectedHashtags).length > 0
@@ -112,8 +204,30 @@ export default function Home() {
   const maxHashtags = currentPlatform?.maxHashtags || 15;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
+    <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900  px-4">
+    {showNetStatus && (
+        <div className="sticky top-0 z-50 animate-pulse bg-green-500 py-3 px-4 text-center shadow-lg">
+          <div className="flex items-center justify-center gap-2">
+            <Wifi className="h-5 w-5 text-white" />
+            <h1 className="text-lg font-semibold text-white">You are back online ✅</h1>
+          </div>
+        </div>
+      )}
+      {/* Offline banner */}
+      {showOffNetStatus && (
+        <div className="sticky top-0 z-50 bg-red-600 py-3 px-4 text-center shadow-lg">
+          <div className="flex items-center justify-center gap-2">
+            <WifiOff className="h-5 w-5 text-white animate-pulse" />
+            <h1 className="text-lg font-semibold text-white">You are currently offline</h1>
+          </div>
+          <p className="mt-1 text-sm text-red-100">
+            Requests will be processed when network is restored
+          </p>
+        </div>
+      )}
+
+<div className="max-w-2xl mx-auto">
+       
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-6">
@@ -244,6 +358,51 @@ export default function Home() {
               )}
             </div>
           </div>
+           {/* Waiting for Network Badge */}
+                {showWaitingButton && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-4 rounded-xl border-2 border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50 p-4 dark:border-yellow-700 dark:from-yellow-900/20 dark:to-orange-900/20"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0">
+                        <AlertTriangle className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="mb-2 text-lg font-semibold text-yellow-800 dark:text-yellow-200">
+                          Waiting for Network Connection
+                        </h4>
+                        <p className="mb-3 text-sm text-yellow-700 dark:text-yellow-300">
+                          Your request is queued and will be processed automatically when
+                          internet connection is restored.
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
+                            <motion.div
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ duration: 1.5, repeat: Infinity }}
+                              className="h-2 w-2 rounded-full bg-yellow-500"
+                            />
+                            <motion.div
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
+                              className="h-2 w-2 rounded-full bg-yellow-500"
+                            />
+                            <motion.div
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
+                              className="h-2 w-2 rounded-full bg-yellow-500"
+                            />
+                          </div>
+                          <span className="text-xs font-medium text-yellow-700 dark:text-yellow-300">
+                            Monitoring network status...
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
 
           {error && (
             <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
