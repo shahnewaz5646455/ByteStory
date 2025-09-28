@@ -88,7 +88,7 @@ export default function PrivacyPolicyPage() {
       </section>
 
       {/* Introduction */}
-      <section className="py-16">
+      <section className="">
         <div className="max-w-4xl mx-auto px-4">
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
             <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -131,7 +131,7 @@ export default function PrivacyPolicyPage() {
       </section>
 
       {/* Additional Information */}
-      <section className="py-16 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+      <section className="pb-16 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto px-4">
           <div className="grid gap-8 md:grid-cols-2">
             <div className="bg-white/80 dark:bg-gray-800/80 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">

@@ -1,14 +1,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Users, Eye, TrendingUp, Globe, Clock, ArrowUpRight, RefreshCw } from "lucide-react";
 
 export function VisitorStats() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false); 
   const [period, setPeriod] = useState("today");
 
   // Fetch statistics from API
-  const fetchStats = async () => {
+  const fetchStats = async (showSkeleton = false) => {
+    if (showSkeleton) {
+      setLoading(true);
+    } else {
+      setRefreshing(true);
+    }
+
     try {
       const response = await fetch(`/api/visitors/stats?period=${period}`);
       const data = await response.json();
@@ -19,38 +27,36 @@ export function VisitorStats() {
     } catch (error) {
       console.error("Error fetching stats:", error);
     } finally {
-      setLoading(false);
+      if (showSkeleton) {
+        setLoading(false);
+      } else {
+        setRefreshing(false);
+      }
     }
   };
 
   // Load stats when component mounts and when period changes
   useEffect(() => {
-    fetchStats();
+    
+    fetchStats(true);
 
-    // Refresh every 30 seconds for real-time updates
-    const interval = setInterval(fetchStats, 30000);
+    // Refresh every 30 seconds
+    const interval = setInterval(() => fetchStats(false), 30000);
     return () => clearInterval(interval);
   }, [period]);
 
+  const handleRefresh = () => {
+    fetchStats(true);
+  };
+
   if (loading) {
-    return (
-      <div className="p-6">
-        <h2 className="text-2xl font-bold mb-4">Loading Statistics...</h2>
-        <div className="animate-pulse">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="bg-gray-200 h-32 rounded"></div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+    return <StatsSkeleton />;
   }
 
   if (!stats) {
     return (
       <div className="p-6">
-        <div className="text-red-500 p-4 bg-red-100 rounded">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 text-red-700 dark:text-red-300">
           Failed to load statistics. Please try again.
         </div>
       </div>
@@ -58,95 +64,207 @@ export function VisitorStats() {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Website Analytics</h2>
-        <select
-          value={period}
-          onChange={(e) => setPeriod(e.target.value)}
-          className="px-3 py-2 border rounded-md"
-        >
-          <option value="today">Today</option>
-          <option value="week">This Week</option>
-          <option value="month">This Month</option>
-          <option value="all">All Time</option>
-        </select>
+    <div className="">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+            Website Analytics
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
+            Real-time insights into your website performance
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <select
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-all duration-200"
+            disabled={refreshing}
+          >
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+            <option value="all">All Time</option>
+          </select>
+
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-all duration-200 disabled:opacity-50"
+          >
+            <RefreshCw className={`w-5 h-5 ${refreshing ? "animate-spin" : ""}`} />
+          </button>
+        </div>
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <StatCard
-          title="Active Users"
-          value={stats.period.activeUsers}
-          description="Currently online"
-          color="blue"
-        />
-        <StatCard
-          title={`Visitors (${period})`}
-          value={stats.period.visitors}
-          description={`This ${period}`}
-          color="green"
-        />
-        <StatCard
-          title={`Page Views (${period})`}
-          value={stats.period.pageViews}
-          description={`This ${period}`}
-          color="purple"
-        />
-        <StatCard
-          title="Total Users"
-          value={stats.totals.users}
-          description="Registered users"
-          color="orange"
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {refreshing ? (
+          [1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="bg-white/80 dark:bg-gray-800/80 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse"
+            >
+              <div className="h-6 w-24 bg-gray-300 dark:bg-gray-700 mb-4 rounded"></div>
+              <div className="h-8 w-32 bg-gray-300 dark:bg-gray-700 mb-2 rounded"></div>
+              <div className="h-4 w-20 bg-gray-300 dark:bg-gray-700 rounded"></div>
+            </div>
+          ))
+        ) : (
+          <>
+            <StatCard
+              title="Active Users"
+              value={stats.period.activeUsers}
+              description="Currently online"
+              icon={Users}
+              color="blue"
+              trend={stats.period.activeUsersTrend}
+            />
+            <StatCard
+              title="Total Visitors"
+              value={stats.period.visitors}
+              description={`This ${period}`}
+              icon={Eye}
+              color="green"
+              trend={stats.period.visitorsTrend}
+            />
+            <StatCard
+              title="Page Views"
+              value={stats.period.pageViews}
+              description={`This ${period}`}
+              icon={TrendingUp}
+              color="purple"
+              trend={stats.period.pageViewsTrend}
+            />
+            <StatCard
+              title="Total Users"
+              value={stats.totals.users}
+              description="Registered users"
+              icon={Globe}
+              color="orange"
+              trend={stats.totals.usersTrend}
+            />
+          </>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <PopularPages pages={stats.popularPages} />
-        <ActiveUsers users={stats.activeUserDetails} />
+        <PopularPages pages={stats.popularPages} loading={refreshing} />
+        <ActiveUsers users={stats.activeUserDetails} loading={refreshing} />
       </div>
     </div>
   );
 }
 
 // Component for each statistic card
-function StatCard({ title, value, description, color }) {
+function StatCard({ title, value, description, icon: Icon, color, trend }) {
   const colorClasses = {
-    blue: "border-blue-200 bg-blue-50",
-    green: "border-green-200 bg-green-50",
-    purple: "border-purple-200 bg-purple-50",
-    orange: "border-orange-200 bg-orange-50",
+    blue: {
+      bg: "from-blue-500 to-cyan-500",
+      light: "bg-blue-50 dark:bg-blue-900/20",
+      border: "border-blue-200 dark:border-blue-800"
+    },
+    green: {
+      bg: "from-green-500 to-emerald-500",
+      light: "bg-green-50 dark:bg-green-900/20",
+      border: "border-green-200 dark:border-green-800"
+    },
+    purple: {
+      bg: "from-purple-500 to-pink-500",
+      light: "bg-purple-50 dark:bg-purple-900/20",
+      border: "border-purple-200 dark:border-purple-800"
+    },
+    orange: {
+      bg: "from-orange-500 to-red-500",
+      light: "bg-orange-50 dark:bg-orange-900/20",
+      border: "border-orange-200 dark:border-orange-800"
+    },
   };
 
+  const colors = colorClasses[color] || colorClasses.blue;
+
   return (
-    <div
-      className={`border-2 rounded-lg p-4 ${
-        colorClasses[color] || colorClasses.blue
-      }`}
-    >
-      <h3 className="font-semibold text-gray-700">{title}</h3>
-      <p className="text-3xl font-bold my-2">{value.toLocaleString()}</p>
-      <p className="text-sm text-gray-600">{description}</p>
+    <div className={`group relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border ${colors.border}`}>
+      <div className="flex items-center justify-between mb-4">
+        <div className={`p-3 rounded-xl bg-gradient-to-r ${colors.bg}`}>
+          <Icon className="w-6 h-6 text-white" />
+        </div>
+        {trend && (
+          <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+            trend > 0 
+              ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+              : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+          }`}>
+            <ArrowUpRight className={`w-3 h-3 ${trend < 0 ? 'rotate-90' : ''}`} />
+            {Math.abs(trend)}%
+          </div>
+        )}
+      </div>
+      
+      <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">{title}</h3>
+      <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
+        {value.toLocaleString()}
+      </p>
+      <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
     </div>
   );
 }
 
 // Component to show popular pages
-function PopularPages({ pages }) {
+function PopularPages({ pages, loading }) {
+  if (loading) {
+    return (
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32 animate-pulse"></div>
+        </div>
+        <div className="space-y-4">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="flex justify-between items-center">
+              <div className="flex-1">
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2"></div>
+                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4 animate-pulse"></div>
+              </div>
+              <div className="w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="border rounded-lg p-4">
-      <h3 className="font-semibold text-lg mb-4">Popular Pages</h3>
-      <div className="space-y-3">
+    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+          <TrendingUp className="w-4 h-4 text-white" />
+        </div>
+        <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Popular Pages</h3>
+      </div>
+      <div className="space-y-4">
         {pages.map((page, index) => (
-          <div key={index} className="flex justify-between items-center">
-            <span className="text-sm truncate flex-1 mr-4">{page._id}</span>
-            <span className="bg-gray-200 px-2 py-1 rounded text-sm font-medium">
+          <div key={index} className="flex justify-between items-center p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
+            <div className="flex-1 min-w-0">
+              <span className="text-sm font-medium text-gray-900 dark:text-white truncate block">
+                {page._id}
+              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {page.path || 'Unknown path'}
+              </span>
+            </div>
+            <span className="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full text-sm font-medium">
               {page.count}
             </span>
           </div>
         ))}
         {pages.length === 0 && (
-          <p className="text-gray-500 text-center py-4">No page views yet</p>
+          <div className="text-center py-8">
+            <TrendingUp className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+            <p className="text-gray-500 dark:text-gray-400">No page views yet</p>
+          </div>
         )}
       </div>
     </div>
@@ -154,32 +272,118 @@ function PopularPages({ pages }) {
 }
 
 // Component to show active users
-function ActiveUsers({ users }) {
-  return (
-    <div className="border rounded-lg p-4">
-      <h3 className="font-semibold text-lg mb-4">Active Now</h3>
-      <div className="space-y-3">
-        {users.map((user, index) => (
-          <div key={index} className="flex justify-between items-center">
-            <div>
-              <p className="font-medium">{user.name}</p>
-              <p className="text-sm text-gray-600">{user.email}</p>
-              <p className="text-xs text-gray-500">On: {user.page}</p>
+function ActiveUsers({ users, loading }) {
+  if (loading) {
+    return (
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32 animate-pulse"></div>
+        </div>
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex justify-between items-center">
+              <div className="flex-1">
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2"></div>
+                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 animate-pulse mb-1"></div>
+                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4 animate-pulse"></div>
+              </div>
+              <div className="w-16 h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
             </div>
-            <span
-              className={`px-2 py-1 rounded text-xs ${
-                user.role === "admin"
-                  ? "bg-red-100 text-red-800"
-                  : "bg-blue-100 text-blue-800"
-              }`}
-            >
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+          <Clock className="w-4 h-4 text-white" />
+        </div>
+        <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Active Now</h3>
+      </div>
+      <div className="space-y-4">
+        {users.map((user, index) => (
+          <div key={index} className="flex justify-between items-center p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
+            <div className="flex-1 min-w-0">
+              <p className="font-medium text-gray-900 dark:text-white truncate">{user.name}</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{user.email}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-500 truncate">On: {user.page}</p>
+            </div>
+            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+              user.role === "admin"
+                ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+            }`}>
               {user.role}
             </span>
           </div>
         ))}
         {users.length === 0 && (
-          <p className="text-gray-500 text-center py-4">No active users</p>
+          <div className="text-center py-8">
+            <Users className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+            <p className="text-gray-500 dark:text-gray-400">No active users</p>
+          </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+// Skeleton Loading Component
+function StatsSkeleton() {
+  return (
+    <div className="p-6">
+      {/* Header Skeleton */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div className="space-y-2">
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-48 animate-pulse"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-64 animate-pulse"></div>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-xl w-32 animate-pulse"></div>
+          <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"></div>
+        </div>
+      </div>
+
+      {/* Stats Cards Skeleton */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="bg-white/80 dark:bg-gray-800/80 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"></div>
+              <div className="w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+            </div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2 w-3/4"></div>
+            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-1"></div>
+            <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-1/2"></div>
+          </div>
+        ))}
+      </div>
+
+      {/* Content Sections Skeleton */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {[1, 2].map((i) => (
+          <div key={i} className="bg-white/80 dark:bg-gray-800/80 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+              <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32 animate-pulse"></div>
+            </div>
+            <div className="space-y-4">
+              {[1, 2, 3, 4, 5].map((j) => (
+                <div key={j} className="flex justify-between items-center">
+                  <div className="flex-1">
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2"></div>
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4 animate-pulse"></div>
+                  </div>
+                  <div className="w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
