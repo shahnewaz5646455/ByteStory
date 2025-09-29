@@ -11,35 +11,35 @@ export async function POST(request) {
     connectDB();
 
     const payload = await request.json();
-    const validationSchema = zSchema.pick({
-      otp: true,
-      email: true,
-    });
 
+    // Validate input
+    const validationSchema = zSchema.pick({ otp: true, email: true });
     const validationData = validationSchema.safeParse(payload);
 
     if (!validationData.success) {
       return response(
         false,
         401,
-        "invalid or missing input field",
+        "Invalid or missing input field",
         validationData.error
       );
     }
 
     const { email, otp } = validationData.data;
+
+    // Find OTP
     const getOtpData = await OTPModel.findOne({ email, otp });
-
     if (!getOtpData) {
-      return response(false, 404, "invalid or expired otp");
+      return response(false, 404, "Invalid or expired OTP");
     }
 
+    // Find User
     const getUser = await UserModel.findOne({ deletedAt: null, email }).lean();
-
-    if (!getOtpData) {
-      return response(false, 401, "user not found");
+    if (!getUser) {
+      return response(false, 401, "User not found");
     }
 
+    // Prepare user data
     const loggedInUserData = {
       _id: getUser._id,
       role: getUser.role,
@@ -47,16 +47,16 @@ export async function POST(request) {
       avatar: getUser.avatar,
     };
 
+    // Generate JWT token
     const secret = new TextEncoder().encode(process.env.SECRET_KEY);
-
     const token = await new SignJWT(loggedInUserData)
       .setIssuedAt()
       .setExpirationTime("24h")
       .setProtectedHeader({ alg: "HS256" })
       .sign(secret);
 
+    // Set cookie (optional)
     const cookieStore = await cookies();
-
     cookieStore.set({
       name: "access_token",
       value: token,
@@ -66,9 +66,14 @@ export async function POST(request) {
       sameSite: "lax",
     });
 
-    //   delete otp after validation
+    // Delete OTP after validation
     await getOtpData.deleteOne();
-    return response(true, 200, "login SuccessFull", loggedInUserData);
+
+    // ✅ Return user data with token
+    return response(true, 200, "Login Successful", {
+      ...loggedInUserData,
+      token,
+    });
   } catch (error) {
     console.error("Verify API Error:", error);
     return catchError(error);
