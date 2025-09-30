@@ -11,7 +11,7 @@ export async function POST() {
 
     return response(true, 200, "Logout successful");
   } catch (error) {
-    console.error("Logout error:", error);
+    // console.error("Logout error:", error);
     return response(false, 500, "Internal server error", error.message);
   }
 }
