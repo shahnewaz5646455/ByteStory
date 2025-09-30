@@ -4,7 +4,6 @@ import React from "react";
 const AdminDashboard = () => {
   return (
     <div>
-      AdminDashboard
       <VisitorStats />
     </div>
   );
