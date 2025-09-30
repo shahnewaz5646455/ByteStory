@@ -29,7 +29,6 @@ import { showToast } from "@/lib/showToast";
 import axios from "axios";
 import OtpVerification from "@/components/ui/Application/OtpVerification";
 import { useDispatch } from "react-redux";
-// import { login } from "@/store/reducer/authReducer";
 import GoogleG from "../../../components/GoogleG";
 import { GoogleLogin } from "@react-oauth/google";
 import { login } from "@/store/reducer/authReducer";
@@ -98,10 +97,9 @@ function LoginPage() {
         throw new Error(otpResponse.message);
       }
 
-      setOtpEmail("");
-
       showToast("success", otpResponse.message);
       dispatch(login(otpResponse.data));
+      setOtpEmail("");
 
       if (searchParams.has("callback")) {
         router.push(searchParams.get("callback"));
