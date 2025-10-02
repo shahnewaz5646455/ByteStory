@@ -48,7 +48,7 @@ const AdminLayout = ({ children }) => {
             {/* Sidebar Overlay for Mobile */}
             {isMobile && isSidebarOpen && (
               <div
-                className="fixed inset-0 bg-gray-300/70 backdrop-blur-md bg-opacity-50 z-40 md:hidden"
+                className="fixed inset-0 backdrop-blur-md bg-opacity-50 z-40 md:hidden"
                 onClick={() => setIsSidebarOpen(false)}
               />
             )}
@@ -56,25 +56,29 @@ const AdminLayout = ({ children }) => {
             {/* Sidebar */}
             <div
               className={`
-          fixed md:static inset-y-0 left-0 z-50
-          transform transition-transform duration-300 ease-in-out
-          ${
-            isSidebarOpen
-              ? "translate-x-0"
-              : "-translate-x-full md:translate-x-0"
-          }
-          w-64 md:w-64 lg:w-72
-        `}
+                ${isMobile ? "fixed" : "sticky top-0 self-start"}
+                inset-y-0 left-0 z-50
+                transform transition-transform duration-300 ease-in-out
+                ${isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+                w-64 md:w-64 lg:w-72
+                h-screen overflow-y-auto
+                bg-white dark:bg-gray-900 shadow-md
+              `}
             >
               <AdminSidebar onClose={() => setIsSidebarOpen(false)} />
             </div>
 
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col min-h-screen w-full md:w-[calc(100%-16rem)] lg:w-[calc(100%-18rem)]">
+            <div className="flex-1 flex flex-col min-h-screen">
               <DashboardNavbar onMenuClick={toggleSidebar} />
 
-              {/* Main content area */}
-              <main className="flex-1 p-4 md:p-6 lg:p-8 bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white transition-colors duration-200 overflow-auto">
+              <main
+                className="flex-1 p-4 md:p-6 lg:p-8 
+                bg-gradient-to-br from-indigo-50 via-white to-purple-50 
+                dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 
+                text-gray-900 dark:text-white transition-colors duration-200 
+                overflow-y-auto"
+              >
                 <div>{children}</div>
                 <VisitorTracking />
               </main>

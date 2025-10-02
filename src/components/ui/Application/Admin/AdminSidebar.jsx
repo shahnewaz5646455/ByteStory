@@ -8,7 +8,6 @@ import {
   FileText,
   Settings,
   BarChart3,
-  LogOut,
   Lightbulb,
   ChevronRight,
   Sparkles,
@@ -17,7 +16,7 @@ import {
 import LogoutButton from "../LogoutButton";
 
 const menuItems = [
-  { name: "Dashboard", href: "/admin", icon: LayoutDashboard, badge: null },
+  { name: "Dashboard", href: "/admin/adminDashboard/overview", icon: LayoutDashboard, badge: null },
   {
     name: "Users",
     href: "/admin/adminDashboard/users",
@@ -89,26 +88,25 @@ export default function AdminSidebar({ onClose }) {
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive =
-            pathname === item.href || pathname.startsWith(item.href + "/");
+            pathname === item.href ||
+            (pathname.startsWith(item.href + "/") && item.href !== "/admin/adminDashboard");
 
           return (
             <Link
               key={item.name}
               href={item.href}
               onClick={onClose}
-              className={`group flex items-center justify-between gap-3 px-3 md:px-4 py-3 rounded-xl transition-all duration-300 relative overflow-hidden ${
-                isActive
+              className={`group flex items-center justify-between gap-3 px-3 md:px-4 py-3 rounded-xl transition-all duration-300 relative overflow-hidden ${isActive
                   ? "bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/30 dark:to-indigo-900/30 text-purple-700 dark:text-purple-300 shadow-md shadow-purple-500/10 border-l-4 border-purple-500"
                   : "text-gray-600 dark:text-gray-400 hover:bg-gray-50/80 dark:hover:bg-gray-800/80 hover:text-gray-900 dark:hover:text-gray-100 hover:shadow-md md:hover:translate-x-1"
-              }`}
+                }`}
             >
               <div className="flex items-center gap-3">
                 <div
-                  className={`p-2 rounded-lg transition-all duration-300 ${
-                    isActive
+                  className={`p-2 rounded-lg transition-all duration-300 ${isActive
                       ? "bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md"
                       : "bg-gray-100/50 dark:bg-gray-800/50 group-hover:bg-gradient-to-r group-hover:from-purple-500/10 group-hover:to-indigo-500/10 text-gray-500 dark:text-gray-400"
-                  }`}
+                    }`}
                 >
                   <Icon className="h-4 w-4" />
                 </div>
@@ -118,11 +116,10 @@ export default function AdminSidebar({ onClose }) {
               <div className="flex items-center gap-2">
                 {item.badge && (
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      isActive
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${isActive
                         ? "bg-white/80 text-purple-600"
                         : "bg-gradient-to-r from-purple-500/10 to-indigo-500/10 text-purple-600 dark:text-purple-400"
-                    }`}
+                      }`}
                   >
                     {item.badge}
                   </span>
@@ -135,9 +132,8 @@ export default function AdminSidebar({ onClose }) {
 
               {/* Hover gradient overlay */}
               <div
-                className={`absolute inset-0 bg-gradient-to-r from-purple-500 to-indigo-500 opacity-0 group-hover:opacity-5 transition-opacity duration-300 ${
-                  isActive ? "opacity-10" : ""
-                }`}
+                className={`absolute inset-0 bg-gradient-to-r from-purple-500 to-indigo-500 opacity-0 group-hover:opacity-5 transition-opacity duration-300 ${isActive ? "opacity-10" : ""
+                  }`}
               ></div>
             </Link>
           );
