@@ -1,9 +1,8 @@
-// import UserModel from "@/models/User";
 import UserModel from "@/app/models/User.model";
 import { connectDB } from "@/lib/database.Connection";
 import { NextResponse } from "next/server";
 
-// GET all users OR single user with query param
+// GET all users
 export async function GET(request) {
   try {
     await connectDB();
@@ -28,10 +27,12 @@ export async function GET(request) {
       });
     }
 
-    // Otherwise return all users
-    const users = await UserModel.find({ deletedAt: null })
+    // Return all active users
+    const users = await UserModel.find()
       .select("-password")
       .sort({ createdAt: -1 });
+
+    console.log(`Found ${users.length} users in database`);
 
     return NextResponse.json({
       success: true,
@@ -46,7 +47,7 @@ export async function GET(request) {
   }
 }
 
-// UPDATE user with query parameter
+// UPDATE user
 export async function PUT(request) {
   try {
     await connectDB();
@@ -82,13 +83,13 @@ export async function PUT(request) {
     const updatedUser = await UserModel.findByIdAndUpdate(
       userId,
       {
-        // name,
-        // email,
+        name,
+        email,
         role,
-        // phone,
-        // address,
-        // isEmailVerified,
-        // updatedAt: new Date(),
+        phone,
+        address,
+        isEmailVerified,
+        updatedAt: new Date(),
       },
       { new: true, runValidators: true }
     ).select("-password");
@@ -114,7 +115,7 @@ export async function PUT(request) {
   }
 }
 
-// DELETE user with query parameter
+// DELETE user - HARD DELETE
 export async function DELETE(request) {
   try {
     await connectDB();
@@ -129,15 +130,10 @@ export async function DELETE(request) {
       );
     }
 
-    // Soft delete - set deletedAt timestamp
-    const deletedUser = await UserModel.findByIdAndUpdate(
-      userId,
-      {
-        deletedAt: new Date(),
-        updatedAt: new Date(),
-      },
-      { new: true }
-    ).select("-password");
+    console.log(`Deleting user with ID: ${userId}`);
+
+    // HARD DELETE - Remove from database completely
+    const deletedUser = await UserModel.findByIdAndDelete(userId);
 
     if (!deletedUser) {
       return NextResponse.json(
@@ -146,9 +142,11 @@ export async function DELETE(request) {
       );
     }
 
+    console.log(`User ${userId} deleted successfully`);
+
     return NextResponse.json({
       success: true,
-      message: "User deleted successfully",
+      message: "User deleted successfully from database",
     });
   } catch (error) {
     console.error("Error deleting user:", error);

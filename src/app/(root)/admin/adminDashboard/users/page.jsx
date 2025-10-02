@@ -109,9 +109,10 @@ export default function UsersPage() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
+      console.log("Fetching users...");
       const response = await fetch("/api/admin/users");
       const data = await response.json();
-
+      console.log("API Response:", data);
       if (data.success) {
         setUsers(data.users);
       } else {
@@ -209,6 +210,8 @@ export default function UsersPage() {
 
     try {
       setDeleting(true);
+      console.log("Deleting user:", userToDelete._id);
+
       const response = await fetch(`/api/admin/users?id=${userToDelete._id}`, {
         method: "DELETE",
       });
