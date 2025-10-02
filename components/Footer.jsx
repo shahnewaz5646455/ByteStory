@@ -32,16 +32,34 @@ export default function Footer() {
               <div className="space-y-3">
                 <p className="font-medium text-gray-700 dark:text-gray-200">Stay updated</p>
                 <div className="flex gap-2">
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
-                             bg-white dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                  <button className="px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white 
-                           rounded-lg hover:shadow-lg transition duration-200 flex items-center gap-1 cursor-pointer hover:from-indigo-500 hover:to-purple-500">
-                    <Mail className="w-4 h-4" />
-                  </button>
+                 <form 
+  action="https://app.us1.list-manage.com/subscribe/post?u=27af9c89a5678128dfd200ebe&amp;id=5e8b6367eb&amp;f_id=0013d5e4f0" 
+  method="post" target="_blank"
+>
+  <input 
+    type="email" 
+    name="EMAIL" 
+    placeholder="Enter your email" 
+    required
+  />
+  
+    <div
+          className="absolute -left-[5000px]"
+          aria-hidden="true"
+        >
+          <input
+            type="text"
+            name="b_27af9c89a5678128dfd200ebe_5e8b6367eb"
+            tabIndex={-1}
+            defaultValue=""
+            autoComplete="off"
+          />
+        </div>
+  
+  <button type="submit" name="subscribe">Subscribe</button>
+</form>
+
+
                 </div>
               </div>
             </div>
