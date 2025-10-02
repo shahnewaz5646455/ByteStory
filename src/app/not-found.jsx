@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Home, ArrowLeft, Book, Sparkles, Zap, Trophy, Volume2, VolumeX } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function NotFoundPage() {
   const [score, setScore] = useState(0);
@@ -14,7 +15,7 @@ export default function NotFoundPage() {
   const [selectedOption, setSelectedOption] = useState(null);
   const [feedback, setFeedback] = useState('');
   const [isMuted, setIsMuted] = useState(false);
-
+  const router = useRouter();
   // Vocabulary words for bloggers/writers
   const vocabularyWords = [
     { word: "PROSE", meaning: "Written or spoken language in its ordinary form", category: "Writing" },
@@ -334,16 +335,17 @@ export default function NotFoundPage() {
               {isMuted ? 'Unmute' : 'Mute'}
             </button>
 
-            <Link href="/">
+           
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={()=> router.back()}
                 className="flex items-center gap-3 bg-white dark:bg-gray-800 text-gray-800 dark:text-white px-6 py-3 rounded-2xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-200 dark:border-gray-700"
               >
                 <ArrowLeft className="w-5 h-5" />
                 Go Back
               </motion.button>
-            </Link>
+      
             
             <Link href="/">
               <motion.button
