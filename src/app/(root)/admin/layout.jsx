@@ -10,7 +10,7 @@ import { VisitorTracking } from "@/components/VisitorTracking";
 
 const AdminLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
 
   useEffect(() => {
     const navbar = document.querySelector("nav");
@@ -18,21 +18,26 @@ const AdminLayout = ({ children }) => {
     const footer = document.querySelector("footer");
     if (footer) footer.style.display = "none";
 
-    // Check if mobile
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth >= 768) {
+    // Check screen size - lg breakpoint (1024px)
+    const checkScreenSize = () => {
+      const large = window.innerWidth >= 1024;
+      setIsLargeScreen(large);
+      
+      // Auto-open sidebar on large screens, close on small screens
+      if (large) {
+        setIsSidebarOpen(true);
+      } else {
         setIsSidebarOpen(false);
       }
     };
 
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
 
     return () => {
       if (navbar) navbar.style.display = "";
       if (footer) footer.style.display = "";
-      window.removeEventListener("resize", checkMobile);
+      window.removeEventListener("resize", checkScreenSize);
     };
   }, []);
 
@@ -40,37 +45,53 @@ const AdminLayout = ({ children }) => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  // Close sidebar when clicking on overlay (mobile)
+  const closeSidebar = () => {
+    if (!isLargeScreen) {
+      setIsSidebarOpen(false);
+    }
+  };
+
   return (
     <SessionProvider>
       <AdminRoute>
         <SidebarProvider>
           <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
-            {/* Sidebar Overlay for Mobile */}
-            {isMobile && isSidebarOpen && (
+            {/* Sidebar Overlay for Mobile/Tablet */}
+            {!isLargeScreen && isSidebarOpen && (
               <div
-                className="fixed inset-0 backdrop-blur-md bg-opacity-50 z-40 md:hidden"
-                onClick={() => setIsSidebarOpen(false)}
+                className="fixed inset-0 backdrop-blur-md bg-black/20 z-40 lg:hidden"
+                onClick={closeSidebar}
               />
             )}
 
-            {/* Sidebar */}
+            {/* Sidebar - Only visible on lg screens or when manually opened */}
             <div
               className={`
-                ${isMobile ? "fixed" : "sticky top-0 self-start"}
+                ${!isLargeScreen ? "fixed" : "sticky top-0 self-start"}
                 inset-y-0 left-0 z-50
                 transform transition-transform duration-300 ease-in-out
-                ${isSidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
-                w-64 md:w-64 lg:w-72
+                ${
+                  isSidebarOpen 
+                    ? "translate-x-0" 
+                    : "-translate-x-full lg:translate-x-0"
+                }
+                w-64 lg:w-72
                 h-screen overflow-y-auto
-                bg-white dark:bg-gray-900 shadow-md
+                bg-white dark:bg-gray-900 shadow-lg
+                border-r border-gray-200 dark:border-gray-700
               `}
             >
-              <AdminSidebar onClose={() => setIsSidebarOpen(false)} />
+              <AdminSidebar onClose={closeSidebar} />
             </div>
 
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col min-h-screen">
-              <DashboardNavbar onMenuClick={toggleSidebar} />
+            <div className="flex-1 flex flex-col min-h-screen min-w-0">
+              {/* Navbar - Always show menu button on non-lg screens */}
+              <DashboardNavbar 
+                onMenuClick={toggleSidebar} 
+                showMenuButton={!isLargeScreen}
+              />
 
               <main
                 className="flex-1 p-4 md:p-6 lg:p-8 
