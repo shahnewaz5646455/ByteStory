@@ -46,48 +46,47 @@ const DashboardNavbar = ({ onMenuClick }) => {
             <div className="flex items-center">
               <button
                 onClick={onMenuClick}
-                className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors md:hidden"
+                className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors lg:hidden"
               >
                 <Menu size={24} />
               </button>
             </div>
-
             {/* Right Section - Actions */}
             <div className="flex items-center space-x-4">
               {/* theme toggle */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="md:flex border-gray-300 dark:border-gray-600 bg-transparent dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                  <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                  <span className="sr-only">Toggle theme</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                <DropdownMenuItem
-                  onClick={() => setTheme("light")}
-                  className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
-                >
-                  Light
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setTheme("dark")}
-                  className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
-                >
-                  Dark
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setTheme("system")}
-                  className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
-                >
-                  System
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="md:flex border-gray-300 dark:border-gray-600 bg-transparent dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                    <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+                    <span className="sr-only">Toggle theme</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                  <DropdownMenuItem
+                    onClick={() => setTheme("light")}
+                    className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
+                  >
+                    Light
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setTheme("dark")}
+                    className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
+                  >
+                    Dark
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setTheme("system")}
+                    className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
+                  >
+                    System
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
 
               {/* Notifications */}
               <div className="relative">
@@ -191,7 +190,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                     </div>
 
                     <div className="p-2">
-                        <Link
+                      <Link
                         href="/"
                         className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                       >
@@ -205,7 +204,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                         <User size={16} />
                         <span>Profile</span>
                       </Link>
-                    
+
                     </div>
 
                     <div className="p-2 border-t border-gray-200/50 dark:border-gray-700/50">
