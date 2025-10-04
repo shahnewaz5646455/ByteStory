@@ -88,9 +88,10 @@ const AdminLayout = ({ children }) => {
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col min-h-screen min-w-0">
               {/* Navbar - with conditional z-index */}
-              <div className={`
+               <div className={`
+                sticky top-0
                 ${isSidebarOpen && !isLargeScreen ? 'z-30' : 'z-40'}
-                relative
+                bg-white/95 dark:bg-gray-900/95 backdrop-blur-md
               `}>
                 <DashboardNavbar 
                   onMenuClick={toggleSidebar} 
