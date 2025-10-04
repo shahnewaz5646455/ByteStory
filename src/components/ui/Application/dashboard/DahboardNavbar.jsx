@@ -153,7 +153,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
             <div className="flex items-center">
               <button
                 onClick={onMenuClick}
-                className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors md:hidden"
+                className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors lg:hidden"
               >
                 <Menu size={24} />
               </button>

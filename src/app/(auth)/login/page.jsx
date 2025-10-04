@@ -104,7 +104,7 @@ function LoginPage() {
         router.push(searchParams.get("callback"));
       } else {
         otpResponse.data.role === "admin"
-          ? router.push("/admin/adminDashboard")
+          ? router.push("/admin/adminDashboard/overview")
           : router.push("/website/my-account");
       }
     } catch (error) {
@@ -140,7 +140,7 @@ function LoginPage() {
         router.push(searchParams.get("callback"));
       } else {
         googleResponse.data.role === "admin"
-          ? router.push("/admin/adminDashboard")
+          ? router.push("/admin/adminDashboard/overview")
           : router.push("/website/my-account");
       }
     } catch (error) {

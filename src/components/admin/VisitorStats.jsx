@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { Users, Eye, TrendingUp, Globe, Clock, ArrowUpRight, RefreshCw } from "lucide-react";
+import { Card, CardContent } from "../ui/card";
 
 export function VisitorStats() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false); 
+  const [refreshing, setRefreshing] = useState(false);
   const [period, setPeriod] = useState("today");
 
   // Fetch statistics from API
@@ -37,7 +38,7 @@ export function VisitorStats() {
 
   // Load stats when component mounts and when period changes
   useEffect(() => {
-    
+
     fetchStats(true);
 
     // Refresh every 30 seconds
@@ -100,52 +101,80 @@ export function VisitorStats() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
         {refreshing ? (
           [1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="bg-white/80 dark:bg-gray-800/80 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 animate-pulse"
-            >
-              <div className="h-6 w-24 bg-gray-300 dark:bg-gray-700 mb-4 rounded"></div>
-              <div className="h-8 w-32 bg-gray-300 dark:bg-gray-700 mb-2 rounded"></div>
-              <div className="h-4 w-20 bg-gray-300 dark:bg-gray-700 rounded"></div>
-            </div>
+            <Card key={i} className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 animate-pulse">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="h-4 w-16 sm:w-24 bg-gray-300 dark:bg-gray-700 rounded mb-2"></div>
+                    <div className="h-6 w-12 sm:w-16 bg-gray-300 dark:bg-gray-700 rounded mb-1"></div>
+                    <div className="h-3 w-20 bg-gray-300 dark:bg-gray-700 rounded"></div>
+                  </div>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-300 dark:bg-gray-700 rounded-xl flex-shrink-0"></div>
+                </div>
+              </CardContent>
+            </Card>
           ))
         ) : (
           <>
-            <StatCard
-              title="Active Users"
-              value={stats.period.activeUsers}
-              description="Currently online"
-              icon={Users}
-              color="blue"
-              trend={stats.period.activeUsersTrend}
-            />
-            <StatCard
-              title="Total Visitors"
-              value={stats.period.visitors}
-              description={`This ${period}`}
-              icon={Eye}
-              color="green"
-              trend={stats.period.visitorsTrend}
-            />
-            <StatCard
-              title="Page Views"
-              value={stats.period.pageViews}
-              description={`This ${period}`}
-              icon={TrendingUp}
-              color="purple"
-              trend={stats.period.pageViewsTrend}
-            />
-            <StatCard
-              title="Total Users"
-              value={stats.totals.users}
-              description="Registered users"
-              icon={Globe}
-              color="orange"
-              trend={stats.totals.usersTrend}
-            />
+            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">Active Users</p>
+                    <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats.period.activeUsers}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Currently online</p>
+                  </div>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Users className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">Total Visitors</p>
+                    <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats.period.visitors}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">This {period}</p>
+                  </div>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Eye className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">Page Views</p>
+                    <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats.period.pageViews}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">This {period}</p>
+                  </div>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">Total Users</p>
+                    <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats.totals.users}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Registered users</p>
+                  </div>
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Globe className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </>
         )}
       </div>
@@ -192,17 +221,16 @@ function StatCard({ title, value, description, icon: Icon, color, trend }) {
           <Icon className="w-6 h-6 text-white" />
         </div>
         {trend && (
-          <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-            trend > 0 
+          <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${trend > 0
               ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
               : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
-          }`}>
+            }`}>
             <ArrowUpRight className={`w-3 h-3 ${trend < 0 ? 'rotate-90' : ''}`} />
             {Math.abs(trend)}%
           </div>
         )}
       </div>
-      
+
       <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">{title}</h3>
       <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
         {value.toLocaleString()}
@@ -312,11 +340,10 @@ function ActiveUsers({ users, loading }) {
               <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{user.email}</p>
               <p className="text-xs text-gray-500 dark:text-gray-500 truncate">On: {user.page}</p>
             </div>
-            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-              user.role === "admin"
+            <span className={`px-3 py-1 rounded-full text-xs font-medium ${user.role === "admin"
                 ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
                 : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-            }`}>
+              }`}>
               {user.role}
             </span>
           </div>
