@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   Menu,
@@ -17,6 +17,7 @@ import {
   CheckCircle,
   Clock,
   Shield,
+  X,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import {
@@ -36,6 +37,10 @@ const DashboardNavbar = ({ onMenuClick }) => {
   const [loading, setLoading] = useState(false);
   const { setTheme } = useTheme();
   const auth = useSelector((store) => store.authStore.auth);
+
+  // Refs for dropdowns
+  const notificationRef = useRef(null);
+  const profileRef = useRef(null);
 
   // Check if user is admin
   const isAdmin = auth?.role === "admin";
@@ -132,6 +137,23 @@ const DashboardNavbar = ({ onMenuClick }) => {
     }
   };
 
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setIsNotificationOpen(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setIsProfileOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   // Auto-refresh notifications every 30 seconds
   useEffect(() => {
     fetchNotifications();
@@ -191,7 +213,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
               </DropdownMenu>
 
               {/* Notifications - Visible to all users */}
-              <div className="relative">
+              <div className="relative" ref={notificationRef}>
                 <button
                   onClick={() => {
                     setIsNotificationOpen(!isNotificationOpen);
@@ -211,132 +233,150 @@ const DashboardNavbar = ({ onMenuClick }) => {
 
                 {/* Notification Dropdown */}
                 {isNotificationOpen && (
-                  <div className="absolute right-0 mt-2 w-96 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 z-50 max-h-96 overflow-hidden">
-                    <div className="p-4 border-b border-gray-200/50 dark:border-gray-700/50">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                            Notifications
-                          </h3>
-                          {isAdmin && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
-                              <Shield className="h-3 w-3 text-green-500" />
-                              Admin View - All notifications
-                            </p>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {unreadCount > 0 && (
-                            <span className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs px-2 py-1 rounded-full">
-                              {unreadCount} new
-                            </span>
-                          )}
-                          {filteredNotifications.length > 0 && (
-                            <button
-                              onClick={markAllAsRead}
-                              className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
-                            >
-                              Mark all read
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                  <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 z-50 max-h-[40vh] overflow-hidden">
+  {/* Header */}
+  <div className="p-4 border-b border-gray-200/50 dark:border-gray-700/50 sticky top-0 bg-white/95 dark:bg-gray-800/95">
+    <div className="flex justify-between items-center">
+      <div className="flex items-center gap-2">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+          Notifications
+        </h3>
+        {/* Mobile close button */}
+        <button
+          onClick={() => setIsNotificationOpen(false)}
+          className="sm:hidden p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+        >
+          <X size={16} />
+        </button>
+      </div>
+      <div className="flex items-center gap-2">
+        {unreadCount > 0 && (
+          <span className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs px-2 py-1 rounded-full">
+            {unreadCount} new
+          </span>
+        )}
+        {filteredNotifications.length > 0 && (
+          <button
+            onClick={markAllAsRead}
+            className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium hidden sm:block"
+          >
+            Mark all read
+          </button>
+        )}
+      </div>
+    </div>
+    {isAdmin && (
+      <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
+        <Shield className="h-3 w-3 text-green-500" />
+        Admin View - All notifications
+      </p>
+    )}
+  </div>
 
-                    <div className="max-h-80 overflow-y-auto">
-                      {loading ? (
-                        <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-                          <Clock className="h-6 w-6 animate-spin mx-auto mb-2" />
-                          Loading notifications...
-                        </div>
-                      ) : filteredNotifications.length === 0 ? (
-                        <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                          <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                          <p>No notifications yet</p>
-                          <p className="text-sm mt-1">
-                            {isAdmin
-                              ? "You'll be notified when new users register"
-                              : "You'll be notified about important updates"}
-                          </p>
-                        </div>
-                      ) : (
-                        filteredNotifications.map((notification) => (
-                          <div
-                            key={notification._id}
-                            className={`p-4 border-b border-gray-100/50 dark:border-gray-700/50 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200 ${
-                              !notification.isRead
-                                ? "bg-blue-50/80 dark:bg-blue-900/20 border-l-4 border-blue-500"
-                                : "bg-transparent"
-                            }`}
-                            onClick={() => markAsRead([notification._id])}
-                          >
-                            <div className="flex items-start space-x-3">
-                              <div className="flex-shrink-0 mt-1">
-                                {getNotificationIcon(notification.type)}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                  {notification.title}
-                                </p>
-                                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                                  {notification.message}
-                                </p>
+  {/* Notifications List - Scrollable */}
+  <div className="overflow-y-auto" style={{ maxHeight: "calc(40vh - 120px)" }}>
+    {loading ? (
+      <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+        <Clock className="h-6 w-6 animate-spin mx-auto mb-2" />
+        Loading notifications...
+      </div>
+    ) : filteredNotifications.length === 0 ? (
+      <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+        <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
+        <p>No notifications yet</p>
+        <p className="text-sm mt-1">
+          {isAdmin
+            ? "You'll be notified when new users register"
+            : "You'll be notified about important updates"}
+        </p>
+      </div>
+    ) : (
+      filteredNotifications.map((notification) => (
+        <div
+          key={notification._id}
+          className={`p-4 pb-8 border-b border-gray-100/50 dark:border-gray-700/50 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200 ${
+            !notification.isRead
+              ? "bg-blue-50/80 dark:bg-blue-900/20 border-l-4 border-blue-500"
+              : "bg-transparent"
+          }`}
+          onClick={() => markAsRead([notification._id])}
+        >
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0 mt-1">
+              {getNotificationIcon(notification.type)}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 dark:text-white break-words">
+                {notification.title}
+              </p>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 break-words">
+                {notification.message}
+              </p>
 
-                                {/* Show user data for user registrations - Only for admin */}
-                                {notification.type === "user_registered" &&
-                                  notification.data &&
-                                  isAdmin && (
-                                    <div className="mt-2 p-2 bg-white/50 dark:bg-gray-700/50 rounded-lg">
-                                      <p className="text-xs text-gray-600 dark:text-gray-400">
-                                        <strong>Name:</strong>{" "}
-                                        {notification.data.userName}
-                                      </p>
-                                      <p className="text-xs text-gray-600 dark:text-gray-400">
-                                        <strong>Email:</strong>{" "}
-                                        {notification.data.userEmail}
-                                      </p>
-                                      <p className="text-xs text-gray-600 dark:text-gray-400">
-                                        <strong>Role:</strong>{" "}
-                                        {notification.data.userRole}
-                                      </p>
-                                      <p className="text-xs text-gray-600 dark:text-gray-400">
-                                        <strong>Provider:</strong>{" "}
-                                        {notification.data.provider}
-                                      </p>
-                                    </div>
-                                  )}
-
-                                <div className="flex items-center justify-between mt-2">
-                                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                                    {formatTime(notification.createdAt)}
-                                  </p>
-                                  {!notification.isRead && (
-                                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-
-                    {filteredNotifications.length > 0 && (
-                      <div className="p-3 border-t border-gray-200/50 dark:border-gray-700/50">
-                        <Link
-                          href="/admin/notifications"
-                          className="w-full text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium block"
-                        >
-                          View all notifications
-                        </Link>
-                      </div>
-                    )}
+              {/* Show user data for user registrations - Only for admin */}
+              {notification.type === "user_registered" &&
+                notification.data &&
+                isAdmin && (
+                  <div className="mt-2 p-2 bg-white/50 dark:bg-gray-700/50 rounded-lg">
+                    <p className="text-xs text-gray-600 dark:text-gray-400 break-words">
+                      <strong>Name:</strong> {notification.data.userName}
+                    </p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 break-words">
+                      <strong>Email:</strong> {notification.data.userEmail}
+                    </p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                      <strong>Role:</strong> {notification.data.userRole}
+                    </p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                      <strong>Provider:</strong> {notification.data.provider}
+                    </p>
                   </div>
+                )}
+
+              <div className="flex items-center justify-between mt-2">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {formatTime(notification.createdAt)}
+                </p>
+                {!notification.isRead && (
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse flex-shrink-0 ml-2"></div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      ))
+    )}
+  </div>
+
+  {/* Footer */}
+  {filteredNotifications.length > 0 && (
+    <div className="p-3 border-t border-gray-200/50 dark:border-gray-700/50 sticky bottom-0 bg-white/95 dark:bg-gray-800/95">
+      <div className="flex flex-col sm:flex-row gap-2">
+        {/* Mobile mark all read button */}
+        {unreadCount > 0 && (
+          <button
+            onClick={markAllAsRead}
+            className="sm:hidden text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium py-2"
+          >
+            Mark all as read
+          </button>
+        )}
+        <Link
+          href="/admin/notifications"
+          className="text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium py-2"
+          onClick={() => setIsNotificationOpen(false)}
+        >
+          View all notifications
+        </Link>
+      </div>
+    </div>
+  )}
+</div>
                 )}
               </div>
 
               {/* User Profile */}
-              <div className="relative">
+              <div className="relative" ref={profileRef}>
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
                   className="flex items-center space-x-2 md:space-x-3 p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
@@ -377,9 +417,17 @@ const DashboardNavbar = ({ onMenuClick }) => {
 
                 {/* Profile Dropdown */}
                 {isProfileOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 z-50">
+                  <div className="absolute right-0 mt-2 w-48 sm:w-56 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 z-50">
+                    {/* Mobile close button */}
+                    <button
+                      onClick={() => setIsProfileOpen(false)}
+                      className="sm:hidden absolute top-2 right-2 p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <X size={16} />
+                    </button>
+
                     <div className="p-4 border-b border-gray-200/50 dark:border-gray-700/50">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white break-words">
                         {auth?.name}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
@@ -401,6 +449,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                       <Link
                         href="/"
                         className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                        onClick={() => setIsProfileOpen(false)}
                       >
                         <Home size={16} />
                         <span>Go To Home</span>
@@ -408,6 +457,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                       <Link
                         href="/dashboard/profile"
                         className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                        onClick={() => setIsProfileOpen(false)}
                       >
                         <User size={16} />
                         <span>Profile</span>
@@ -427,20 +477,6 @@ const DashboardNavbar = ({ onMenuClick }) => {
           </div>
         </div>
       </div>
-
-      {/* Close dropdowns when clicking outside */}
-      {isNotificationOpen && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setIsNotificationOpen(false)}
-        />
-      )}
-      {isProfileOpen && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setIsProfileOpen(false)}
-        />
-      )}
     </>
   );
 };
