@@ -60,7 +60,7 @@ const AdminLayout = ({ children }) => {
             {/* Sidebar Overlay for Mobile/Tablet */}
             {!isLargeScreen && isSidebarOpen && (
               <div
-                className="fixed inset-0 backdrop-blur-md bg-black/20 z-40 lg:hidden"
+                className="fixed inset-0 backdrop-blur-xs bg-black/20 z-40"
                 onClick={closeSidebar}
               />
             )}
@@ -87,18 +87,27 @@ const AdminLayout = ({ children }) => {
 
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col min-h-screen min-w-0">
-              {/* Navbar - Always show menu button on non-lg screens */}
-              <DashboardNavbar 
-                onMenuClick={toggleSidebar} 
-                showMenuButton={!isLargeScreen}
-              />
+              {/* Navbar - with conditional z-index */}
+              <div className={`
+                ${isSidebarOpen && !isLargeScreen ? 'z-30' : 'z-40'}
+                relative
+              `}>
+                <DashboardNavbar 
+                  onMenuClick={toggleSidebar} 
+                  showMenuButton={!isLargeScreen}
+                />
+              </div>
 
               <main
-                className="flex-1 p-4 md:p-6 lg:p-8 
-                bg-gradient-to-br from-indigo-50 via-white to-purple-50 
-                dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 
-                text-gray-900 dark:text-white transition-colors duration-200 
-                overflow-y-auto"
+                className={`
+                  flex-1 p-4 md:p-6 lg:p-8 
+                  bg-gradient-to-br from-indigo-50 via-white to-purple-50 
+                  dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 
+                  text-gray-900 dark:text-white transition-colors duration-200 
+                  overflow-y-auto
+                  ${isSidebarOpen && !isLargeScreen ? 'z-20' : 'z-10'}
+                  relative
+                `}
               >
                 <div>{children}</div>
                 <VisitorTracking />
