@@ -12,7 +12,7 @@ const content = [
     content: (
       <div className="flex h-full w-full items-center justify-center bg-white dark:bg-gray-800 rounded-lg ">
           <img 
-            src="https://i.postimg.cc/CMPMxvfG/Gemini-Generated-Image-na49l3na49l3na49.png" 
+            src="thumbnail/seo1.png" 
             alt="SEO Checker" 
             className="w-full h-full object-cover"
           />
@@ -26,7 +26,7 @@ const content = [
       content: (
           <div className="flex h-full w-full items-center justify-center bg-white dark:bg-gray-800 rounded-lg ">
           <img 
-          src="https://i.postimg.cc/tTrb7T7q/Gemini-Generated-Image-gg6jybgg6jybgg6j.png" 
+          src="thumbnail/grammer2.png" 
             alt="Grammar Checker" 
             className="w-full h-full object-cover"
           />
@@ -40,7 +40,7 @@ const content = [
       content: (
           <div className="flex h-full w-full items-center justify-center bg-white dark:bg-gray-800 rounded-lg ">
           <img 
-          src="https://i.postimg.cc/zGn1Kp3P/Gemini-Generated-Image-xot8twxot8twxot8.png" 
+          src="thumbnail/blog3.png" 
             alt="Blog Post Generator" 
             className="w-full h-full object-cover"
           />
@@ -54,7 +54,7 @@ const content = [
     content: (
       <div className="flex h-full w-full items-center justify-center bg-white dark:bg-gray-800 rounded-lg ">
           <img 
-            src="https://i.postimg.cc/05Fg4hwB/Gemini-Generated-Image-59wmva59wmva59wm.png" 
+            src="thumbnail/summary4.png" 
             alt="AI Summarizer" 
             className="w-full h-full object-cover"
           />
@@ -68,7 +68,7 @@ const content = [
       content: (
           <div className="flex h-full w-full items-center justify-center bg-white dark:bg-gray-800 rounded-lg ">
           <img 
-          src="https://i.postimg.cc/NfXhvb8f/Gemini-Generated-Image-1vssvz1vssvz1vss.png" 
+          src="thumbnail/pdf5.png" 
             alt="PDF Tools Suite" 
             className="w-full h-full object-cover"
           />
@@ -82,7 +82,7 @@ const content = [
     content: (
       <div className="flex h-full w-full items-center justify-center bg-white dark:bg-gray-800 rounded-lg ">
           <img 
-            src="https://i.postimg.cc/V5QVNQ9s/Gemini-Generated-Image-hll37khll37khll3.png"  
+            src="thumbnail/hashtag6.png"  
             alt="Hashtag Generator" 
             className="w-full h-full object-cover"
           />
@@ -112,7 +112,7 @@ export function StickyScrollRevealDemo() {
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 max-w-4xl mx-auto">
             <div className="flex flex-col items-center text-center p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow">
               <img 
-                src="https://i.postimg.cc/CMPMxvfG/Gemini-Generated-Image-na49l3na49l3na49.png" 
+                src="thumbnail/seo1.png" 
                 alt="SEO Checker" 
                 className="w-16 h-16 object-cover rounded-lg mb-3"
               />
@@ -120,7 +120,7 @@ export function StickyScrollRevealDemo() {
             </div>
             <div className="flex flex-col items-center text-center p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow">
               <img 
-                src="https://i.postimg.cc/tTrb7T7q/Gemini-Generated-Image-gg6jybgg6jybgg6j.png" 
+                src="thumbnail/grammer2.png" 
                 alt="Grammar Checker" 
                 className="w-16 h-16 object-cover rounded-lg mb-3"
               />
@@ -128,7 +128,7 @@ export function StickyScrollRevealDemo() {
             </div>
             <div className="flex flex-col items-center text-center p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow">
               <img 
-                src="https://i.postimg.cc/zGn1Kp3P/Gemini-Generated-Image-xot8twxot8twxot8.png" 
+                src="thumbnail/blog3.png" 
                 alt="Blog Post Generator" 
                 className="w-16 h-16 object-cover rounded-lg mb-3"
               />
@@ -136,7 +136,7 @@ export function StickyScrollRevealDemo() {
             </div>
             <div className="flex flex-col items-center text-center p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow">
               <img 
-                src="https://i.postimg.cc/05Fg4hwB/Gemini-Generated-Image-59wmva59wmva59wm.png" 
+                src="thumbnail/summary4.png" 
                 alt="AI Summarizer" 
                 className="w-16 h-16 object-cover rounded-lg mb-3"
               />
@@ -144,7 +144,7 @@ export function StickyScrollRevealDemo() {
             </div>
             <div className="flex flex-col items-center text-center p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow">
               <img 
-                src="https://i.postimg.cc/NfXhvb8f/Gemini-Generated-Image-1vssvz1vssvz1vss.png" 
+                src="thumbnail/pdf5.png" 
                 alt="PDF Summarizer" 
                 className="w-16 h-16 object-cover rounded-lg mb-3"
               />
@@ -152,7 +152,7 @@ export function StickyScrollRevealDemo() {
             </div>
             <div className="flex flex-col items-center text-center p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow">
               <img 
-                src="https://i.postimg.cc/V5QVNQ9s/Gemini-Generated-Image-hll37khll37khll3.png" 
+                src="thumbnail/hashtag6.png" 
                 alt="Hashtag Generator" 
                 className="w-16 h-16 object-cover rounded-lg mb-3"
               />
