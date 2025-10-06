@@ -13,28 +13,43 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 import LogoutButton from "../LogoutButton";
-
-const menuItems = [
-  { name: "Dashboard", href: "/admin/adminDashboard/overview", icon: LayoutDashboard, badge: null },
-  {
-    name: "Users",
-    href: "/admin/adminDashboard/users",
-    icon: Users,
-    badge: "24",
-  },
-  { name: "Content", href: "/admin/content", icon: FileText, badge: "12" },
-  {
-    name: "Analytics",
-    href: "/admin/analytics",
-    icon: BarChart3,
-    badge: "New",
-  },
-  { name: "Settings", href: "/admin/settings", icon: Settings, badge: null },
-];
 
 export default function AdminSidebar({ onClose }) {
   const pathname = usePathname();
+  const [totalUsers, setTotalUsers] = useState(null); // 🧠 ডাইনামিক ব্যাজের জন্য স্টেট
+
+  // 🔹 API থেকে ইউজার সংখ্যা ফেচ করা
+  useEffect(() => {
+    const fetchUserCount = async () => {
+      try {
+        const res = await fetch("/api/visitors/stats"); // ✅ এখানে তোমার API রুট
+        const data = await res.json();
+        if (data.success) {
+          setTotalUsers(data.data?.totals?.users || 0);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user stats:", error);
+      }
+    };
+
+    fetchUserCount();
+  }, []);
+
+  // 🔹 মেনু আইটেম লিস্ট
+  const menuItems = [
+    { name: "Dashboard", href: "/admin/adminDashboard/overview", icon: LayoutDashboard },
+    {
+      name: "Users",
+      href: "/admin/adminDashboard/users",
+      icon: Users,
+      badge: totalUsers !== null ? String(totalUsers) : null, // ✅ ডাইনামিক ব্যাজ
+    },
+    { name: "Content", href: "/admin/content", icon: FileText, badge: "12" },
+    { name: "Analytics", href: "/admin/analytics", icon: BarChart3, badge: "New" },
+    { name: "Settings", href: "/admin/settings", icon: Settings },
+  ];
 
   return (
     <aside className="h-screen w-full bg-white/95 dark:bg-gray-900/95 border-r border-gray-200/50 dark:border-gray-600/50 backdrop-blur-md flex flex-col shadow-xl">
@@ -48,7 +63,7 @@ export default function AdminSidebar({ onClose }) {
           <div className="relative">
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center 
-                  bg-gradient-to-r from-purple-500 to-indigo-500 transition-all duration-300"
+                bg-gradient-to-r from-purple-500 to-indigo-500 transition-all duration-300"
             >
               <Lightbulb className="w-6 h-6 text-white" />
             </div>
@@ -57,11 +72,11 @@ export default function AdminSidebar({ onClose }) {
             <p className="dark:text-gray-100 font-bold text-lg">ByteStory</p>
             <p
               className="inline-flex items-center rounded-full 
-  bg-gradient-to-r from-indigo-100 to-purple-100 
-  dark:from-indigo-900/30 dark:to-purple-900/30 
-  py-0.5 px-2 mt-1 text-[9px] font-medium 
-  text-indigo-700 dark:text-indigo-300 shadow-sm 
-  bg-gray-100 dark:bg-gray-800 max-w-max"
+              bg-gradient-to-r from-indigo-100 to-purple-100 
+              dark:from-indigo-900/30 dark:to-purple-900/30 
+              py-0.5 px-2 mt-1 text-[9px] font-medium 
+              text-indigo-700 dark:text-indigo-300 shadow-sm 
+              bg-gray-100 dark:bg-gray-800 max-w-max"
             >
               Admin Panel
             </p>
@@ -96,17 +111,19 @@ export default function AdminSidebar({ onClose }) {
               key={item.name}
               href={item.href}
               onClick={onClose}
-              className={`group flex items-center justify-between gap-3 px-3 md:px-4 py-3 rounded-xl transition-all duration-300 relative overflow-hidden ${isActive
+              className={`group flex items-center justify-between gap-3 px-3 md:px-4 py-3 rounded-xl transition-all duration-300 relative overflow-hidden ${
+                isActive
                   ? "bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/30 dark:to-indigo-900/30 text-purple-700 dark:text-purple-300 shadow-md shadow-purple-500/10 border-l-4 border-purple-500"
                   : "text-gray-600 dark:text-gray-400 hover:bg-gray-50/80 dark:hover:bg-gray-800/80 hover:text-gray-900 dark:hover:text-gray-100 hover:shadow-md md:hover:translate-x-1"
-                }`}
+              }`}
             >
               <div className="flex items-center gap-3">
                 <div
-                  className={`p-2 rounded-lg transition-all duration-300 ${isActive
+                  className={`p-2 rounded-lg transition-all duration-300 ${
+                    isActive
                       ? "bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md"
                       : "bg-gray-100/50 dark:bg-gray-800/50 group-hover:bg-gradient-to-r group-hover:from-purple-500/10 group-hover:to-indigo-500/10 text-gray-500 dark:text-gray-400"
-                    }`}
+                  }`}
                 >
                   <Icon className="h-4 w-4" />
                 </div>
@@ -116,15 +133,15 @@ export default function AdminSidebar({ onClose }) {
               <div className="flex items-center gap-2">
                 {item.badge && (
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${isActive
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      isActive
                         ? "bg-white/80 text-purple-600"
                         : "bg-gradient-to-r from-purple-500/10 to-indigo-500/10 text-purple-600 dark:text-purple-400"
-                      }`}
+                    }`}
                   >
                     {item.badge}
                   </span>
                 )}
-
                 {isActive && (
                   <ChevronRight className="h-3 w-3 text-purple-500 animate-pulse" />
                 )}
@@ -132,8 +149,9 @@ export default function AdminSidebar({ onClose }) {
 
               {/* Hover gradient overlay */}
               <div
-                className={`absolute inset-0 bg-gradient-to-r from-purple-500 to-indigo-500 opacity-0 group-hover:opacity-5 transition-opacity duration-300 ${isActive ? "opacity-10" : ""
-                  }`}
+                className={`absolute inset-0 bg-gradient-to-r from-purple-500 to-indigo-500 opacity-0 group-hover:opacity-5 transition-opacity duration-300 ${
+                  isActive ? "opacity-10" : ""
+                }`}
               ></div>
             </Link>
           );

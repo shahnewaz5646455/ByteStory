@@ -7,15 +7,15 @@ import { Card, CardContent } from "../ui/card";
 export function VisitorStats() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [period, setPeriod] = useState("today");
 
   // Fetch statistics from API
-  const fetchStats = async (showSkeleton = false) => {
-    if (showSkeleton) {
+  const fetchStats = async (isInitialLoad = false) => {
+    if (isInitialLoad) {
       setLoading(true);
     } else {
-      setRefreshing(true);
+      setIsRefreshing(true);
     }
 
     try {
@@ -28,26 +28,37 @@ export function VisitorStats() {
     } catch (error) {
       console.error("Error fetching stats:", error);
     } finally {
-      if (showSkeleton) {
+      if (isInitialLoad) {
         setLoading(false);
       } else {
-        setRefreshing(false);
+        setIsRefreshing(false);
       }
     }
   };
 
   // Load stats when component mounts and when period changes
   useEffect(() => {
-
     fetchStats(true);
 
-    // Refresh every 30 seconds
-    const interval = setInterval(() => fetchStats(false), 30000);
+    // Refresh every 30 seconds without showing any skeleton
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/visitors/stats?period=${period}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          setStats(data.data); // Silently update the data
+        }
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+      }
+    }, 30000);
+    
     return () => clearInterval(interval);
   }, [period]);
 
   const handleRefresh = () => {
-    fetchStats(true);
+    fetchStats(true); // Show skeleton only on manual refresh
   };
 
   if (loading) {
@@ -82,7 +93,7 @@ export function VisitorStats() {
             value={period}
             onChange={(e) => setPeriod(e.target.value)}
             className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-all duration-200"
-            disabled={refreshing}
+            disabled={loading}
           >
             <option value="today">Today</option>
             <option value="week">This Week</option>
@@ -92,178 +103,85 @@ export function VisitorStats() {
 
           <button
             onClick={handleRefresh}
-            disabled={refreshing}
+            disabled={loading}
             className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-all duration-200 disabled:opacity-50"
           >
-            <RefreshCw className={`w-5 h-5 ${refreshing ? "animate-spin" : ""}`} />
+            <RefreshCw className={`w-5 h-5 ${loading ? "animate-spin" : ""}`} />
           </button>
         </div>
       </div>
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-        {refreshing ? (
-          [1, 2, 3, 4].map((i) => (
-            <Card key={i} className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 animate-pulse">
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="h-4 w-16 sm:w-24 bg-gray-300 dark:bg-gray-700 rounded mb-2"></div>
-                    <div className="h-6 w-12 sm:w-16 bg-gray-300 dark:bg-gray-700 rounded mb-1"></div>
-                    <div className="h-3 w-20 bg-gray-300 dark:bg-gray-700 rounded"></div>
-                  </div>
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-300 dark:bg-gray-700 rounded-xl flex-shrink-0"></div>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        ) : (
-          <>
-            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">Active Users</p>
-                    <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats.period.activeUsers}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Currently online</p>
-                  </div>
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Users className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">Total Visitors</p>
-                    <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats.period.visitors}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">This {period}</p>
-                  </div>
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Eye className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">Page Views</p>
-                    <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats.period.pageViews}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">This {period}</p>
-                  </div>
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
-              <CardContent className="p-4 sm:p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">Total Users</p>
-                    <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats.totals.users}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Registered users</p>
-                  </div>
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <Globe className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </>
-        )}
+        <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">Active Users</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats.period.activeUsers}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Currently online</p>
+              </div>
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Users className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">Total Visitors</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats.period.visitors}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">This {period}</p>
+              </div>
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Eye className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">Page Views</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats.period.pageViews}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">This {period}</p>
+              </div>
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">Total Users</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">{stats.totals.users}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Registered users</p>
+              </div>
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                <Globe className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <PopularPages pages={stats.popularPages} loading={refreshing} />
-        <ActiveUsers users={stats.activeUserDetails} loading={refreshing} />
+        <PopularPages pages={stats.popularPages} loading={false} />
+        <ActiveUsers users={stats.activeUserDetails} loading={false} />
       </div>
     </div>
   );
 }
 
-// Component for each statistic card
-function StatCard({ title, value, description, icon: Icon, color, trend }) {
-  const colorClasses = {
-    blue: {
-      bg: "from-blue-500 to-cyan-500",
-      light: "bg-blue-50 dark:bg-blue-900/20",
-      border: "border-blue-200 dark:border-blue-800"
-    },
-    green: {
-      bg: "from-green-500 to-emerald-500",
-      light: "bg-green-50 dark:bg-green-900/20",
-      border: "border-green-200 dark:border-green-800"
-    },
-    purple: {
-      bg: "from-purple-500 to-pink-500",
-      light: "bg-purple-50 dark:bg-purple-900/20",
-      border: "border-purple-200 dark:border-purple-800"
-    },
-    orange: {
-      bg: "from-orange-500 to-red-500",
-      light: "bg-orange-50 dark:bg-orange-900/20",
-      border: "border-orange-200 dark:border-orange-800"
-    },
-  };
-
-  const colors = colorClasses[color] || colorClasses.blue;
-
-  return (
-    <div className={`group relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border ${colors.border}`}>
-      <div className="flex items-center justify-between mb-4">
-        <div className={`p-3 rounded-xl bg-gradient-to-r ${colors.bg}`}>
-          <Icon className="w-6 h-6 text-white" />
-        </div>
-        {trend && (
-          <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${trend > 0
-              ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-              : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
-            }`}>
-            <ArrowUpRight className={`w-3 h-3 ${trend < 0 ? 'rotate-90' : ''}`} />
-            {Math.abs(trend)}%
-          </div>
-        )}
-      </div>
-
-      <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">{title}</h3>
-      <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
-        {value.toLocaleString()}
-      </p>
-      <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
-    </div>
-  );
-}
-
-// Component to show popular pages
+// PopularPages এবং ActiveUsers কম্পোনেন্টে loading prop false করে দিন
 function PopularPages({ pages, loading }) {
-  if (loading) {
-    return (
-      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
-          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32 animate-pulse"></div>
-        </div>
-        <div className="space-y-4">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="flex justify-between items-center">
-              <div className="flex-1">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2"></div>
-                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4 animate-pulse"></div>
-              </div>
-              <div className="w-12 h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
+  // loading prop ব্যবহার না করে সরাসরি রেন্ডার করুন
   return (
     <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
       <div className="flex items-center gap-3 mb-6">
@@ -299,31 +217,8 @@ function PopularPages({ pages, loading }) {
   );
 }
 
-// Component to show active users
 function ActiveUsers({ users, loading }) {
-  if (loading) {
-    return (
-      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
-          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32 animate-pulse"></div>
-        </div>
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="flex justify-between items-center">
-              <div className="flex-1">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2"></div>
-                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2 animate-pulse mb-1"></div>
-                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4 animate-pulse"></div>
-              </div>
-              <div className="w-16 h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
+  // loading prop ব্যবহার না করে সরাসরি রেন্ডার করুন
   return (
     <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
       <div className="flex items-center gap-3 mb-6">
@@ -359,7 +254,7 @@ function ActiveUsers({ users, loading }) {
   );
 }
 
-// Skeleton Loading Component
+// Skeleton Loading Component (শুধু প্রথম লোডের জন্য)
 function StatsSkeleton() {
   return (
     <div className="p-6">
