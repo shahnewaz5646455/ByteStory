@@ -40,7 +40,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  // ✅ Form schema setup
+  //  Form schema setup
   const formSchema = zSchema
     .pick({
       name: true,
@@ -65,7 +65,7 @@ export default function RegisterPage() {
     },
   });
 
-  // ✅ Email-based registration
+  //  Email-based registration
   const handleRegister = async (values) => {
     try {
       setLoading(true);
@@ -88,7 +88,7 @@ export default function RegisterPage() {
     }
   };
 
-  // ✅ Google-based registration/login
+  //  Google-based registration/login
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       setLoading(true);
