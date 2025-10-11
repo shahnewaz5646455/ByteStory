@@ -1,7 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { StickyNote, X, Copy, Trash2, Save, Share, Download, Upload, Maximize2, Minimize2 } from "lucide-react";
+import { 
+  StickyNote, 
+  X, 
+  Copy, 
+  Trash2, 
+  Save, 
+  Download, 
+  Upload, 
+  Maximize2, 
+  Minimize2,
+  ClipboardPaste,
+  Share2
+} from "lucide-react";
 
 export default function GlobalNotepad() {
   const [isOpen, setIsOpen] = useState(false);
@@ -111,7 +123,7 @@ export default function GlobalNotepad() {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-6 right-6 z-50 bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 rounded-full shadow-2xl hover:scale-105 transition-all duration-300 ${
+        className={`fixed bottom-6 right-6 z-50 bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 rounded-full shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer ${
           isOpen ? 'rotate-90' : 'rotate-0'
         }`}
         title="Smart Notepad"
@@ -124,7 +136,7 @@ export default function GlobalNotepad() {
         <div className={`fixed z-50 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 ${
           isExpanded 
             ? 'bottom-4 right-4 top-4 left-4' 
-            : 'bottom-20 right-6 w-80 h-96'
+            : 'bottom-20 right-6 w-80 h-[390px]'
         }`}>
           {/* Header */}
           <div className="flex justify-between items-center bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-3">
@@ -132,12 +144,12 @@ export default function GlobalNotepad() {
               <StickyNote className="h-4 w-4 text-white" />
               <h3 className="text-white font-semibold text-sm">Smart Notepad</h3>
               {isSaved && (
-                <span className="text-xs text-green-300 bg-green-800 bg-opacity-30 px-2 py-1 rounded">
+                <span className="text-xs text-green-300 bg-green-800 bg-opacity-30 px-2 py-1 rounded cursor-default">
                   Saved
                 </span>
               )}
               {copySuccess && (
-                <span className="text-xs text-green-300 bg-green-800 bg-opacity-30 px-2 py-1 rounded">
+                <span className="text-xs text-green-300 bg-green-800 bg-opacity-30 px-2 py-1 rounded cursor-default">
                   Copied!
                 </span>
               )}
@@ -145,14 +157,14 @@ export default function GlobalNotepad() {
             <div className="flex items-center space-x-2">
               <button 
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="text-white hover:text-gray-200 transition-colors"
+                className="text-white hover:text-gray-200 transition-colors cursor-pointer"
                 title={isExpanded ? "Minimize" : "Expand"}
               >
                 {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
               </button>
               <button 
                 onClick={() => setIsOpen(false)}
-                className="text-white hover:text-gray-200 transition-colors"
+                className="text-white hover:text-gray-200 transition-colors cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -163,15 +175,15 @@ export default function GlobalNotepad() {
           <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            placeholder={`Write or paste your content here...\n\n💡 Tip: Use this notepad to combine content from different tools like Blog Generator, Hashtag Generator, etc.`}
-            className={`w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 resize-none outline-none p-4 ${
+            placeholder={`Write or paste your content here...\n\nTip: Use this notepad to combine content from different tools like Blog Generator, Hashtag Generator, etc.`}
+            className={`w-full bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 resize-none outline-none p-4 cursor-text ${
               isExpanded ? 'h-[calc(100%-8rem)]' : 'h-64'
             }`}
           />
 
           {/* Stats Bar */}
           <div className="flex justify-between items-center px-4 py-2 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex space-x-4 text-xs text-gray-500 dark:text-gray-400">
+            <div className="flex space-x-4 text-xs text-gray-500 dark:text-gray-400 cursor-default">
               <span>{note.length} chars</span>
               <span>{wordCount} words</span>
               <span>{lineCount} lines</span>
@@ -199,45 +211,45 @@ export default function GlobalNotepad() {
             <div className="flex space-x-2">
               <button
                 onClick={handleSave}
-                className="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900 rounded-lg transition-all"
+                className="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900 rounded-lg transition-all cursor-pointer"
                 title="Save (Auto-saves)"
               >
                 <Save className="h-4 w-4" />
               </button>
               <button
                 onClick={handleCopy}
-                className="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900 rounded-lg transition-all"
+                className="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900 rounded-lg transition-all cursor-pointer"
                 title="Copy to clipboard"
               >
                 <Copy className="h-4 w-4" />
               </button>
               <button
                 onClick={handlePasteFromClipboard}
-                className="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900 rounded-lg transition-all"
+                className="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900 rounded-lg transition-all cursor-pointer"
                 title="Paste from clipboard"
               >
-                📋
+                <ClipboardPaste className="h-4 w-4" />
               </button>
               <button
                 onClick={handleShare}
-                className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900 rounded-lg transition-all"
+                className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900 rounded-lg transition-all cursor-pointer"
                 title="Share content"
               >
-                <Share className="h-4 w-4" />
+                <Share2 className="h-4 w-4" />
               </button>
             </div>
 
             <div className="flex space-x-2">
               <button
                 onClick={handleExport}
-                className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition-all"
+                className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900 rounded-lg transition-all cursor-pointer"
                 title="Export as file"
               >
                 <Download className="h-4 w-4" />
               </button>
               <button
                 onClick={handleClear}
-                className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg transition-all"
+                className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900 rounded-lg transition-all cursor-pointer"
                 title="Clear all"
               >
                 <Trash2 className="h-4 w-4" />
