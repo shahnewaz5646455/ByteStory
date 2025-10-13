@@ -45,6 +45,30 @@ const DashboardNavbar = ({ onMenuClick }) => {
   // Check if user is admin
   const isAdmin = auth?.role === "admin";
 
+  // Fetch user profile data to get avatar
+  const [userProfile, setUserProfile] = useState(null);
+
+  // Fetch user profile with avatar
+  const fetchUserProfile = async () => {
+    try {
+      if (!auth?._id) return;
+
+      const response = await fetch("/api/dashboard/update-profile", {
+        headers: {
+          "x-user-id": auth._id,
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.user) {
+        setUserProfile(data.user);
+      }
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    }
+  };
+
   // Fetch notifications from API
   const fetchNotifications = async () => {
     try {
@@ -60,6 +84,25 @@ const DashboardNavbar = ({ onMenuClick }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Get user avatar URL - priority: userProfile.avatar > auth.photoURL > fallback initial
+  const getUserAvatar = () => {
+    // First try: User profile avatar from database
+    if (userProfile?.avatar?.url) {
+      return userProfile.avatar.url;
+    }
+    // Second try: photoURL from auth (if using OAuth)
+    if (auth?.photoURL) {
+      return auth.photoURL;
+    }
+    // Fallback: Show initial
+    return null;
+  };
+
+  // Get user initial for fallback avatar
+  const getUserInitial = () => {
+    return auth?.name?.charAt(0)?.toUpperCase() || "U";
   };
 
   // Filter notifications based on user role
@@ -140,7 +183,10 @@ const DashboardNavbar = ({ onMenuClick }) => {
   // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target)
+      ) {
         setIsNotificationOpen(false);
       }
       if (profileRef.current && !profileRef.current.contains(event.target)) {
@@ -154,17 +200,20 @@ const DashboardNavbar = ({ onMenuClick }) => {
     };
   }, []);
 
-  // Auto-refresh notifications every 30 seconds
+  // Fetch user profile and notifications on component mount
   useEffect(() => {
+    fetchUserProfile();
     fetchNotifications();
 
     const interval = setInterval(fetchNotifications, 30000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [auth?._id]);
 
   const filteredNotifications = getFilteredNotifications();
   const unreadCount = filteredNotifications.filter((n) => !n.isRead).length;
+  const userAvatar = getUserAvatar();
+  const userInitial = getUserInitial();
 
   return (
     <>
@@ -234,144 +283,151 @@ const DashboardNavbar = ({ onMenuClick }) => {
                 {/* Notification Dropdown */}
                 {isNotificationOpen && (
                   <div className="absolute -right-13 mt-2 w-80 sm:w-96 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-200/50 dark:border-gray-700/50 z-50 max-h-[45vh] overflow-hidden">
-  {/* Header */}
-  <div className="p-4 border-b border-gray-200/50 dark:border-gray-700/50 sticky top-0 bg-white/95 dark:bg-gray-800/95">
-    <div className="flex justify-between items-center">
-      <div className="flex items-center gap-2">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Notifications
-        </h3>
-        {/* Mobile close button */}
-        <button
-          onClick={() => setIsNotificationOpen(false)}
-          className="sm:hidden p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-        >
-          <X size={16} />
-        </button>
-      </div>
-      <div className="flex items-center gap-2">
-        {unreadCount > 0 && (
-          <span className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs px-2 py-1 rounded-full">
-            {unreadCount} new
-          </span>
-        )}
-        {filteredNotifications.length > 0 && (
-          <button
-            onClick={markAllAsRead}
-            className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium hidden sm:block"
-          >
-            Mark all read
-          </button>
-        )}
-      </div>
-    </div>
-    {isAdmin && (
-      <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
-        <Shield className="h-3 w-3 text-green-500" />
-        Admin View - All notifications
-      </p>
-    )}
-  </div>
+                    {/* Header */}
+                    <div className="p-4 border-b border-gray-200/50 dark:border-gray-700/50 sticky top-0 bg-white/95 dark:bg-gray-800/95">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                            Notifications
+                          </h3>
+                          {/* Mobile close button */}
+                          <button
+                            onClick={() => setIsNotificationOpen(false)}
+                            className="sm:hidden p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {unreadCount > 0 && (
+                            <span className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs px-2 py-1 rounded-full">
+                              {unreadCount} new
+                            </span>
+                          )}
+                          {filteredNotifications.length > 0 && (
+                            <button
+                              onClick={markAllAsRead}
+                              className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium hidden sm:block"
+                            >
+                              Mark all read
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      {isAdmin && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
+                          <Shield className="h-3 w-3 text-green-500" />
+                          Admin View - All notifications
+                        </p>
+                      )}
+                    </div>
 
-  {/* Notifications List - Scrollable */}
-  <div className="overflow-y-auto" style={{ maxHeight: "calc(40vh - 120px)" }}>
-    {loading ? (
-      <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-        <Clock className="h-6 w-6 animate-spin mx-auto mb-2" />
-        Loading notifications...
-      </div>
-    ) : filteredNotifications.length === 0 ? (
-      <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-        <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
-        <p>No notifications yet</p>
-        <p className="text-sm mt-1">
-          {isAdmin
-            ? "You'll be notified when new users register"
-            : "You'll be notified about important updates"}
-        </p>
-      </div>
-    ) : (
-      filteredNotifications.map((notification) => (
-        <div
-          key={notification._id}
-          className={`p-4 pb-8 border-b border-gray-100/50 dark:border-gray-700/50 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200 ${
-            !notification.isRead
-              ? "bg-blue-50/80 dark:bg-blue-900/20 border-l-4 border-blue-500"
-              : "bg-transparent"
-          }`}
-          onClick={() => markAsRead([notification._id])}
-        >
-          <div className="flex items-start space-x-3">
-            <div className="flex-shrink-0 mt-1">
-              {getNotificationIcon(notification.type)}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 dark:text-white break-words">
-                {notification.title}
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 break-words">
-                {notification.message}
-              </p>
+                    {/* Notifications List - Scrollable */}
+                    <div
+                      className="overflow-y-auto"
+                      style={{ maxHeight: "calc(40vh - 120px)" }}
+                    >
+                      {loading ? (
+                        <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+                          <Clock className="h-6 w-6 animate-spin mx-auto mb-2" />
+                          Loading notifications...
+                        </div>
+                      ) : filteredNotifications.length === 0 ? (
+                        <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                          <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                          <p>No notifications yet</p>
+                          <p className="text-sm mt-1">
+                            {isAdmin
+                              ? "You'll be notified when new users register"
+                              : "You'll be notified about important updates"}
+                          </p>
+                        </div>
+                      ) : (
+                        filteredNotifications.map((notification) => (
+                          <div
+                            key={notification._id}
+                            className={`p-4 pb-8 border-b border-gray-100/50 dark:border-gray-700/50 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200 ${
+                              !notification.isRead
+                                ? "bg-blue-50/80 dark:bg-blue-900/20 border-l-4 border-blue-500"
+                                : "bg-transparent"
+                            }`}
+                            onClick={() => markAsRead([notification._id])}
+                          >
+                            <div className="flex items-start space-x-3">
+                              <div className="flex-shrink-0 mt-1">
+                                {getNotificationIcon(notification.type)}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-900 dark:text-white break-words">
+                                  {notification.title}
+                                </p>
+                                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 break-words">
+                                  {notification.message}
+                                </p>
 
-              {/* Show user data for user registrations - Only for admin */}
-              {notification.type === "user_registered" &&
-                notification.data &&
-                isAdmin && (
-                  <div className="mt-2 p-2 bg-white/50 dark:bg-gray-700/50 rounded-lg">
-                    <p className="text-xs text-gray-600 dark:text-gray-400 break-words">
-                      <strong>Name:</strong> {notification.data.userName}
-                    </p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 break-words">
-                      <strong>Email:</strong> {notification.data.userEmail}
-                    </p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                      <strong>Role:</strong> {notification.data.userRole}
-                    </p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                      <strong>Provider:</strong> {notification.data.provider}
-                    </p>
+                                {/* Show user data for user registrations - Only for admin */}
+                                {notification.type === "user_registered" &&
+                                  notification.data &&
+                                  isAdmin && (
+                                    <div className="mt-2 p-2 bg-white/50 dark:bg-gray-700/50 rounded-lg">
+                                      <p className="text-xs text-gray-600 dark:text-gray-400 break-words">
+                                        <strong>Name:</strong>{" "}
+                                        {notification.data.userName}
+                                      </p>
+                                      <p className="text-xs text-gray-600 dark:text-gray-400 break-words">
+                                        <strong>Email:</strong>{" "}
+                                        {notification.data.userEmail}
+                                      </p>
+                                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                                        <strong>Role:</strong>{" "}
+                                        {notification.data.userRole}
+                                      </p>
+                                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                                        <strong>Provider:</strong>{" "}
+                                        {notification.data.provider}
+                                      </p>
+                                    </div>
+                                  )}
+
+                                <div className="flex items-center justify-between mt-2">
+                                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    {formatTime(notification.createdAt)}
+                                  </p>
+                                  {!notification.isRead && (
+                                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse flex-shrink-0 ml-2"></div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    {/* Footer */}
+                    {filteredNotifications.length > 0 && (
+                      <div className="p-3 border-t border-gray-200/50 dark:border-gray-700/50 sticky bottom-0 bg-white/95 dark:bg-gray-800/95">
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          {/* Mobile mark all read button */}
+                          {unreadCount > 0 && (
+                            <button
+                              onClick={markAllAsRead}
+                              className="sm:hidden text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium py-2"
+                            >
+                              Mark all as read
+                            </button>
+                          )}
+                          <Link
+                            href="/admin/notifications"
+                            className="text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium py-2"
+                            onClick={() => setIsNotificationOpen(false)}
+                          >
+                            View all notifications
+                          </Link>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
-
-              <div className="flex items-center justify-between mt-2">
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {formatTime(notification.createdAt)}
-                </p>
-                {!notification.isRead && (
-                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse flex-shrink-0 ml-2"></div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      ))
-    )}
-  </div>
-
-  {/* Footer */}
-  {filteredNotifications.length > 0 && (
-    <div className="p-3 border-t border-gray-200/50 dark:border-gray-700/50 sticky bottom-0 bg-white/95 dark:bg-gray-800/95">
-      <div className="flex flex-col sm:flex-row gap-2">
-        {/* Mobile mark all read button */}
-        {unreadCount > 0 && (
-          <button
-            onClick={markAllAsRead}
-            className="sm:hidden text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium py-2"
-          >
-            Mark all as read
-          </button>
-        )}
-        <Link
-          href="/admin/notifications"
-          className="text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium py-2"
-          onClick={() => setIsNotificationOpen(false)}
-        >
-          View all notifications
-        </Link>
-      </div>
-    </div>
-  )}
-</div>
                 )}
               </div>
 
@@ -381,15 +437,22 @@ const DashboardNavbar = ({ onMenuClick }) => {
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
                   className="flex items-center space-x-2 md:space-x-3 p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
                 >
-                  <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                    {auth?.photoURL ? (
+                  <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm overflow-hidden">
+                    {userAvatar ? (
                       <img
-                        src={auth.photoURL}
+                        src={userAvatar}
                         alt="User Avatar"
-                        className="w-8 h-8 rounded-full object-cover"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // If image fails to load, show initial
+                          e.target.style.display = "none";
+                          e.target.nextSibling.style.display = "flex";
+                        }}
                       />
                     ) : (
-                      auth?.name?.charAt(0) || "U"
+                      <span className="text-white font-semibold">
+                        {userInitial}
+                      </span>
                     )}
                   </div>
 
@@ -426,23 +489,41 @@ const DashboardNavbar = ({ onMenuClick }) => {
                       <X size={16} />
                     </button>
 
+                    {/* Profile Header with Avatar */}
                     <div className="p-4 border-b border-gray-200/50 dark:border-gray-700/50">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white break-words">
-                        {auth?.name}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                        {auth?.email}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
-                        {isAdmin ? (
-                          <>
-                            <Shield className="h-3 w-3 text-green-500" />
-                            Administrator
-                          </>
-                        ) : (
-                          "User"
-                        )}
-                      </p>
+                      <div className="flex items-center space-x-3 mb-3">
+                        <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-lg overflow-hidden">
+                          {userAvatar ? (
+                            <img
+                              src={userAvatar}
+                              alt="User Avatar"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <span className="text-white font-semibold">
+                              {userInitial}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white break-words">
+                            {auth?.name}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                            {auth?.email}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
+                            {isAdmin ? (
+                              <>
+                                <Shield className="h-3 w-3 text-green-500" />
+                                Administrator
+                              </>
+                            ) : (
+                              "User"
+                            )}
+                          </p>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="p-2">
@@ -455,7 +536,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                         <span>Go To Home</span>
                       </Link>
                       <Link
-                        href="/dashboard/profile"
+                        href="/admin/adminDashboard/update-profile"
                         className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         onClick={() => setIsProfileOpen(false)}
                       >

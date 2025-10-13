@@ -58,7 +58,7 @@ function LoginPage() {
     },
   });
 
-  // Handle submit
+  // Handle submit login
   const handleLoginSubmit = async (values) => {
     try {
       setLoading(true);

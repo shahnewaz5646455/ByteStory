@@ -37,9 +37,13 @@ export default function AdminSidebar({ onClose }) {
     fetchUserCount();
   }, []);
 
-  // 🔹 মেনু আইটেম লিস্ট
+  // manuItems
   const menuItems = [
-    { name: "Dashboard", href: "/admin/adminDashboard/overview", icon: LayoutDashboard },
+    {
+      name: "Dashboard",
+      href: "/admin/adminDashboard/overview",
+      icon: LayoutDashboard,
+    },
     {
       name: "Users",
       href: "/admin/adminDashboard/users",
@@ -47,8 +51,17 @@ export default function AdminSidebar({ onClose }) {
       badge: totalUsers !== null ? String(totalUsers) : null, // ✅ ডাইনামিক ব্যাজ
     },
     { name: "Content", href: "/admin/content", icon: FileText, badge: "12" },
-    { name: "Analytics", href: "/admin/analytics", icon: BarChart3, badge: "New" },
-    { name: "Settings", href: "/admin/settings", icon: Settings },
+    {
+      name: "Analytics",
+      href: "/admin/analytics",
+      icon: BarChart3,
+      badge: "New",
+    },
+    {
+      name: "Profile",
+      href: "/admin/adminDashboard/update-profile",
+      icon: Settings,
+    },
   ];
 
   return (
@@ -104,7 +117,8 @@ export default function AdminSidebar({ onClose }) {
           const Icon = item.icon;
           const isActive =
             pathname === item.href ||
-            (pathname.startsWith(item.href + "/") && item.href !== "/admin/adminDashboard");
+            (pathname.startsWith(item.href + "/") &&
+              item.href !== "/admin/adminDashboard");
 
           return (
             <Link
