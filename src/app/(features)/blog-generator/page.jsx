@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ReactMarkdown from 'react-markdown';
 import {
   Send,
   Sparkles,
@@ -408,119 +409,127 @@ export default function AIWriterPage() {
 
             {/* Output */}
             <div className="flex-1">
-              <div className="mb-6 flex items-center justify-between">
-                <div>
-                  <h3 className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-2xl font-bold text-transparent">
-                    Generated Content
-                  </h3>
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Powered by ByteStory AI • Professional quality
-                  </p>
-                </div>
-                {output && (
-                  <motion.button
-                    onClick={copyToClipboard}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-2 text-indigo-700 transition-all duration-200 hover:bg-indigo-100 dark:border-indigo-700/30 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50"
-                  >
-                    <Copy size={18} className="mr-2" />
-                    <span className="text-sm font-medium">Copy</span>
-                  </motion.button>
-                )}
-              </div>
+ <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h3 className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-2xl font-bold text-transparent">
+              Generated Content
+            </h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              Powered by ByteStory AI • With formatting support
+            </p>
+          </div>
+          {output && (
+            <motion.button
+              onClick={copyToClipboard}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-2 text-indigo-700 transition-all duration-200 hover:bg-indigo-100 dark:border-indigo-700/30 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50"
+            >
+              <Copy size={18} className="mr-2" />
+              <span className="text-sm font-medium">Copy</span>
+            </motion.button>
+          )}
+        </div>
 
               <div className="h-48 overflow-y-auto rounded-2xl border-2 border-indigo-100/50 bg-gradient-to-br from-white to-indigo-50/50 p-6 shadow-inner dark:from-gray-700/80 dark:to-gray-800/80 dark:border-gray-600">
-                {isGenerating ? (
-                  <div className="flex h-full items-center justify-center">
-                    <motion.div
-                      initial={{ opacity: 0.5, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ repeat: Infinity, repeatType: "reverse", duration: 1.5 }}
-                      className="flex flex-col items-center text-center"
-                    >
-                      <div className="relative">
-                        <Sparkles className="mb-3 h-8 w-8 text-indigo-500" />
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                          className="absolute -inset-2 rounded-full border-2 border-indigo-200 border-t-indigo-500"
-                        />
-                      </div>
-                      <p className="font-medium text-gray-600 dark:text-gray-400">
-                        Crafting your content...
-                      </p>
-                      <p className="mt-1 text-sm text-gray-500 dark:text-gray-500">
-                        This may take a few moments
-                      </p>
-                    </motion.div>
-                  </div>
-                ) : output ? (
-                  <div className="prose prose-sm max-w-none dark:prose-invert sm:prose">
-                    <div className="leading-relaxed text-gray-800 dark:text-gray-200">
-                      {output.split("\n").map((paragraph, i) =>
-                        paragraph.trim() ? (
-                          <p key={i} className="mb-4 text-justify">
-                            {paragraph}
-                          </p>
-                        ) : null
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex h-full flex-col items-center justify-center text-center">
-                    <div className="relative mb-4">
-                      <Type size={40} className="text-indigo-300 dark:text-indigo-500" />
-                      <Sparkles className="absolute -right-2 -top-2 h-5 w-5 animate-pulse text-indigo-500" />
-                    </div>
-                    <h4 className="mb-2 font-semibold text-gray-600 dark:text-gray-400">
-                      Awaiting Your Inspiration
-                    </h4>
-                    <p className="max-w-xs text-sm text-gray-500 dark:text-gray-500">
-                      Enter your topic above and watch as AI transforms it into professional content
-                    </p>
-                  </div>
-                )}
+          {isGenerating ? (
+            <div className="flex h-full items-center justify-center">
+              <motion.div
+                initial={{ opacity: 0.5, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ repeat: Infinity, repeatType: "reverse", duration: 1.5 }}
+                className="flex flex-col items-center text-center"
+              >
+                <div className="relative">
+                  <Sparkles className="mb-3 h-8 w-8 text-indigo-500" />
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    className="absolute -inset-2 rounded-full border-2 border-indigo-200 border-t-indigo-500"
+                  />
+                </div>
+                <p className="font-medium text-gray-600 dark:text-gray-400">
+                  Crafting your content...
+                </p>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-500">
+                  This may take a few moments
+                </p>
+              </motion.div>
+            </div>
+          ) : output ? (
+            <div className="max-w-none markdown-content">
+              <ReactMarkdown
+                components={{
+                  // Custom styling for markdown elements
+                  h1: ({node, ...props}) => <h1 className="text-2xl font-bold mt-6 mb-4 text-gray-900 dark:text-white border-b pb-2" {...props} />,
+                  h2: ({node, ...props}) => <h2 className="text-xl font-bold mt-5 mb-3 text-gray-800 dark:text-gray-200" {...props} />,
+                  h3: ({node, ...props}) => <h3 className="text-lg font-semibold mt-4 mb-2 text-gray-700 dark:text-gray-300" {...props} />,
+                  p: ({node, ...props}) => <p className="mb-4 text-justify leading-relaxed text-gray-800 dark:text-gray-200" {...props} />,
+                  strong: ({node, ...props}) => <strong className="font-bold text-gray-900 dark:text-white" {...props} />,
+                  em: ({node, ...props}) => <em className="italic text-gray-700 dark:text-gray-300" {...props} />,
+                  ul: ({node, ...props}) => <ul className="mb-4 ml-6 list-disc space-y-2 text-gray-800 dark:text-gray-200" {...props} />,
+                  ol: ({node, ...props}) => <ol className="mb-4 ml-6 list-decimal space-y-2 text-gray-800 dark:text-gray-200" {...props} />,
+                  li: ({node, ...props}) => <li className="text-justify" {...props} />,
+                  blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-indigo-500 pl-4 my-4 italic text-gray-600 dark:text-gray-400" {...props} />,
+                }}
+              >
+                {output}
+              </ReactMarkdown>
+            </div>
+          ) : (
+            <div className="flex h-full flex-col items-center justify-center text-center">
+              <div className="relative mb-4">
+                <Type size={40} className="text-indigo-300 dark:text-indigo-500" />
+                <Sparkles className="absolute -right-2 -top-2 h-5 w-5 animate-pulse text-indigo-500" />
               </div>
+              <h4 className="mb-2 font-semibold text-gray-600 dark:text-gray-400">
+                Awaiting Your Inspiration
+              </h4>
+              <p className="max-w-xs text-sm text-gray-500 dark:text-gray-500">
+                Enter your topic above and watch as AI transforms it into professional content
+              </p>
+            </div>
+          )}
+        </div>
 
               {/* Word Count & Status */}
               {output && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white/60 px-4 py-3 shadow-sm backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/60"
-                >
-                  {/* Left side - Word count and status */}
-                  <div className="flex flex-col xs:flex-row items-center gap-3 w-full sm:w-auto">
-                    {/* Word count */}
-                    <div className="flex items-center gap-2">
-                      <div className="h-2.5 w-2.5 animate-ping rounded-full bg-green-500" />
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-300 whitespace-nowrap">
-                        {output.split(/\s+/).filter((w) => w.length > 0).length} words
-                      </span>
-                    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white/60 px-4 py-3 shadow-sm backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/60"
+    >
+      {/* Left side - Word count and status */}
+      <div className="flex flex-col xs:flex-row items-center gap-3 w-full sm:w-auto">
+        {/* Word count */}
+        <div className="flex items-center gap-2">
+          <div className="h-2.5 w-2.5 animate-ping rounded-full bg-green-500" />
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-300 whitespace-nowrap">
+            {output.split(/\s+/).filter((w) => w.length > 0).length} words
+          </span>
+        </div>
 
-                    {/* Vertical divider - hidden on mobile */}
-                    <div className="hidden xs:block mx-2 h-5 w-px bg-gray-300 dark:bg-gray-600" />
+        {/* Vertical divider - hidden on mobile */}
+        <div className="hidden xs:block mx-2 h-5 w-px bg-gray-300 dark:bg-gray-600" />
 
-                    {/* Status */}
-                    <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
-                      <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
-                      <span className="font-medium whitespace-nowrap">Ready to use</span>
-                    </div>
-                  </div>
+        {/* Status */}
+        <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+          <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+          <span className="font-medium whitespace-nowrap">With formatting</span>
+        </div>
+      </div>
 
-                  {/* Right side - Reader component */}
-                  <div className="w-full sm:w-auto">
-                    <Reader />
-                  </div>
-                </motion.div>
-              )}
-              {/* Speech Recorder - Mobile/Tablet placement */}
-              <div className="mt-6 block lg:hidden">
-                <SpeechRecorder />
-              </div>
-            </div>
+      {/* Right side - Reader component */}
+      <div className="w-full sm:w-auto">
+        <Reader />
+      </div>
+    </motion.div>
+  )}
+  {/* Speech Recorder - Mobile/Tablet placement */}
+  <div className="mt-6 block lg:hidden">
+    <SpeechRecorder />
+  </div>
+</div>
           </div>
 
           {/* Speech Recorder - Desktop placement (under the form) */}
