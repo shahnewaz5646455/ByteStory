@@ -18,13 +18,13 @@ import LogoutButton from "../LogoutButton";
 
 export default function AdminSidebar({ onClose }) {
   const pathname = usePathname();
-  const [totalUsers, setTotalUsers] = useState(null); // 🧠 ডাইনামিক ব্যাজের জন্য স্টেট
+  const [totalUsers, setTotalUsers] = useState(null);
 
-  // 🔹 API থেকে ইউজার সংখ্যা ফেচ করা
+  // facing data user
   useEffect(() => {
     const fetchUserCount = async () => {
       try {
-        const res = await fetch("/api/visitors/stats"); // ✅ এখানে তোমার API রুট
+        const res = await fetch("/api/visitors/stats");
         const data = await res.json();
         if (data.success) {
           setTotalUsers(data.data?.totals?.users || 0);
@@ -37,7 +37,7 @@ export default function AdminSidebar({ onClose }) {
     fetchUserCount();
   }, []);
 
-  // manuItems
+  // menuItems
   const menuItems = [
     {
       name: "Dashboard",
@@ -48,7 +48,7 @@ export default function AdminSidebar({ onClose }) {
       name: "Users",
       href: "/admin/adminDashboard/users",
       icon: Users,
-      badge: totalUsers !== null ? String(totalUsers) : null, // ✅ ডাইনামিক ব্যাজ
+      badge: totalUsers !== null ? String(totalUsers) : null,
     },
     { name: "Content", href: "/admin/content", icon: FileText, badge: "12" },
     {
