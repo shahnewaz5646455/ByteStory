@@ -11,7 +11,7 @@ export async function POST(req) {
   try {
     const { credential } = await req.json();
 
-    // Verify Google ID token
+    // ✅ Verify Google ID token
     const ticket = await client.verifyIdToken({
       idToken: credential,
       audience: process.env.GOOGLE_CLIENT_ID,
@@ -19,33 +19,43 @@ export async function POST(req) {
 
     const payload = ticket.getPayload();
 
-    // Connect to DB
     await connectDB();
 
     let isNewUser = false;
 
-    // Check if user exists
+    // ✅ Check if user exists
     let user = await UserModel.findOne({ email: payload.email });
 
     if (!user) {
-      // Create new user
+      // ✅ Create new user with Google info
       user = new UserModel({
         name: payload.name || payload.email.split("@")[0],
         email: payload.email,
-        photo: payload.picture || "",
-        role: "user", // default role
+        role: "user",
         isEmailVerified: true,
         provider: "google",
-        googleId: payload.sub,
+        providerId: payload.sub,
+        avatar: {
+          url: payload.picture || "", // ✅ Save Google profile photo
+          public_id: "", // no Cloudinary id since it’s from Google
+        },
       });
+
       await user.save();
       isNewUser = true;
-
-      // ✅ Create notification for new user registration
       await createNewUserNotification(user);
+    } else {
+      // ✅ Update avatar if missing
+      if (!user.avatar?.url && payload.picture) {
+        user.avatar = {
+          url: payload.picture,
+          public_id: "",
+        };
+        await user.save();
+      }
     }
 
-    // Generate JWT
+    // ✅ Generate JWT token
     const secret = new TextEncoder().encode(process.env.SECRET_KEY);
     const token = await new SignJWT({
       id: user._id,
@@ -68,10 +78,10 @@ export async function POST(req) {
           name: user.name,
           email: user.email,
           role: user.role,
-          photo: user.photo,
+          avatar: user.avatar?.url || "", // ✅ send avatar URL in response
           token,
         },
-        isNewUser: isNewUser,
+        isNewUser,
       }),
       { status: 200 }
     );
@@ -88,7 +98,7 @@ export async function POST(req) {
   }
 }
 
-// Function to create new user notification
+// ✅ Notification helper
 async function createNewUserNotification(user) {
   try {
     const notification = new Notification({
@@ -109,20 +119,13 @@ async function createNewUserNotification(user) {
 
     await notification.save();
 
-    console.log(`✅ Notification created for new user: ${user.name}`);
-
-    // Emit real-time event if Socket.io is available
     if (global.io) {
       global.io.emit("new_notification", {
         type: "user_registered",
         data: notification,
       });
-      console.log(`📢 Real-time notification emitted for: ${user.name}`);
     }
-
-    return notification;
   } catch (error) {
     console.error("Error creating notification:", error);
-    // Don't throw error, just log it so login process continues
   }
 }

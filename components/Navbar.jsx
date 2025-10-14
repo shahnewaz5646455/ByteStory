@@ -33,7 +33,9 @@ export default function Navbar() {
   const router = useRouter();
   const auth = useSelector((store) => store.authStore.auth);
   const profileLink =
-    auth?.role === "admin" ? "/admin/adminDashboard/overview" : "/website/my-account";
+    auth?.role === "admin"
+      ? "/admin/adminDashboard/overview"
+      : "/website/my-account";
 
   useEffect(() => {
     if (isSearchOpen && searchInputRef.current) {
@@ -58,13 +60,16 @@ export default function Navbar() {
   function onSubmitSearch(e) {
     e.preventDefault();
     const searchTerm = query.trim().toLowerCase();
-    
+
     if (searchTerm === "seo") {
       router.push("/seo-checker");
-    } else if (searchTerm.includes("grammar") || searchTerm.includes("grammer")) {
+    } else if (
+      searchTerm.includes("grammar") ||
+      searchTerm.includes("grammer")
+    ) {
       router.push("/grammar-checker");
     }
-    
+
     setIsSearchOpen(false);
     setQuery("");
   }
@@ -264,9 +269,9 @@ export default function Navbar() {
               <Link href={profileLink} className="hidden md:flex">
                 <div className="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
                   <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                    {auth?.photoURL ? (
+                    {auth?.avatar ? (
                       <img
-                        src={auth.photoURL}
+                        src={auth.avatar}
                         alt="avatar"
                         className="w-8 h-8 rounded-full object-cover"
                       />
@@ -292,7 +297,6 @@ export default function Navbar() {
 
             {/* Mobile Section */}
             <div className="flex lg:hidden items-center gap-2">
-             
               {/* Mobile Search */}
               <Button
                 variant="outline"
@@ -341,13 +345,13 @@ export default function Navbar() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-               {auth && (
+              {auth && (
                 <Link href={profileLink} className="flex md:hidden">
                   <div className="flex items-center p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
                     <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                      {auth?.photoURL ? (
+                      {auth?.avatar ? (
                         <img
-                          src={auth.photoURL}
+                          src={auth.avatar}
                           alt="avatar"
                           className="w-8 h-8 rounded-full object-cover"
                         />
