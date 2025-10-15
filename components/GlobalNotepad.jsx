@@ -47,7 +47,7 @@ export default function EnhancedNotepad() {
   const [historyIndex, setHistoryIndex] = useState(0);
   const [isSaved, setIsSaved] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
-  const [viewMode, setViewMode] = useState("edit"); // "edit", "preview", "split"
+  const [viewMode, setViewMode] = useState("edit");
   const [fontSize, setFontSize] = useState(14);
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearch, setShowSearch] = useState(false);
@@ -58,6 +58,43 @@ export default function EnhancedNotepad() {
   const editorRef = useRef(null);
   const isInitialized = useRef(false);
   const saveTimeoutRef = useRef(null);
+
+  // Local Storage থেকে ডেটা লোড করার ফাংশন
+  const loadFromLocalStorage = () => {
+    try {
+      const saved = localStorage.getItem('enhancedNotepad');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          note: parsed.note || "",
+          fontSize: parsed.fontSize || 14,
+          darkMode: parsed.darkMode || false,
+          viewMode: parsed.viewMode || "edit",
+          history: parsed.history || [""],
+          historyIndex: parsed.historyIndex || 0
+        };
+      }
+    } catch (error) {
+      console.error("Error loading from localStorage:", error);
+    }
+    return {
+      note: "",
+      fontSize: 14,
+      darkMode: false,
+      viewMode: "edit",
+      history: [""],
+      historyIndex: 0
+    };
+  };
+
+  // Local Storage এ সেভ করার ফাংশন
+  const saveToLocalStorage = (data) => {
+    try {
+      localStorage.setItem('enhancedNotepad', JSON.stringify(data));
+    } catch (error) {
+      console.error("Error saving to localStorage:", error);
+    }
+  };
 
   // Check if mobile on mount and resize
   useEffect(() => {
@@ -70,37 +107,42 @@ export default function EnhancedNotepad() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Initialize
+  // Initialize - Local Storage থেকে ডেটা লোড করুন
   useEffect(() => {
     if (!isInitialized.current) {
       isInitialized.current = true;
-      const saved = {
-        note: "",
-        fontSize: 14,
-        darkMode: false,
-        viewMode: "edit"
-      };
+      const savedData = loadFromLocalStorage();
       
-      if (saved.note) setNote(saved.note);
-      if (saved.fontSize) setFontSize(saved.fontSize);
-      if (saved.darkMode) setDarkMode(saved.darkMode);
-      if (saved.viewMode) setViewMode(saved.viewMode);
-      
-      setHistory([saved.note || ""]);
+      setNote(savedData.note);
+      setFontSize(savedData.fontSize);
+      setDarkMode(savedData.darkMode);
+      setViewMode(savedData.viewMode);
+      setHistory(savedData.history);
+      setHistoryIndex(savedData.historyIndex);
     }
   }, []);
 
-  // Auto-save with debounce
+  // Auto-save with debounce - Local Storage এ সেভ করুন
   useEffect(() => {
     if (isInitialized.current) {
       if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
       
       saveTimeoutRef.current = setTimeout(() => {
+        // Local Storage এ সব ডেটা সেভ করুন
+        saveToLocalStorage({
+          note,
+          fontSize,
+          darkMode,
+          viewMode,
+          history,
+          historyIndex
+        });
+        
         setIsSaved(true);
         setTimeout(() => setIsSaved(false), 2000);
       }, 1000);
     }
-  }, [note, fontSize, darkMode, viewMode]);
+  }, [note, fontSize, darkMode, viewMode, history, historyIndex]);
 
   // Update history for undo/redo
   const updateHistory = (newNote) => {
@@ -239,6 +281,15 @@ export default function EnhancedNotepad() {
   const handleClear = () => {
     if (note.trim() && confirm("Clear all notes? This cannot be undone.")) {
       updateHistory("");
+      // Clear localStorage too
+      saveToLocalStorage({
+        note: "",
+        fontSize,
+        darkMode,
+        viewMode,
+        history: [""],
+        historyIndex: 0
+      });
     }
   };
 
@@ -264,6 +315,33 @@ export default function EnhancedNotepad() {
       }
     } else {
       handleCopy();
+    }
+  };
+
+  // Manual save function
+  const handleManualSave = () => {
+    saveToLocalStorage({
+      note,
+      fontSize,
+      darkMode,
+      viewMode,
+      history,
+      historyIndex
+    });
+    setIsSaved(true);
+    setTimeout(() => setIsSaved(false), 2000);
+  };
+
+  // Import from file function
+  const handleImport = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target.result;
+        updateHistory(content);
+      };
+      reader.readAsText(file);
     }
   };
 
@@ -369,7 +447,7 @@ export default function EnhancedNotepad() {
               ? 'ins-2 bottom-2 left-2 right-2 top-2' 
               : 'bottom-20 right-4 left-4 h-[70vh]'
             : isExpanded 
-              ? 'inset-4' 
+              ? 'inset-4 z-50' 
               : 'bottom-20 right-6 w-[480px] h-[600px]'
         }`}>
           {/* Header */}
@@ -417,12 +495,9 @@ export default function EnhancedNotepad() {
           {/* Help Panel */}
           {showHelp && (
             <div className="bg-indigo-50 dark:bg-indigo-900/20 px-4 py-3 border-b border-indigo-200 dark:border-indigo-800 text-sm">
-              <div className="font-semibold text-indigo-900 dark:text-indigo-200 mb-2">Keyboard Shortcuts</div>
-              <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} gap-2 text-gray-700 dark:text-gray-300`}>
-                <div><kbd className="bg-white dark:bg-gray-700 px-2 py-0.5 rounded border text-xs">Ctrl+Z</kbd> Undo</div>
-                <div><kbd className="bg-white dark:bg-gray-700 px-2 py-0.5 rounded border text-xs">Ctrl+Y</kbd> Redo</div>
-                <div><kbd className="bg-white dark:bg-gray-700 px-2 py-0.5 rounded border text-xs">Ctrl+B</kbd> Bold</div>
-                <div><kbd className="bg-white dark:bg-gray-700 px-2 py-0.5 rounded border text-xs">Ctrl+I</kbd> Italic</div>
+              <div className="font-semibold text-indigo-900 dark:text-indigo-200 mb-2">Auto-save Enabled</div>
+              <div className="text-gray-700 dark:text-gray-300">
+                Your notes are automatically saved to your browser. They will persist even after refresh.
               </div>
             </div>
           )}
@@ -526,7 +601,7 @@ export default function EnhancedNotepad() {
           <div className="flex-1 overflow-hidden flex flex-col md:flex-row">
             {/* Edit View */}
             {(viewMode === "edit" || viewMode === "split") && (
-              <div className={`${isMobile || viewMode === "edit" ? "w-full" : "w-1/2"} ${viewMode === "split" && !isMobile ? "border-r border-gray-200 dark:border-gray-700" : ""} overflow-auto`}>
+              <div className={`${isMobile || viewMode === "edit" ? "w-full" : "w-1/2"} ${viewMode === "split" && !isMobile ? "border-r border-gray-200 dark:border-gray-700" : ""} overflow-hidden`}>
                 <textarea
                   ref={editorRef}
                   value={note}
@@ -537,10 +612,11 @@ export default function EnhancedNotepad() {
                       if (e.key === 'y') { e.preventDefault(); handleRedo(); }
                       if (e.key === 'b') { e.preventDefault(); formatBold(); }
                       if (e.key === 'i') { e.preventDefault(); formatItalic(); }
+                      if (e.key === 's') { e.preventDefault(); handleManualSave(); }
                     }
                   }}
-                  placeholder="Start writing your notes here..."
-                  className="w-full h-auto p-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 resize-none focus:outline-none font-mono"
+                  placeholder="Start writing your notes here... Your notes are automatically saved!"
+                  className="w-full h-full p-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 resize-none focus:outline-none font-mono"
                   style={{ fontSize: `${fontSize}px`, lineHeight: '1.6' }}
                 />
               </div>
@@ -580,17 +656,32 @@ export default function EnhancedNotepad() {
           {/* Action Bar */}
           <div className="flex items-center justify-between px-3 py-2 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
             <div className="flex items-center space-x-1 overflow-x-auto">
+              <button onClick={handleManualSave} className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/50 rounded-lg transition-all whitespace-nowrap" title="Save">
+                <Save className="h-4 w-4" />
+              </button>
               <button onClick={handleCopy} className="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/50 rounded-lg transition-all whitespace-nowrap" title="Copy">
                 <Copy className="h-4 w-4" />
               </button>
               <button onClick={handlePaste} className="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/50 rounded-lg transition-all whitespace-nowrap" title="Paste">
                 <ClipboardPaste className="h-4 w-4" />
               </button>
-              <button onClick={handleShare} className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/50 rounded-lg transition-all whitespace-nowrap" title="Share">
-                <Share2 className="h-4 w-4" />
-              </button>
+              
+              {/* Import Button */}
+              <label className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/50 rounded-lg transition-all whitespace-nowrap cursor-pointer" title="Import">
+                <Upload className="h-4 w-4" />
+                <input
+                  type="file"
+                  accept=".txt,.md,.json"
+                  onChange={handleImport}
+                  className="hidden"
+                />
+              </label>
+              
               <button onClick={handleExport} className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/50 rounded-lg transition-all whitespace-nowrap" title="Export">
                 <Download className="h-4 w-4" />
+              </button>
+              <button onClick={handleShare} className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/50 rounded-lg transition-all whitespace-nowrap" title="Share">
+                <Share2 className="h-4 w-4" />
               </button>
             </div>
             
