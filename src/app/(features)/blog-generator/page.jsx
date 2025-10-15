@@ -40,6 +40,7 @@ export default function AIWriterPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [output, setOutput] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState("blog");
+  const [copied, setCopied] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const [error, setError] = useState("");
 
@@ -148,14 +149,14 @@ export default function AIWriterPage() {
   };
 
   const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(output);
-      alert("Content copied to clipboard!");
-    } catch (err) {
-      console.error("Failed to copy:", err);
-      alert("Failed to copy content");
-    }
-  };
+  try {
+    await navigator.clipboard.writeText(output);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  } catch (err) {
+    console.error("Failed to copy:", err);
+  }
+}
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 text-gray-900 transition-colors duration-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 dark:text-white">
@@ -419,15 +420,24 @@ export default function AIWriterPage() {
             </p>
           </div>
           {output && (
-            <motion.button
-              onClick={copyToClipboard}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-2 text-indigo-700 transition-all duration-200 hover:bg-indigo-100 dark:border-indigo-700/30 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50"
-            >
-              <Copy size={18} className="mr-2" />
-              <span className="text-sm font-medium">Copy</span>
-            </motion.button>
+             <motion.button
+    onClick={copyToClipboard}
+    whileHover={{ scale: 1.05 }}
+    whileTap={{ scale: 0.95 }}
+    className="flex-1 max-w-max bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center"
+  >
+    {copied ? (
+      <>
+        <CheckCircle className="h-4 w-4 mr-2" />
+        Copied!
+      </>
+    ) : (
+      <>
+        <Copy className="h-4 w-4 mr-2" />
+        Copy
+      </>
+    )}
+  </motion.button>
           )}
         </div>
 
