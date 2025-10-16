@@ -33,14 +33,7 @@ export default function Navbar() {
   const router = useRouter();
   const auth = useSelector((store) => store.authStore.auth);
   const profileLink =
-<<<<<<< HEAD
-    auth?.role === "admin"
-      ? "/admin/adminDashboard/overview"
-      : "/website/my-account";
-
-=======
     auth?.role === "admin" ? "/admin/adminDashboard/overview" : "/website/my-account";
->>>>>>> cfd02e1db88f1811283a605b15af167fa8b7b85c
   useEffect(() => {
     if (isSearchOpen && searchInputRef.current) {
       searchInputRef.current.focus();
