@@ -20,77 +20,23 @@ export default function Post({ post, onUpdate, onDelete }) {
   const [isLoading, setIsLoading] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
   const [imageError, setImageError] = useState(false);
-// Add custom share options modal state
-const [showShareOptions, setShowShareOptions] = useState(false);
-  // Add this state variable near your other state declarations
-const [isSharing, setIsSharing] = useState(false);
-const [shareUrl, setShareUrl] = useState('');
+  const [showShareOptions, setShowShareOptions] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
+  const [expanded, setExpanded] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageExpanded, setImageExpanded] = useState(false);
 
-// Generate share URL when component mounts
-useEffect(() => {
-  // You can customize this URL based on your app's routing
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
-  const postShareUrl = `${currentUrl.split('?')[0]}?post=${post.id}`;
-  setShareUrl(postShareUrl);
-}, [post.id]);
+  // Check if content needs "See More"
+  const needsExpansion = post.content && post.content.length > 150;
+  const displayContent = expanded || !needsExpansion ? post.content : `${post.content.substring(0, 150)}...`;
 
-// Add this function near your other handler functions
-const handleShare = async () => {
-  if (!session) {
-    alert('Please log in to share posts');
-    return;
-  }
-
-  setIsSharing(true);
-  
-  try {
-    // Check if Web Share API is available (mobile devices)
-    if (navigator.share) {
-      await navigator.share({
-        title: post.title || 'Check out this post',
-        text: post.content?.substring(0, 100) + '...',
-        url: shareUrl,
-      });
-    } else {
-      // Fallback: copy to clipboard and show options
-      await navigator.clipboard.writeText(shareUrl);
-      
-      // Show custom share options modal
-      setShowShareOptions(true);
-    }
-  } catch (error) {
-    if (error.name !== 'AbortError') {
-      console.error('Error sharing:', error);
-      // Fallback to clipboard if share fails
-      await navigator.clipboard.writeText(shareUrl);
-      setShowShareOptions(true);
-    }
-  } finally {
-    setIsSharing(false);
-  }
-};
-
-
-
-// Custom share options handler
-const handleCustomShare = (platform) => {
-  const text = encodeURIComponent(post.title || 'Check out this post');
-  const url = encodeURIComponent(shareUrl);
-  
-  let shareUrlMap = {
-    twitter: `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
-    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
-    whatsapp: `https://wa.me/?text=${text}%20${url}`,
-    telegram: `https://t.me/share/url?url=${url}&text=${text}`,
-  };
-
-  if (shareUrlMap[platform]) {
-    window.open(shareUrlMap[platform], '_blank', 'width=600,height=400');
-  }
-  
-  setShowShareOptions(false);
-};
+  // Generate share URL when component mounts
+  useEffect(() => {
+    const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+    const postShareUrl = `${currentUrl.split('?')[0]}?post=${post.id}`;
+    setShareUrl(postShareUrl);
+  }, [post.id]);
 
   // Fetch author's profile info
   useEffect(() => {
@@ -127,147 +73,192 @@ const handleCustomShare = (platform) => {
     return null;
   };
 
- const handleReaction = async (reactionType) => {
-  if (!session) return;
+  const handleReaction = async (reactionType) => {
+    if (!session) return;
 
-  setIsLoading(true);
-  try {
-    const response = await fetch(`/api/posts/${post.id}/react`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-user-email': session.email,
-      },
-      body: JSON.stringify({ reactionType }),
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      
-      // Update local state based on API response
-      setIsLiked(data.hasLike);
-      setIsLoved(data.hasLove);
-      
-      // Update the post with new reaction arrays
-      const updatedPost = {
-        ...post,
-        likes: data.likes,
-        loves: data.loves
-      };
-      onUpdate(updatedPost);
-    } else {
-      const error = await response.json();
-      console.error('Error response:', error);
-      alert(error.message || 'Failed to update reaction');
-    }
-  } catch (error) {
-    console.error('Error updating reaction:', error);
-    alert('Failed to update reaction. Please try again.');
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-const handleComment = async (e) => {
-  e.preventDefault();
-  if (!session || !commentText.trim()) return;
-
-  setIsLoading(true);
-  try {
-    const response = await fetch(`/api/posts/${post.id}/comments`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-user-email': session.email,
-        'x-user-name': session.name || 'Anonymous',
-        'x-user-photo': session.photoURL || '',
-      },
-      body: JSON.stringify({ 
-        content: commentText
-      }),
-    });
-
-    if (response.ok) {
-      const newComment = await response.json();
-      const updatedPost = {
-        ...post,
-        comments: [...post.comments, newComment]
-      };
-      onUpdate(updatedPost);
-      setCommentText('');
-    } else {
-      const error = await response.json();
-      console.error('Error response:', error);
-      alert(error.message || 'Failed to post comment');
-    }
-  } catch (error) {
-    console.error('Error adding comment:', error);
-    alert('Failed to post comment. Please try again.');
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-const handleEdit = async (e) => {
-  e.preventDefault();
-  setIsLoading(true);
-  try {
-    const response = await fetch(`/api/posts/${post.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-user-email': session.email, // Add this header
-      },
-      body: JSON.stringify({
-        ...editData,
-        tags: editData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
-      }),
-    });
-
-    if (response.ok) {
-      const updatedPost = await response.json();
-      onUpdate(updatedPost);
-      setIsEditing(false);
-      setShowMenu(false);
-    } else {
-      const error = await response.json();
-      console.error('Error response:', error);
-      alert(error.error || 'Failed to update post');
-    }
-  } catch (error) {
-    console.error('Error updating post:', error);
-    alert('Failed to update post. Please try again.');
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-const handleDelete = async () => {
-  if (window.confirm('Are you sure you want to delete this post?')) {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/posts/${post.id}`, {
-        method: 'DELETE',
+      const response = await fetch(`/api/posts/${post.id}/react`, {
+        method: 'POST',
         headers: {
-          'x-user-email': session.email, // Add this header
+          'Content-Type': 'application/json',
+          'x-user-email': session.email,
         },
+        body: JSON.stringify({ reactionType }),
       });
 
       if (response.ok) {
-        onDelete(post.id);
+        const data = await response.json();
+        setIsLiked(data.hasLike);
+        setIsLoved(data.hasLove);
+        const updatedPost = {
+          ...post,
+          likes: data.likes,
+          loves: data.loves
+        };
+        onUpdate(updatedPost);
       } else {
         const error = await response.json();
         console.error('Error response:', error);
-        alert(error.error || 'Failed to delete post');
+        alert(error.message || 'Failed to update reaction');
       }
     } catch (error) {
-      console.error('Error deleting post:', error);
-      alert('Failed to delete post. Please try again.');
+      console.error('Error updating reaction:', error);
+      alert('Failed to update reaction. Please try again.');
     } finally {
       setIsLoading(false);
     }
-  }
-};
+  };
+
+  const handleComment = async (e) => {
+    e.preventDefault();
+    if (!session || !commentText.trim()) return;
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/posts/${post.id}/comments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-email': session.email,
+          'x-user-name': session.name || 'Anonymous',
+          'x-user-photo': session.photoURL || '',
+        },
+        body: JSON.stringify({ 
+          content: commentText
+        }),
+      });
+
+      if (response.ok) {
+        const newComment = await response.json();
+        const updatedPost = {
+          ...post,
+          comments: [...post.comments, newComment]
+        };
+        onUpdate(updatedPost);
+        setCommentText('');
+      } else {
+        const error = await response.json();
+        console.error('Error response:', error);
+        alert(error.message || 'Failed to post comment');
+      }
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      alert('Failed to post comment. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const response = await fetch(`/api/posts/${post.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-user-email': session.email,
+        },
+        body: JSON.stringify({
+          ...editData,
+          tags: editData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
+        }),
+      });
+
+      if (response.ok) {
+        const updatedPost = await response.json();
+        onUpdate(updatedPost);
+        setIsEditing(false);
+        setShowMenu(false);
+      } else {
+        const error = await response.json();
+        console.error('Error response:', error);
+        alert(error.error || 'Failed to update post');
+      }
+    } catch (error) {
+      console.error('Error updating post:', error);
+      alert('Failed to update post. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm('Are you sure you want to delete this post?')) {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/posts/${post.id}`, {
+          method: 'DELETE',
+          headers: {
+            'x-user-email': session.email,
+          },
+        });
+
+        if (response.ok) {
+          onDelete(post.id);
+        } else {
+          const error = await response.json();
+          console.error('Error response:', error);
+          alert(error.error || 'Failed to delete post');
+        }
+      } catch (error) {
+        console.error('Error deleting post:', error);
+        alert('Failed to delete post. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const handleShare = async () => {
+    if (!session) {
+      alert('Please log in to share posts');
+      return;
+    }
+
+    setIsSharing(true);
+    
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: post.title || 'Check out this post',
+          text: post.content?.substring(0, 100) + '...',
+          url: shareUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        setShowShareOptions(true);
+      }
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        console.error('Error sharing:', error);
+        await navigator.clipboard.writeText(shareUrl);
+        setShowShareOptions(true);
+      }
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
+  const handleCustomShare = (platform) => {
+    const text = encodeURIComponent(post.title || 'Check out this post');
+    const url = encodeURIComponent(shareUrl);
+    
+    let shareUrlMap = {
+      twitter: `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
+      whatsapp: `https://wa.me/?text=${text}%20${url}`,
+      telegram: `https://t.me/share/url?url=${url}&text=${text}`,
+    };
+
+    if (shareUrlMap[platform]) {
+      window.open(shareUrlMap[platform], '_blank', 'width=600,height=400');
+    }
+    
+    setShowShareOptions(false);
+  };
 
   const formatTime = (date) => {
     const postDate = new Date(date);
@@ -289,9 +280,9 @@ const handleDelete = async () => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-indigo-100 dark:border-gray-700 mb-6">
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-6 overflow-hidden transition-all duration-300 hover:shadow-md">
       {/* Post Header */}
-      <div className="p-4">
+      <div className="p-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             {/* Author Avatar */}
@@ -299,21 +290,26 @@ const handleDelete = async () => {
               <img 
                 src={getUserAvatar()} 
                 alt={post.authorName} 
-                className="w-10 h-10 rounded-full object-cover border border-gray-200 dark:border-gray-700"
+                className="w-12 h-12 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-sm"
                 onError={() => setImageError(true)}
               />
             ) : (
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm border border-gray-200 dark:border-gray-700">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-lg border-2 border-white dark:border-gray-700 shadow-sm">
                 {post.authorName?.charAt(0)?.toUpperCase() || "U"}
               </div>
             )}
             
-            <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white">
+            <div className="flex-1 min-w-0">
+              <h3 className="font-semibold text-gray-900 dark:text-white truncate">
                 {post.authorName}
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {formatTime(post.createdAt)}
+              <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
+                <span>{formatTime(post.createdAt)}</span>
+                <span className="mx-2">•</span>
+                <span className="flex items-center">
+                  <GlobeIcon className="w-3 h-3 mr-1" />
+                  Public
+                </span>
               </p>
             </div>
           </div>
@@ -323,28 +319,30 @@ const handleDelete = async () => {
               <button 
                 onClick={() => setShowMenu(!showMenu)}
                 disabled={isLoading}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-2 disabled:opacity-50"
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
               >
                 <MoreIcon className="w-5 h-5" />
               </button>
               {showMenu && (
-                <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-700 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 py-1 z-10">
+                <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-gray-700 rounded-xl shadow-lg border border-gray-200 dark:border-gray-600 py-2 z-10 backdrop-blur-sm bg-white/95 dark:bg-gray-700/95">
                   <button
                     onClick={() => {
                       setIsEditing(true);
                       setShowMenu(false);
                     }}
                     disabled={isLoading}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50"
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 transition-colors flex items-center space-x-2"
                   >
-                    Edit Post
+                    <EditIcon className="w-4 h-4" />
+                    <span>Edit Post</span>
                   </button>
                   <button
                     onClick={handleDelete}
                     disabled={isLoading}
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50"
+                    className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 transition-colors flex items-center space-x-2"
                   >
-                    Delete Post
+                    <DeleteIcon className="w-4 h-4" />
+                    <span>Delete Post</span>
                   </button>
                 </div>
               )}
@@ -353,19 +351,19 @@ const handleDelete = async () => {
         </div>
 
         {isEditing ? (
-          <form onSubmit={handleEdit} className="mt-4 space-y-3">
+          <form onSubmit={handleEdit} className="mt-4 space-y-4">
             <input
               type="text"
               value={editData.title}
               onChange={(e) => setEditData({...editData, title: e.target.value})}
-              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
               placeholder="Post title"
             />
             <textarea
               value={editData.content}
               onChange={(e) => setEditData({...editData, content: e.target.value})}
-              rows="3"
-              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+              rows="4"
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
               placeholder="What's on your mind?"
               required
             />
@@ -373,23 +371,23 @@ const handleDelete = async () => {
               type="url"
               value={editData.imageUrl}
               onChange={(e) => setEditData({...editData, imageUrl: e.target.value})}
-              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
               placeholder="Image URL"
             />
             <input
               type="text"
               value={editData.tags}
               onChange={(e) => setEditData({...editData, tags: e.target.value})}
-              className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
               placeholder="Tags (comma separated)"
             />
-            <div className="flex space-x-2">
+            <div className="flex space-x-3">
               <button
                 type="submit"
                 disabled={isLoading}
-                className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg text-sm disabled:opacity-50"
+                className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl text-sm font-medium disabled:opacity-50 hover:shadow-md transition-all transform hover:-translate-y-0.5"
               >
-                {isLoading ? 'Saving...' : 'Save'}
+                {isLoading ? 'Saving...' : 'Save Changes'}
               </button>
               <button
                 type="button"
@@ -403,7 +401,7 @@ const handleDelete = async () => {
                   });
                 }}
                 disabled={isLoading}
-                className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm disabled:opacity-50"
+                className="px-6 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-sm font-medium disabled:opacity-50 transition-colors"
               >
                 Cancel
               </button>
@@ -412,218 +410,236 @@ const handleDelete = async () => {
         ) : (
           <>
             {post.title && (
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mt-2">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mt-4 mb-2 leading-tight">
                 {post.title}
               </h2>
             )}
-            <p className="text-gray-700 dark:text-gray-300 mt-2 whitespace-pre-wrap">
-              {post.content}
-            </p>
-             {post.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-3">
+            <div className="text-gray-700 dark:text-gray-300 mt-3 leading-relaxed">
+              <p className="whitespace-pre-wrap break-words">
+                {displayContent}
+              </p>
+              {needsExpansion && (
+                <button
+                  onClick={() => setExpanded(!expanded)}
+                  className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium text-sm mt-2 transition-colors"
+                >
+                  {expanded ? 'See Less' : 'See More'}
+                </button>
+              )}
+            </div>
+            
+            {post.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-4">
                 {post.tags.map((tag, index) => (
                   <span
                     key={index}
-                    className="px-2 py-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-xs rounded-full"
+                    className="px-3 py-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-xs rounded-full font-medium shadow-sm"
                   >
                     #{tag}
                   </span>
                 ))}
               </div>
             )}
+            
             {post.imageUrl && (
-              <div className="mt-3 rounded-lg overflow-hidden">
-                <img
-                  src={post.imageUrl}
-                  alt="Post image"
-                  className="w-full h-auto max-h-96 object-cover"
-                />
+              <div className="mt-4 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-900">
+                <div className="relative">
+                  <img
+                    src={post.imageUrl}
+                    alt="Post image"
+                    className={`w-full h-auto transition-all duration-500 cursor-pointer ${
+                      imageLoaded ? 'opacity-100' : 'opacity-0'
+                    } ${imageExpanded ? 'object-contain' : 'object-cover'}`}
+                    style={{
+                      maxHeight: imageExpanded ? 'none' : '500px'
+                    }}
+                    onLoad={() => setImageLoaded(true)}
+                    onClick={() => setImageExpanded(!imageExpanded)}
+                  />
+                  {!imageLoaded && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-200 dark:bg-gray-800">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                    </div>
+                  )}
+                  <button
+                    onClick={() => setImageExpanded(!imageExpanded)}
+                    className="absolute bottom-3 right-3 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full backdrop-blur-sm transition-all"
+                  >
+                    {imageExpanded ? (
+                      <ZoomOutIcon className="w-4 h-4" />
+                    ) : (
+                      <ZoomInIcon className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
               </div>
             )}
-            
-           
           </>
         )}
       </div>
 
       {/* Post Stats */}
-      <div className="px-4 py-2 border-t border-b border-gray-100 dark:border-gray-700 flex justify-between text-sm text-gray-500 dark:text-gray-400">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-1">
+      <div className="px-5 py-3 border-t border-gray-100 dark:border-gray-700 flex justify-between text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-750">
+        <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-2">
             <div className="flex -space-x-1">
               {post.likes.length > 0 && (
-                <div className="w-5 h-5 bg-blue-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
+                <div className="w-6 h-6 bg-blue-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center shadow-sm">
                   <LikeIcon className="w-3 h-3 text-white" filled={true} />
                 </div>
               )}
               {post.loves.length > 0 && (
-                <div className="w-5 h-5 bg-red-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
+                <div className="w-6 h-6 bg-red-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center shadow-sm">
                   <LoveIcon className="w-3 h-3 text-white" filled={true} />
                 </div>
               )}
             </div>
-            <span>{post.likes.length + post.loves.length}</span>
+            <span className="font-medium">{post.likes.length + post.loves.length}</span>
           </div>
-          <span>{post.comments.length} comments</span>
+          <button 
+            onClick={() => setShowComments(!showComments)}
+            className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+          >
+            {post.comments.length} comments
+          </button>
         </div>
       </div>
 
       {/* Post Actions */}
-      <div className="px-4 py-2 flex justify-between">
+      <div className="px-3 py-2 flex justify-between border-t border-gray-100 dark:border-gray-700">
         <button
           onClick={() => handleReaction('like')}
           disabled={isLoading}
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg flex-1 justify-center transition-colors disabled:opacity-50 ${
+          className={`flex items-center space-x-2 px-4 py-3 rounded-lg flex-1 justify-center transition-all duration-300 disabled:opacity-50 group ${
             isLiked 
               ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' 
               : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
           }`}
         >
-          <LikeIcon className="w-5 h-5" filled={isLiked} />
-          <span>Like</span>
+          <div className={`transform transition-transform group-hover:scale-110 ${isLiked ? 'scale-110' : ''}`}>
+            <LikeIcon className="w-5 h-5" filled={isLiked} />
+          </div>
+          <span className={`font-medium ${isLiked ? 'text-blue-600 dark:text-blue-400' : ''}`}>Like</span>
         </button>
         
         <button
           onClick={() => handleReaction('love')}
           disabled={isLoading}
-          className={`flex items-center space-x-2 px-4 py-2 rounded-lg flex-1 justify-center transition-colors disabled:opacity-50 ${
+          className={`flex items-center space-x-2 px-4 py-3 rounded-lg flex-1 justify-center transition-all duration-300 disabled:opacity-50 group ${
             isLoved 
               ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400' 
               : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
           }`}
         >
-          <LoveIcon className="w-5 h-5" filled={isLoved} />
-          <span>Love</span>
+          <div className={`transform transition-transform group-hover:scale-110 ${isLoved ? 'scale-110' : ''}`}>
+            <LoveIcon className="w-5 h-5" filled={isLoved} />
+          </div>
+          <span className={`font-medium ${isLoved ? 'text-red-600 dark:text-red-400' : ''}`}>Love</span>
         </button>
         
         <button
           onClick={() => setShowComments(!showComments)}
           disabled={isLoading}
-          className="flex items-center space-x-2 px-4 py-2 rounded-lg flex-1 justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+          className="flex items-center space-x-2 px-4 py-3 rounded-lg flex-1 justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 disabled:opacity-50 group"
         >
-          <CommentIcon className="w-5 h-5" />
-          <span>Comment</span>
+          <div className="transform transition-transform group-hover:scale-110">
+            <CommentIcon className="w-5 h-5" />
+          </div>
+          <span className="font-medium">Comment</span>
         </button>
         
-       <button 
-        onClick={handleShare}
-        disabled={isLoading || isSharing}
-        className="flex items-center space-x-2 px-4 py-2 rounded-lg flex-1 justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
-      >
-        <ShareIcon className="w-5 h-5" />
-        <span>{isSharing ? 'Sharing...' : 'Share'}</span>
-      </button>
+        <button 
+          onClick={handleShare}
+          disabled={isLoading || isSharing}
+          className="flex items-center space-x-2 px-4 py-3 rounded-lg flex-1 justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 disabled:opacity-50 group"
+        >
+          <div className="transform transition-transform group-hover:scale-110">
+            <ShareIcon className="w-5 h-5" />
+          </div>
+          <span className="font-medium">{isSharing ? 'Sharing...' : 'Share'}</span>
+        </button>
+      </div>
+
       {/* Share Options Modal */}
-{showShareOptions && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-    <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-          Share Post
-        </h3>
-        <button
-          onClick={() => setShowShareOptions(false)}
-          className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      
-      <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">
-        Post link copied to clipboard! Share it on:
-      </p>
-      
-      <div className="grid grid-cols-3 gap-3 mb-4">
-        <button
-          onClick={() => handleCustomShare('twitter')}
-          className="flex flex-col items-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
-        >
-          <TwitterIcon className="w-6 h-6 text-blue-500" />
-          <span className="text-xs mt-1 text-gray-700 dark:text-gray-300">Twitter</span>
-        </button>
-        
-        <button
-          onClick={() => handleCustomShare('facebook')}
-          className="flex flex-col items-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
-        >
-          <FacebookIcon className="w-6 h-6 text-blue-600" />
-          <span className="text-xs mt-1 text-gray-700 dark:text-gray-300">Facebook</span>
-        </button>
-        
-        <button
-          onClick={() => handleCustomShare('linkedin')}
-          className="flex flex-col items-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
-        >
-          <LinkedInIcon className="w-6 h-6 text-blue-700" />
-          <span className="text-xs mt-1 text-gray-700 dark:text-gray-300">LinkedIn</span>
-        </button>
-        
-        <button
-          onClick={() => handleCustomShare('whatsapp')}
-          className="flex flex-col items-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors"
-        >
-          <WhatsAppIcon className="w-6 h-6 text-green-500" />
-          <span className="text-xs mt-1 text-gray-700 dark:text-gray-300">WhatsApp</span>
-        </button>
-        
-        <button
-          onClick={() => handleCustomShare('telegram')}
-          className="flex flex-col items-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors"
-        >
-          <TelegramIcon className="w-6 h-6 text-blue-400" />
-          <span className="text-xs mt-1 text-gray-700 dark:text-gray-300">Telegram</span>
-        </button>
-        
-        <button
-          onClick={() => navigator.clipboard.writeText(shareUrl).then(() => {
-            alert('Link copied to clipboard again!');
-            setShowShareOptions(false);
-          })}
-          className="flex flex-col items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
-        >
-          <CopyIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-          <span className="text-xs mt-1 text-gray-700 dark:text-gray-300">Copy Link</span>
-        </button>
-      </div>
-      
-      <div className="flex space-x-2">
-        <button
-          onClick={() => setShowShareOptions(false)}
-          className="flex-1 px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-      </div>
+      {showShareOptions && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full p-6 shadow-xl border border-gray-200 dark:border-gray-700">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                Share Post
+              </h3>
+              <button
+                onClick={() => setShowShareOptions(false)}
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                <CloseIcon className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <p className="text-gray-600 dark:text-gray-300 mb-6 text-center text-sm">
+              Post link copied to clipboard! Share it on:
+            </p>
+            
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              {[
+                { platform: 'twitter', icon: TwitterIcon, color: 'bg-blue-50 dark:bg-blue-900/20', hoverColor: 'hover:bg-blue-100 dark:hover:bg-blue-900/30', textColor: 'text-blue-500' },
+                { platform: 'facebook', icon: FacebookIcon, color: 'bg-blue-50 dark:bg-blue-900/20', hoverColor: 'hover:bg-blue-100 dark:hover:bg-blue-900/30', textColor: 'text-blue-600' },
+                { platform: 'linkedin', icon: LinkedInIcon, color: 'bg-blue-50 dark:bg-blue-900/20', hoverColor: 'hover:bg-blue-100 dark:hover:bg-blue-900/30', textColor: 'text-blue-700' },
+                { platform: 'whatsapp', icon: WhatsAppIcon, color: 'bg-green-50 dark:bg-green-900/20', hoverColor: 'hover:bg-green-100 dark:hover:bg-green-900/30', textColor: 'text-green-500' },
+                { platform: 'telegram', icon: TelegramIcon, color: 'bg-blue-50 dark:bg-blue-900/20', hoverColor: 'hover:bg-blue-100 dark:hover:bg-blue-900/30', textColor: 'text-blue-400' },
+              ].map(({ platform, icon: Icon, color, hoverColor, textColor }) => (
+                <button
+                  key={platform}
+                  onClick={() => handleCustomShare(platform)}
+                  className={`flex flex-col items-center p-4 ${color} ${hoverColor} rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md`}
+                >
+                  <Icon className={`w-7 h-7 ${textColor} mb-2`} />
+                  <span className="text-xs font-medium text-gray-700 dark:text-gray-300 capitalize">
+                    {platform}
+                  </span>
+                </button>
+              ))}
+              
+              <button
+                onClick={() => navigator.clipboard.writeText(shareUrl).then(() => {
+                  alert('Link copied to clipboard again!');
+                  setShowShareOptions(false);
+                })}
+                className="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-md"
+              >
+                <CopyIcon className="w-7 h-7 text-gray-600 dark:text-gray-300 mb-2" />
+                <span className="text-xs font-medium text-gray-700 dark:text-gray-300">Copy Link</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Comments Section */}
       {showComments && (
-        <div className="border-t border-gray-100 dark:border-gray-700 p-4">
+        <div className="border-t border-gray-100 dark:border-gray-700 p-5 bg-gray-50 dark:bg-gray-750">
           {/* Comment Input */}
-          <form onSubmit={handleComment} className="flex space-x-3 mb-4">
-            {session?.photoURL ? (
-              <img
-                src={session.photoURL}
-                alt={session?.name}
-                className="w-8 h-8 rounded-full object-cover"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  if (e.target.nextSibling) {
-                    e.target.nextSibling.style.display = 'flex';
-                  }
-                }}
-              />
-            ) : null}
-            <div 
-              className="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-xs flex-shrink-0"
-              style={{ display: session?.photoURL ? 'none' : 'flex' }}
-            >
-              {session?.name?.charAt(0)?.toUpperCase() || "U"}
+          <form onSubmit={handleComment} className="flex space-x-3 mb-6">
+            <div className="flex-shrink-0">
+              {session?.photoURL ? (
+                <img
+                  src={session.photoURL}
+                  alt={session?.name}
+                  className="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-sm"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    if (e.target.nextSibling) {
+                      e.target.nextSibling.style.display = 'flex';
+                    }
+                  }}
+                />
+              ) : null}
+              <div 
+                className="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm border-2 border-white dark:border-gray-700 shadow-sm flex-shrink-0"
+                style={{ display: session?.photoURL ? 'none' : 'flex' }}
+              >
+                {session?.name?.charAt(0)?.toUpperCase() || "U"}
+              </div>
             </div>
             
             <div className="flex-1">
@@ -633,61 +649,63 @@ const handleDelete = async () => {
                 onChange={(e) => setCommentText(e.target.value)}
                 placeholder="Write a comment..."
                 disabled={isLoading}
-                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-full bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+                className="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:opacity-50 shadow-sm transition-all"
               />
             </div>
             <button
               type="submit"
               disabled={isLoading || !commentText.trim()}
-              className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg text-sm disabled:opacity-50"
+              className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl text-sm font-medium disabled:opacity-50 hover:shadow-md transition-all transform hover:-translate-y-0.5 flex-shrink-0 self-start mt-2"
             >
               {isLoading ? 'Posting...' : 'Post'}
             </button>
           </form>
 
           {/* Comments List */}
-          <div className="space-y-3">
+          <div className="space-y-4">
             {post.comments.map((comment) => (
-              <div key={comment.id} className="flex space-x-3">
-                {comment.authorImage ? (
-                  <img
-                    src={comment.authorImage}
-                    alt={comment.authorName}
-                    className="w-8 h-8 rounded-full object-cover"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      if (e.target.nextSibling) {
-                        e.target.nextSibling.style.display = 'flex';
-                      }
-                    }}
-                  />
-                ) : null}
-                <div 
-                  className="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-xs flex-shrink-0"
-                  style={{ display: comment.authorImage ? 'none' : 'flex' }}
-                >
-                  {comment.authorName?.charAt(0)?.toUpperCase() || "U"}
+              <div key={comment.id} className="flex space-x-3 group">
+                <div className="flex-shrink-0">
+                  {comment.authorImage ? (
+                    <img
+                      src={comment.authorImage}
+                      alt={comment.authorName}
+                      className="w-9 h-9 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-sm"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        if (e.target.nextSibling) {
+                          e.target.nextSibling.style.display = 'flex';
+                        }
+                      }}
+                    />
+                  ) : null}
+                  <div 
+                    className="w-9 h-9 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-xs border-2 border-white dark:border-gray-700 shadow-sm flex-shrink-0"
+                    style={{ display: comment.authorImage ? 'none' : 'flex' }}
+                  >
+                    {comment.authorName?.charAt(0)?.toUpperCase() || "U"}
+                  </div>
                 </div>
                 
-                <div className="flex-1">
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-                    <div className="flex items-center space-x-2">
-                      <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
+                <div className="flex-1 min-w-0">
+                  <div className="bg-white dark:bg-gray-700 rounded-2xl p-4 shadow-sm border border-gray-200 dark:border-gray-600 group-hover:shadow-md transition-all">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <h4 className="font-semibold text-gray-900 dark:text-white text-sm truncate">
                         {comment.authorName}
                       </h4>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                      <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
                         {formatTime(comment.createdAt)}
                       </span>
                     </div>
-                    <p className="text-gray-700 dark:text-gray-300 mt-1 text-sm">
+                    <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed break-words">
                       {comment.content}
                     </p>
                   </div>
-                  <div className="flex items-center space-x-4 mt-1 ml-3 text-xs text-gray-500 dark:text-gray-400">
-                    <button className="hover:text-indigo-600 dark:hover:text-indigo-400">
+                  <div className="flex items-center space-x-4 mt-2 ml-2 text-xs text-gray-500 dark:text-gray-400">
+                    <button className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors font-medium">
                       Like
                     </button>
-                    <button className="hover:text-indigo-600 dark:hover:text-indigo-400">
+                    <button className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors font-medium">
                       Reply
                     </button>
                   </div>
@@ -701,11 +719,27 @@ const handleDelete = async () => {
   );
 }
 
-// Icon Components
+// Enhanced Icon Components
 function MoreIcon({ className }) {
   return (
     <svg className={className} fill="currentColor" viewBox="0 0 24 24">
       <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+    </svg>
+  );
+}
+
+function EditIcon({ className }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+    </svg>
+  );
+}
+
+function DeleteIcon({ className }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
     </svg>
   );
 }
@@ -741,6 +775,39 @@ function ShareIcon({ className }) {
     </svg>
   );
 }
+
+function GlobeIcon({ className }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9m0 9c-5 0-9-4-9-9s4-9 9-9"/>
+    </svg>
+  );
+}
+
+function ZoomInIcon({ className }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/>
+    </svg>
+  );
+}
+
+function ZoomOutIcon({ className }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"/>
+    </svg>
+  );
+}
+
+function CloseIcon({ className }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  );
+}
+
 function TwitterIcon({ className }) {
   return (
     <svg className={className} fill="currentColor" viewBox="0 0 24 24">
@@ -769,6 +836,22 @@ function WhatsAppIcon({ className }) {
   return (
     <svg className={className} fill="currentColor" viewBox="0 0 24 24">
       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.495 3.09"/>
+    </svg>
+  );
+}
+
+function TelegramIcon({ className }) {
+  return (
+    <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.191c-.175.761-.836 2.607-1.65 5.072-.847 2.563-1.287 3.807-1.934 3.807-.568 0-.891-.527-1.377-1.037-.387-.406-1.42-1.194-2.076-1.603-.872-.548-.374-.848.231-1.341.155-.127 2.814-2.434 2.865-2.64.005-.026.009-.118-.135-.118-.195 0-1.123.198-2.006.346-.765.128-1.458.187-1.51.394-.046.187.406.371 1.186.72 1.285.569 1.635.838 2.432 1.338.18.113.327.166.447.166.619 0 1.016-.572 2.141-2.059 1.101-1.456 1.587-2.466 1.772-2.766.163-.266.036-.401-.367-.401-.653 0-1.194.183-2.477.61-1.25.416-1.945.621-2.193.621-.575 0-.525-.265.075-.607.351-.201 2.021-.846 3.5-1.406 1.645-.623 2.155-.914 2.536-.914.549 0 .786.257.715.771z"/>
+    </svg>
+  );
+}
+
+function CopyIcon({ className }) {
+  return (
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
     </svg>
   );
 }

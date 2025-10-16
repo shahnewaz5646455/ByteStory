@@ -18,11 +18,11 @@ import LogoutButton from "../LogoutButton";
 
 const menuItems = [
   { name: "Dashboard", href: "/website", icon: LayoutDashboard, badge: null },
-  { name: "Navlink 1", href: "/website/users", icon: Users, badge: "24" },
-  { name: "Navlink 2", href: "/website/content", icon: FileText, badge: "12" },
+  { name: "Feed", href: "/feed", icon: FileText },
+  { name: "Navlink 2", href: "/", icon: Users, badge: "12" },
   {
     name: "Navlink 3",
-    href: "/website/analytics",
+    href: "/",
     icon: BarChart3,
     badge: "New",
   },
@@ -42,7 +42,7 @@ export default function UserSidebar({ onClose }) {
       {/* Header */}
       <div className="flex items-center justify-between h-20 px-4 md:px-6 border-b border-gray-200/80 dark:border-gray-600/50">
         <Link
-          href="/admin"
+          href="/"
           className="group flex items-center gap-2 cursor-pointer transition-all duration-300"
           onClick={onClose}
         >
