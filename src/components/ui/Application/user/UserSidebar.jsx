@@ -42,7 +42,7 @@ export default function UserSidebar({ onClose }) {
       {/* Header */}
       <div className="flex items-center justify-between h-20 px-4 md:px-6 border-b border-gray-200/80 dark:border-gray-600/50">
         <Link
-          href="/admin"
+          href="/"
           className="group flex items-center gap-2 cursor-pointer transition-all duration-300"
           onClick={onClose}
         >
