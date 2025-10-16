@@ -8,7 +8,7 @@ const projects = [
     duration: '45 min',
     level: 'Beginner',
     skills: ['Thesis Development', 'Citation', 'Argument Structure'],
-    thumbnailUrl: 'https://i.postimg.cc/2SCCBs24/How-to-write-descriptively-Nalo-Hopkinson-1280x720.jpg',
+    thumbnailUrl: '/thumbnail/1.jpg',
     videoUrl: 'https://www.youtube.com/embed/RSoRzTtwgP4'
   },
   {
@@ -20,7 +20,7 @@ const projects = [
     duration: '1 hr',
     level: 'All Levels',
     skills: ['Story Structure', 'Character Arcs', 'Dialogue Writing'],
-    thumbnailUrl: 'https://i.postimg.cc/dtjYvWwD/How-to-write-a-story-John-Dufresne-TEDx-FIU-1280x720.jpg',
+    thumbnailUrl: '/thumbnail/2.jpg',
     videoUrl: 'https://www.youtube.com/embed/urJDbQl5W0I'
   },
   {
@@ -32,7 +32,7 @@ const projects = [
     duration: '35 min',
     level: 'Beginner',
     skills: ['Idea Generation', 'Overcoming Writer’s Block', 'Basic Narrative'],
-    thumbnailUrl: 'https://i.postimg.cc/SNqBZWC4/How-to-Start-Writing-for-Beginners-Start-Your-Story-1280x720.jpg',
+    thumbnailUrl: '/thumbnail/3.jpg',
     videoUrl: 'https://www.youtube.com/embed/UigjnxgyOSQ'
   },
   {
@@ -44,7 +44,7 @@ const projects = [
     duration: '50 min',
     level: 'Intermediate',
     skills: ['Pacing', 'Tension Building', 'Cliffhangers'],
-    thumbnailUrl: 'https://i.postimg.cc/wv8f1pkz/How-to-make-your-writing-suspenseful-Victoria-Smith-1280x720.jpg',
+    thumbnailUrl: '/thumbnail/4.jpg',
     videoUrl: 'https://www.youtube.com/embed/xjKruwAfZWk'
   },
   {
@@ -56,7 +56,7 @@ const projects = [
     duration: '55 min',
     level: 'All Levels',
     skills: ['Paper Structure', 'Research Methods', 'Academic Formatting'],
-    thumbnailUrl: 'https://i.postimg.cc/cHLKMKhB/HOW-TO-WRITE-A-RESEARCH-PAPER-Steps-to-writing-a-research-paper-Research-paper-sections-1280x720.jpg',
+    thumbnailUrl: '/thumbnail/5.jpg',
     videoUrl: 'https://www.youtube.com/embed/-kguiI17880'
   },
   {
@@ -68,7 +68,7 @@ const projects = [
     duration: '40 min',
     level: 'Intermediate',
     skills: ['Time Management', 'Efficient Research', 'Fast Drafting'],
-    thumbnailUrl: 'https://i.postimg.cc/G3sDMDrX/5-Steps-To-Write-A-Research-Paper-In-A-Weekend-EXPLAINED-BY-PROFESSOR-1280x720.jpg',
+    thumbnailUrl: '/thumbnail/6.jpg',
     videoUrl: 'https://www.youtube.com/embed/yt6zuQbETMI'
   },
   {
@@ -80,7 +80,7 @@ const projects = [
     duration: '50 min',
     level: 'All Levels',
     skills: ['Research Opportunities', 'Publication Process', 'Networking'],
-    thumbnailUrl: 'https://i.postimg.cc/tCNYftcN/How-I-Published-3-Research-Papers-in-High-School-secrets-revealed-1280x720.jpg',
+    thumbnailUrl: '/thumbnail/7.jpg',
     videoUrl: 'https://www.youtube.com/embed/oRlTyX25m7w'
   },
   {
@@ -92,7 +92,7 @@ const projects = [
     duration: '1 hr 10 min',
     level: 'Intermediate',
     skills: ['Formulating Research Questions', 'Data Collection', 'Presenting Findings'],
-    thumbnailUrl: 'https://i.postimg.cc/mgr2nxCT/How-to-Do-Research-1280x720.jpg',
+    thumbnailUrl: '/thumbnail/8.jpg',
     videoUrl: 'https://www.youtube.com/embed/sigJwoeU6OI'
   },
   {
@@ -104,7 +104,7 @@ const projects = [
     duration: '45 min',
     level: 'Advanced',
     skills: ['Fast Drafting', 'Editing for Quality', 'Time-Efficient Research'],
-    thumbnailUrl: 'https://i.postimg.cc/L5yGYWXV/4297-How-to-Write-a-Paper-in-a-Weekend-By-Prof-Pete-Carr-You-Tube.png',
+    thumbnailUrl: '/thumbnail/9.png',
     videoUrl: 'https://www.youtube.com/embed/UY7sVKJPTMA'
   },
   {
@@ -116,7 +116,7 @@ const projects = [
     duration: '50 min',
     level: 'Intermediate',
     skills: ['AI Research Tools', 'Summarization', 'Critical Analysis'],
-    thumbnailUrl: 'https://i.postimg.cc/Kz00JM2G/How-to-write-a-Review-Paper-with-AI-Tool-Step-by-step-process-to-write-review-article-1280x720.jpg',
+    thumbnailUrl: '/thumbnail/10.jpg',
     videoUrl: 'https://www.youtube.com/embed/e8l6X7SGgDk'
   },
   {
@@ -128,7 +128,7 @@ const projects = [
     duration: '1 hr',
     level: 'Advanced',
     skills: ['Review Methodology', 'Critical Writing', 'Journal Formatting'],
-    thumbnailUrl: 'https://i.postimg.cc/fRS1yBhx/How-to-write-a-Review-Paper-How-to-write-a-Review-Article-Step-by-step-process-explained-1280x72.jpg',
+    thumbnailUrl: '/thumbnail/11.jpg',
     videoUrl: 'https://www.youtube.com/embed/-7CgvahnEnc'
   },
   {
@@ -140,7 +140,7 @@ const projects = [
     duration: '1 hr 15 min',
     level: 'Advanced',
     skills: ['Academic Publishing', 'Peer Review Process', 'Manuscript Preparation'],
-    thumbnailUrl: 'https://i.postimg.cc/qv9q6b60/How-to-write-an-article-1280x720.jpg',
+    thumbnailUrl: '/thumbnail/12.jpg',
     videoUrl: 'https://www.youtube.com/embed/93VBdWgPpMw'
   },
   {
@@ -152,7 +152,7 @@ const projects = [
     duration: '40 min',
     level: 'All Levels',
     skills: ['Content Planning', 'Engagement Writing', 'Traffic Growth'],
-    thumbnailUrl: 'https://i.postimg.cc/Rh32tRH5/How-To-ACTUALLY-Write-A-Blog-Post-From-Start-To-Finish-Neil-Patel-1280x720.jpg',
+    thumbnailUrl: '/thumbnail/13.jpg',
     videoUrl: 'https://www.youtube.com/embed/Q8rN3JKqUc8'
   },
   {
@@ -164,7 +164,7 @@ const projects = [
     duration: '35 min',
     level: 'Intermediate',
     skills: ['SEO Basics', 'Keyword Research', 'On-Page SEO'],
-    thumbnailUrl: 'https://i.postimg.cc/3NPVFvXy/How-to-Write-a-Blog-Post-That-Actually-Gets-Traffic-1280x720.jpg',
+    thumbnailUrl: '/thumbnail/14.jpg',
     videoUrl: 'https://www.youtube.com/embed/-kOT39l0omU'
   },
   {
@@ -176,7 +176,7 @@ const projects = [
     duration: '1 hr',
     level: 'Intermediate',
     skills: ['Simplifying Concepts', 'Technical Writing', 'Audience Engagement'],
-    thumbnailUrl: 'https://i.postimg.cc/50ZWnT1N/How-to-write-technical-blog-posts-talk-by-Quincy-Larson-1280x720.jpg',
+    thumbnailUrl: '/thumbnail/15.jpg',
     videoUrl: 'https://www.youtube.com/embed/YODPgBadj80'
   },
   {
@@ -188,7 +188,7 @@ const projects = [
     duration: '45 min',
     level: 'Intermediate',
     skills: ['SEO Optimization', 'Content Structuring', 'Keyword Placement'],
-    thumbnailUrl: 'https://i.postimg.cc/rwdCLHLL/How-To-Write-An-SEO-Optimized-Blog-Post-To-Drives-Traffic-To-Your-Site-1280x720.jpg',
+    thumbnailUrl: '/thumbnail/16.jpg',
     videoUrl: 'https://www.youtube.com/embed/oa5E1LWHG7A'
   },
   {
@@ -200,7 +200,7 @@ const projects = [
     duration: '50 min',
     level: 'Advanced',
     skills: ['Competitive Analysis', 'Content Optimization', 'Ranking Strategy'],
-    thumbnailUrl: 'https://i.postimg.cc/7hkwqdRt/How-to-Write-SEO-Content-for-Website-Ranks-1-on-Google-1280x720.jpg',
+    thumbnailUrl: '/thumbnail/17.jpg',
     videoUrl: 'https://www.youtube.com/embed/gydm3Vy7XC4'
   },
   {
@@ -212,7 +212,7 @@ const projects = [
     duration: '1 hr 20 min',
     level: 'Intermediate',
     skills: ['Persuasive Writing', 'Keyword Integration', 'Conversion Writing'],
-    thumbnailUrl: 'https://i.postimg.cc/wvzGMz6N/SEO-Copywriting-Tutorial-From-Start-to-Finish-1280x720-1.jpg',
+    thumbnailUrl: '/thumbnail/18.jpg',
     videoUrl: 'https://www.youtube.com/embed/q0Ujy3EN0lk'
   },
   {
@@ -224,7 +224,7 @@ const projects = [
     duration: '2 hrs',
     level: 'All Levels',
     skills: ['SEO Fundamentals', 'Content Strategy', 'Search Optimization'],
-    thumbnailUrl: 'https://i.postimg.cc/SKFZ14YP/SEO-Content-Writing-Full-Course-Learn-SEO-Content-Writing-Step-By-Step-1280x720.jpg',
+    thumbnailUrl: '/thumbnail/19.jpg',
     videoUrl: 'https://www.youtube.com/embed/uujO8uqjOqw'
   }
 ];

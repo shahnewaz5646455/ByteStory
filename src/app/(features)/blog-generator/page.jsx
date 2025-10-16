@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ReactMarkdown from 'react-markdown';
 import {
   Send,
   Sparkles,
@@ -33,6 +34,7 @@ import { useSelector } from "react-redux";
 
 export default function AIWriterPage() {
   const auth = useSelector((store) => store.authStore.auth);
+  console.log(auth);
 
   // ---- Share state that's needed across handlers ----
   const [shareId, setShareId] = useState(null);
@@ -55,6 +57,7 @@ export default function AIWriterPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [output, setOutput] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState("blog");
+  const [copied, setCopied] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const [error, setError] = useState("");
 
@@ -596,57 +599,65 @@ export default function AIWriterPage() {
               </div>
 
               <div className="h-48 overflow-y-auto rounded-2xl border-2 border-indigo-100/50 bg-gradient-to-br from-white to-indigo-50/50 p-6 shadow-inner dark:from-gray-700/80 dark:to-gray-800/80 dark:border-gray-600">
-                {isGenerating ? (
-                  <div className="flex h-full items-center justify-center">
-                    <motion.div
-                      initial={{ opacity: 0.5, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ repeat: Infinity, repeatType: "reverse", duration: 1.5 }}
-                      className="flex flex-col items-center text-center"
-                    >
-                      <div className="relative">
-                        <Sparkles className="mb-3 h-8 w-8 text-indigo-500" />
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                          className="absolute -inset-2 rounded-full border-2 border-indigo-200 border-t-indigo-500"
-                        />
-                      </div>
-                      <p className="font-medium text-gray-600 dark:text-gray-400">
-                        Crafting your content...
-                      </p>
-                      <p className="mt-1 text-sm text-gray-500 dark:text-gray-500">
-                        This may take a few moments
-                      </p>
-                    </motion.div>
-                  </div>
-                ) : output ? (
-                  <div className="prose prose-sm max-w-none dark:prose-invert sm:prose">
-                    <div className="leading-relaxed text-gray-800 dark:text-gray-200">
-                      {output.split("\n").map((paragraph, i) =>
-                        paragraph.trim() ? (
-                          <p key={i} className="mb-4 text-justify">
-                            {paragraph}
-                          </p>
-                        ) : null
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex h-full flex-col items-center justify-center text-center">
-                    <div className="relative mb-4">
-                      <Type size={40} className="text-indigo-300 dark:text-indigo-500" />
-                      <Sparkles className="absolute -right-2 -top-2 h-5 w-5 animate-pulse text-indigo-500" />
-                    </div>
-                    <h4 className="mb-2 font-semibold text-gray-600 dark:text-gray-400">
-                      Awaiting Your Inspiration
-                    </h4>
-                    <p className="max-w-xs text-sm text-gray-500 dark:text-gray-500">
-                      Enter your topic above and watch as AI transforms it into professional content
-                    </p>
-                  </div>
-                )}
+          {isGenerating ? (
+            <div className="flex h-full items-center justify-center">
+              <motion.div
+                initial={{ opacity: 0.5, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ repeat: Infinity, repeatType: "reverse", duration: 1.5 }}
+                className="flex flex-col items-center text-center"
+              >
+                <div className="relative">
+                  <Sparkles className="mb-3 h-8 w-8 text-indigo-500" />
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    className="absolute -inset-2 rounded-full border-2 border-indigo-200 border-t-indigo-500"
+                  />
+                </div>
+                <p className="font-medium text-gray-600 dark:text-gray-400">
+                  Crafting your content...
+                </p>
+                <p className="mt-1 text-sm text-gray-500 dark:text-gray-500">
+                  This may take a few moments
+                </p>
+              </motion.div>
+            </div>
+          ) : output ? (
+            <div className="max-w-none markdown-content">
+              <ReactMarkdown
+                components={{
+                  // Custom styling for markdown elements
+                  h1: ({node, ...props}) => <h1 className="text-2xl font-bold mt-6 mb-4 text-gray-900 dark:text-white border-b pb-2" {...props} />,
+                  h2: ({node, ...props}) => <h2 className="text-xl font-bold mt-5 mb-3 text-gray-800 dark:text-gray-200" {...props} />,
+                  h3: ({node, ...props}) => <h3 className="text-lg font-semibold mt-4 mb-2 text-gray-700 dark:text-gray-300" {...props} />,
+                  p: ({node, ...props}) => <p className="mb-4 text-justify leading-relaxed text-gray-800 dark:text-gray-200" {...props} />,
+                  strong: ({node, ...props}) => <strong className="font-bold text-gray-900 dark:text-white" {...props} />,
+                  em: ({node, ...props}) => <em className="italic text-gray-700 dark:text-gray-300" {...props} />,
+                  ul: ({node, ...props}) => <ul className="mb-4 ml-6 list-disc space-y-2 text-gray-800 dark:text-gray-200" {...props} />,
+                  ol: ({node, ...props}) => <ol className="mb-4 ml-6 list-decimal space-y-2 text-gray-800 dark:text-gray-200" {...props} />,
+                  li: ({node, ...props}) => <li className="text-justify" {...props} />,
+                  blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-indigo-500 pl-4 my-4 italic text-gray-600 dark:text-gray-400" {...props} />,
+                }}
+              >
+                {output}
+              </ReactMarkdown>
+            </div>
+          ) : (
+            <div className="flex h-full flex-col items-center justify-center text-center">
+              <div className="relative mb-4">
+                <Type size={40} className="text-indigo-300 dark:text-indigo-500" />
+                <Sparkles className="absolute -right-2 -top-2 h-5 w-5 animate-pulse text-indigo-500" />
               </div>
+              <h4 className="mb-2 font-semibold text-gray-600 dark:text-gray-400">
+                Awaiting Your Inspiration
+              </h4>
+              <p className="max-w-xs text-sm text-gray-500 dark:text-gray-500">
+                Enter your topic above and watch as AI transforms it into professional content
+              </p>
+            </div>
+          )}
+        </div>
 
               {/* Word Count & Status */}
               {output && (
