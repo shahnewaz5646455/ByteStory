@@ -105,6 +105,26 @@ const DashboardNavbar = ({ onMenuClick }) => {
     return auth?.name?.charAt(0)?.toUpperCase() || "U";
   };
 
+  // Safe image error handler
+  const handleImageError = (e) => {
+    // Hide the image
+    e.target.style.display = "none";
+
+    // Find the parent container and show the initial
+    const parent = e.target.parentElement;
+    if (parent) {
+      // Find or create the fallback initial element
+      let fallbackElement = parent.querySelector(".avatar-fallback");
+      if (!fallbackElement) {
+        fallbackElement = document.createElement("span");
+        fallbackElement.className = "avatar-fallback text-white font-semibold";
+        fallbackElement.textContent = getUserInitial();
+        parent.appendChild(fallbackElement);
+      }
+      fallbackElement.style.display = "flex";
+    }
+  };
+
   // Filter notifications based on user role
   const getFilteredNotifications = () => {
     if (isAdmin) {
@@ -443,11 +463,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                         src={userAvatar}
                         alt="User Avatar"
                         className="w-full h-full object-cover"
-                        onError={(e) => {
-                          // If image fails to load, show initial
-                          e.target.style.display = "none";
-                          e.target.nextSibling.style.display = "flex";
-                        }}
+                        onError={handleImageError}
                       />
                     ) : (
                       <span className="text-white font-semibold">
@@ -498,6 +514,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                               src={userAvatar}
                               alt="User Avatar"
                               className="w-full h-full object-cover"
+                              onError={handleImageError}
                             />
                           ) : (
                             <span className="text-white font-semibold">

@@ -26,7 +26,12 @@ const menuItems = [
     icon: BarChart3,
     badge: "New",
   },
-  { name: "Navlink 4", href: "/website/settings", icon: Settings, badge: null },
+  {
+    name: "Profile",
+    href: "/website/update-profile",
+    icon: Settings,
+    badge: null,
+  },
 ];
 
 export default function UserSidebar({ onClose }) {
