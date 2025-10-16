@@ -469,7 +469,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                       <span className="text-white font-semibold">
                         {userInitial}
                       </span>
-                    )}
+                    )} 
                   </div>
 
                   <div className="hidden md:block text-left">

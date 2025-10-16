@@ -32,6 +32,7 @@ import { zSchema } from "@/lib/zodSchema";
 import axios from "axios";
 import { showToast } from "@/lib/showToast";
 import GoogleG from "../../../../components/GoogleG";
+// import GoogleG from "../../../components/GoogleG";
 
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
