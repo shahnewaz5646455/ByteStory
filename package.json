@@ -47,6 +47,7 @@
     "react-dom": "19.1.0",
     "react-hook-form": "^7.62.0",
     "react-redux": "^9.2.0",
+    "react-share": "^5.2.2",
     "react-toastify": "^11.0.5",
     "redux-persist": "^6.0.0",
     "slick-carousel": "^1.8.1",

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import DashboardNavbar from "@/components/ui/Application/dashboard/DahboardNavbar";
 import AdminRoute from "@/components/routes/AdminRoute";
-import UserSidebar from "@/components/ui/Application/website/UserSidebar";
+import UserSidebar from "@/components/ui/Application/user/UserSidebar";
 import UserRoute from "@/components/routes/UserRoute";
 
 const WebsiteLayout = ({ children }) => {

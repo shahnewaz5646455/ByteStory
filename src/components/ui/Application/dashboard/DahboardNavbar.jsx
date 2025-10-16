@@ -162,8 +162,9 @@ const DashboardNavbar = ({ onMenuClick }) => {
                       />
                     ) : (
                       auth?.name?.charAt(0) || "U"
-                    )}
+                    )} 
                   </div>
+                  
 
                   {/* Name & Role - Hidden on mobile */}
                   <div className="hidden md:block text-left">

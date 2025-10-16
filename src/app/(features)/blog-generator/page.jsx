@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Send,
@@ -19,11 +19,27 @@ import {
   Wifi,
   WifiOff,
   AlertTriangle,
+  Instagram,
 } from "lucide-react";
+import {
+  FacebookShareButton,
+  WhatsappShareButton,
+  FacebookIcon,
+  WhatsappIcon,
+} from "react-share";
 import Reader from "@/components/ui/Reader";
 import SpeechRecorder from "@/components/ui/speechRecorder";
+import { useSelector } from "react-redux";
 
 export default function AIWriterPage() {
+  const auth = useSelector((store) => store.authStore.auth);
+
+  // ---- Share state that's needed across handlers ----
+  const [shareId, setShareId] = useState(null);
+  const [sharedUrl, setSharedUrl] = useState(
+    typeof window !== "undefined" ? window.location.href : "https://yourdomain.com"
+  );
+
   // ---- Network state ----
   const [isOnline, setIsOnline] = useState(
     typeof window !== "undefined" ? navigator.onLine : true
@@ -41,6 +57,36 @@ export default function AIWriterPage() {
   const [selectedTemplate, setSelectedTemplate] = useState("blog");
   const [showTemplates, setShowTemplates] = useState(false);
   const [error, setError] = useState("");
+
+  // ---- Share UI state ----
+  const [showShareMenu, setShowShareMenu] = useState(false);
+  const shareBtnRef = useRef(null);
+  const shareMenuRef = useRef(null);
+
+  // Close share popover on outside click / Escape
+  useEffect(() => {
+    function onClick(e) {
+      if (!showShareMenu) return;
+      const t = e.target;
+      if (
+        shareBtnRef.current &&
+        !shareBtnRef.current.contains(t) &&
+        shareMenuRef.current &&
+        !shareMenuRef.current.contains(t)
+      ) {
+        setShowShareMenu(false);
+      }
+    }
+    function onKey(e) {
+      if (e.key === "Escape") setShowShareMenu(false);
+    }
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [showShareMenu]);
 
   const templates = [
     { id: "blog", name: "Blog Post", icon: <FileText size={18} /> },
@@ -108,7 +154,7 @@ export default function AIWriterPage() {
     }
   }, [isOnline, hasNetworkChanged, pendingRequest]);
 
-  // ---- API call ----
+  // ---- Generate API call ----
   const executeGenerateContent = async (inputText, template) => {
     setIsGenerating(true);
     setError("");
@@ -120,8 +166,8 @@ export default function AIWriterPage() {
         body: JSON.stringify({ prompt: inputText, template }),
       });
       const data = await resp.json();
-      if (data?.success) setOutput(data.content);
-      else setError("Failed to generate content. Please try again.");
+      if (resp.ok && data?.success) setOutput(data.content);
+      else setError(data?.message || "Failed to generate content. Please try again.");
     } catch (e) {
       console.error(e);
       setError("Failed to generate content. Please try again.");
@@ -146,6 +192,58 @@ export default function AIWriterPage() {
     await executeGenerateContent(input.trim(), selectedTemplate);
   };
 
+  // ---- Save to DB before sharing (react-share will await this) ----
+  const PostToDB = async () => {
+    const time = new Date().toLocaleString("en-US", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+    try {
+      const resp = await fetch("/api/content-saveTo-DB", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: input,
+          template: selectedTemplate,
+          content: output,
+          type: "blog",
+          generated_time: { time },
+          visibility: "public",
+          user: { email: auth?.email, name: auth?.name },
+        }),
+      });
+
+      const contentData = await resp.json().catch(() => ({}));
+      if (!resp.ok || !contentData?.data?.insertedId) {
+        throw new Error(contentData?.message || "Save failed");
+      }
+
+      const insertedId = contentData.data.insertedId;
+      setShareId(insertedId);
+      console.log(shareId);
+
+      const origin =
+        typeof window !== "undefined" ? window.location.origin : "https://yourdomain.com";
+      const nextUrl = `${origin}/Shared-Content/${insertedId}`;
+      setSharedUrl(nextUrl);
+      console.log(nextUrl);
+
+      // Let React commit state before the share dialog reads the prop
+      await new Promise((r) => setTimeout(r, 0));
+      return true;
+    } catch (e) {
+      console.error(e);
+      setError(e.message || "failed to share");
+      // Throwing prevents the share dialog from opening
+      throw e;
+    }
+  };
+
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(output);
@@ -155,6 +253,8 @@ export default function AIWriterPage() {
       alert("Failed to copy content");
     }
   };
+
+  const shareTitle = output ? output.slice(0, 80) : "Check this out";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 text-gray-900 transition-colors duration-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 dark:text-white">
@@ -167,6 +267,7 @@ export default function AIWriterPage() {
           </div>
         </div>
       )}
+
       {/* Offline banner */}
       {showOffNetStatus && (
         <div className="sticky top-0 z-50 bg-red-600 py-3 px-4 text-center shadow-lg">
@@ -246,8 +347,7 @@ export default function AIWriterPage() {
                     </div>
                     <ChevronDown
                       size={18}
-                      className={`text-indigo-400 transition-transform duration-300 ${showTemplates ? "rotate-180" : ""
-                        }`}
+                      className={`text-indigo-400 transition-transform duration-300 ${showTemplates ? "rotate-180" : ""}`}
                     />
                   </button>
 
@@ -267,10 +367,11 @@ export default function AIWriterPage() {
                               setShowTemplates(false);
                             }}
                             type="button"
-                            className={`group flex w-full items-center px-4 py-3 text-left transition-all duration-200 hover:bg-indigo-50 dark:hover:bg-gray-700 ${selectedTemplate === template.id
+                            className={`group flex w-full items-center px-4 py-3 text-left transition-all duration-200 hover:bg-indigo-50 dark:hover:bg-gray-700 ${
+                              selectedTemplate === template.id
                                 ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300"
                                 : "text-gray-700 dark:text-gray-300"
-                              }`}
+                            }`}
                           >
                             <span className="text-indigo-500 transition-transform group-hover:scale-110 dark:text-indigo-400">
                               {template.icon}
@@ -286,7 +387,6 @@ export default function AIWriterPage() {
 
               {/* Form */}
               <form onSubmit={handleSubmit}>
-                {/* Label */}
                 <div className="mb-2 flex items-center">
                   <PenTool className="mr-2 h-4 w-4 text-indigo-500" />
                   <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
@@ -294,9 +394,7 @@ export default function AIWriterPage() {
                   </span>
                 </div>
 
-                {/* Textarea container */}
                 <div className="relative">
-                  {/* Textarea */}
                   <textarea
                     value={input}
                     onChange={(e) => {
@@ -308,7 +406,6 @@ export default function AIWriterPage() {
                     disabled={isGenerating}
                   />
 
-                  {/* Send button OVERLAY */}
                   <div className="absolute bottom-3 right-3 z-10">
                     <motion.button
                       whileHover={{ scale: 1.05 }}
@@ -316,10 +413,11 @@ export default function AIWriterPage() {
                       type="submit"
                       aria-label="Send"
                       disabled={isGenerating || !input.trim()}
-                      className={`rounded-full p-3 shadow-lg transition-all duration-300 ${isGenerating || !input.trim()
+                      className={`rounded-full p-3 shadow-lg transition-all duration-300 ${
+                        isGenerating || !input.trim()
                           ? "cursor-not-allowed bg-gray-300 dark:bg-gray-600"
                           : "cursor-pointer bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-indigo-500/30 dark:hover:shadow-purple-500/20"
-                        }`}
+                      }`}
                     >
                       {isGenerating ? (
                         <motion.div
@@ -335,7 +433,6 @@ export default function AIWriterPage() {
                   </div>
                 </div>
 
-                {/* Waiting badge */}
                 {showWaitingButton && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
@@ -363,20 +460,12 @@ export default function AIWriterPage() {
                             />
                             <motion.div
                               animate={{ scale: [1, 1.2, 1] }}
-                              transition={{
-                                duration: 1.5,
-                                repeat: Infinity,
-                                delay: 0.3,
-                              }}
+                              transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
                               className="h-2 w-2 rounded-full bg-yellow-500"
                             />
                             <motion.div
                               animate={{ scale: [1, 1.2, 1] }}
-                              transition={{
-                                duration: 1.5,
-                                repeat: Infinity,
-                                delay: 0.6,
-                              }}
+                              transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
                               className="h-2 w-2 rounded-full bg-yellow-500"
                             />
                           </div>
@@ -417,16 +506,92 @@ export default function AIWriterPage() {
                     Powered by ByteStory AI • Professional quality
                   </p>
                 </div>
+
                 {output && (
-                  <motion.button
-                    onClick={copyToClipboard}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-2 text-indigo-700 transition-all duration-200 hover:bg-indigo-100 dark:border-indigo-700/30 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50"
-                  >
-                    <Copy size={18} className="mr-2" />
-                    <span className="text-sm font-medium">Copy</span>
-                  </motion.button>
+                  <div className="flex justify-center gap-2 relative" ref={shareBtnRef}>
+                    <button
+                      type="button"
+                      onClick={() => setShowShareMenu((v) => !v)}
+                      className="flex items-center rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-2 text-indigo-700 transition-all duration-200 hover:bg-indigo-100 dark:border-indigo-700/30 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50"
+                    >
+                      Share
+                    </button>
+
+                    <AnimatePresence>
+                      {showShareMenu && (
+                        <motion.div
+                          ref={shareMenuRef}
+                          initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                          animate={{ opacity: 1, y: -8, scale: 1 }}
+                          exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                          transition={{ duration: 0.18 }}
+                          className="absolute right-0 -top-2 translate-y-[-100%] z-30 rounded-xl border border-indigo-100/60 bg-white p-2 shadow-2xl dark:border-gray-700 dark:bg-gray-800"
+                          role="menu"
+                        >
+                          <div className="flex items-center gap-2">
+                            <FacebookShareButton
+                              url={sharedUrl}
+                              quote={shareTitle}
+                              beforeOnClick={PostToDB}
+                            >
+                              <FacebookIcon size={36} round />
+                            </FacebookShareButton>
+
+                            <WhatsappShareButton
+                              url={sharedUrl}
+                              title={shareTitle}
+                              separator=" — "
+                              beforeOnClick={PostToDB}
+                            >
+                              <WhatsappIcon size={36} round />
+                            </WhatsappShareButton>
+
+                            {/* Instagram-like (Web Share API) */}
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                try {
+                                  await PostToDB();
+                                  if (navigator.share) {
+                                    await navigator.share({
+                                      title: shareTitle,
+                                      text: output,
+                                      url: sharedUrl,
+                                    });
+                                    setShowShareMenu(false);
+                                  } else {
+                                    alert(
+                                      "System share isn’t supported here. Instagram doesn’t allow direct web link sharing—try on mobile using the system share sheet or copy the link."
+                                    );
+                                  }
+                                } catch {
+                                  // already handled via setError
+                                }
+                              }}
+                              className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-pink-500 via-red-500 to-yellow-500 text-white shadow hover:opacity-90 focus:outline-none"
+                              title="Share via Instagram (via system share)"
+                              aria-label="Share via Instagram"
+                            >
+                              <Instagram size={18} />
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Copy button */}
+                    <div>
+                      <motion.button
+                        onClick={copyToClipboard}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex items-center rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-2 text-indigo-700 transition-all duration-200 hover:bg-indigo-100 dark:border-indigo-700/30 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50"
+                      >
+                        <Copy size={18} className="mr-2" />
+                        <span className="text-sm font-medium">Copy</span>
+                      </motion.button>
+                    </div>
+                  </div>
                 )}
               </div>
 
@@ -490,40 +655,34 @@ export default function AIWriterPage() {
                   animate={{ opacity: 1, y: 0 }}
                   className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white/60 px-4 py-3 shadow-sm backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/60"
                 >
-                  {/* Left side - Word count and status */}
                   <div className="flex flex-col xs:flex-row items-center gap-3 w-full sm:w-auto">
-                    {/* Word count */}
                     <div className="flex items-center gap-2">
                       <div className="h-2.5 w-2.5 animate-ping rounded-full bg-green-500" />
                       <span className="text-sm font-medium text-gray-600 dark:text-gray-300 whitespace-nowrap">
                         {output.split(/\s+/).filter((w) => w.length > 0).length} words
                       </span>
                     </div>
-
-                    {/* Vertical divider - hidden on mobile */}
                     <div className="hidden xs:block mx-2 h-5 w-px bg-gray-300 dark:bg-gray-600" />
-
-                    {/* Status */}
                     <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
                       <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
                       <span className="font-medium whitespace-nowrap">Ready to use</span>
                     </div>
                   </div>
 
-                  {/* Right side - Reader component */}
                   <div className="w-full sm:w-auto">
                     <Reader />
                   </div>
                 </motion.div>
               )}
-              {/* Speech Recorder - Mobile/Tablet placement */}
+
+              {/* Speech Recorder - Mobile */}
               <div className="mt-6 block lg:hidden">
                 <SpeechRecorder />
               </div>
             </div>
           </div>
 
-          {/* Speech Recorder - Desktop placement (under the form) */}
+          {/* Speech Recorder - Desktop */}
           <div className="mt-6 hidden lg:block">
             <SpeechRecorder />
           </div>

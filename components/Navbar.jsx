@@ -32,6 +32,7 @@ export default function Navbar() {
   const searchCardRef = useRef(null);
   const router = useRouter();
   const auth = useSelector((store) => store.authStore.auth);
+  
   const profileLink =
     auth?.role === "admin" ? "/admin/adminDashboard" : "/website/my-account";
 
