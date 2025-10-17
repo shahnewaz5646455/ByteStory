@@ -153,6 +153,9 @@ export default function Navbar() {
                       <ListItem href="/hashtag" title="Hashtag Generator">
                         Get suggested hashtags for your blog posts and content.
                       </ListItem>
+                      <ListItem href="/email-writer" title="Email Writer">
+                        Create professional emails with AI assistance.
+                      </ListItem>
                     </ul>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
