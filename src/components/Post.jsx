@@ -1,7 +1,9 @@
 'use client';
 
+import { showToast } from '@/lib/showToast';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 export default function Post({ post, onUpdate, onDelete }) {
   const session = useSelector((store) => store.authStore.auth);
@@ -26,6 +28,108 @@ export default function Post({ post, onUpdate, onDelete }) {
   const [expanded, setExpanded] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageExpanded, setImageExpanded] = useState(false);
+
+  // Add these state variables near your other state declarations
+const [selectedImage, setSelectedImage] = useState(null);
+const [imagePreview, setImagePreview] = useState(null);
+const [isUploading, setIsUploading] = useState(false);
+
+// Add this function to handle image selection
+const handleImageSelect = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+    
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size should be less than 5MB');
+      return;
+    }
+    
+    setSelectedImage(file);
+    
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setImagePreview(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+// Add this function to remove selected image
+const handleRemoveImage = () => {
+  setSelectedImage(null);
+  setImagePreview(null);
+  setEditData({...editData, imageUrl: ''});
+};
+
+// Update the handleEdit function to handle image upload
+const handleEdit = async (e) => {
+  e.preventDefault();
+  setIsLoading(true);
+  
+  try {
+    let imageUrl = editData.imageUrl;
+    
+    // Upload new image if selected
+    if (selectedImage) {
+      setIsUploading(true);
+      const formData = new FormData();
+      formData.append('image', selectedImage);
+      
+      const uploadResponse = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (uploadResponse.ok) {
+        const uploadData = await uploadResponse.json();
+        imageUrl = uploadData.url;
+      } else {
+        throw new Error('Failed to upload image');
+      }
+      setIsUploading(false);
+    }
+    
+    // Update the post with the new image URL
+    const response = await fetch(`/api/posts/${post.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-email': session.email,
+      },
+      body: JSON.stringify({
+        ...editData,
+        imageUrl: imageUrl,
+        tags: editData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
+      }),
+    });
+
+    if (response.ok) {
+      const updatedPost = await response.json();
+      onUpdate(updatedPost);
+      setIsEditing(false);
+      setShowMenu(false);
+      setSelectedImage(null);
+      setImagePreview(null);
+    } else {
+      const error = await response.json();
+      console.error('Error response:', error);
+      alert(error.error || 'Failed to update post');
+    }
+  } catch (error) {
+    console.error('Error updating post:', error);
+    alert('Failed to update post. Please try again.');
+  } finally {
+    setIsLoading(false);
+    setIsUploading(false);
+  }
+};
 
   // Check if content needs "See More"
   const needsExpansion = post.content && post.content.length > 150;
@@ -150,65 +254,51 @@ export default function Post({ post, onUpdate, onDelete }) {
     }
   };
 
-  const handleEdit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    try {
-      const response = await fetch(`/api/posts/${post.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-user-email': session.email,
-        },
-        body: JSON.stringify({
-          ...editData,
-          tags: editData.tags.split(',').map(tag => tag.trim()).filter(Boolean)
-        }),
-      });
-
-      if (response.ok) {
-        const updatedPost = await response.json();
-        onUpdate(updatedPost);
-        setIsEditing(false);
-        setShowMenu(false);
-      } else {
-        const error = await response.json();
-        console.error('Error response:', error);
-        alert(error.error || 'Failed to update post');
-      }
-    } catch (error) {
-      console.error('Error updating post:', error);
-      alert('Failed to update post. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+ 
   const handleDelete = async () => {
-    if (window.confirm('Are you sure you want to delete this post?')) {
-      setIsLoading(true);
-      try {
-        const response = await fetch(`/api/posts/${post.id}`, {
-          method: 'DELETE',
-          headers: {
-            'x-user-email': session.email,
-          },
-        });
+    toast(
+    ({ closeToast }) => (
+      <div className="flex flex-col space-y-2">
+        <p>Are you sure you want to delete this post?</p>
+        <div className="flex gap-2 justify-end">
+          <button
+            onClick={async () => {
+              closeToast();
+              setIsLoading(true);
+              try {
+                const response = await fetch(`/api/posts/${post.id}`, {
+                  method: 'DELETE',
+                  headers: { 'x-user-email': session.email },
+                });
 
-        if (response.ok) {
-          onDelete(post.id);
-        } else {
-          const error = await response.json();
-          console.error('Error response:', error);
-          alert(error.error || 'Failed to delete post');
-        }
-      } catch (error) {
-        console.error('Error deleting post:', error);
-        alert('Failed to delete post. Please try again.');
-      } finally {
-        setIsLoading(false);
-      }
-    }
+                if (response.ok) {
+                  onDelete(post.id);
+                  toast.success('Post deleted successfully');
+                } else {
+                  const error = await response.json();
+                  toast.error(error.error || 'Failed to delete post');
+                }
+              } catch (error) {
+                toast.error('Failed to delete post. Please try again.');
+              } finally {
+                setIsLoading(false);
+              }
+            }}
+            className="bg-red-500 text-white px-3 py-1 rounded"
+          >
+            Delete
+          </button>
+          <button
+            onClick={closeToast}
+            className="bg-gray-300 text-gray-800 px-3 py-1 rounded"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    ),
+    { autoClose: false }
+  );
   };
 
   const handleShare = async () => {
@@ -350,64 +440,155 @@ export default function Post({ post, onUpdate, onDelete }) {
           )}
         </div>
 
-        {isEditing ? (
-          <form onSubmit={handleEdit} className="mt-4 space-y-4">
-            <input
-              type="text"
-              value={editData.title}
-              onChange={(e) => setEditData({...editData, title: e.target.value})}
-              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              placeholder="Post title"
-            />
-            <textarea
-              value={editData.content}
-              onChange={(e) => setEditData({...editData, content: e.target.value})}
-              rows="4"
-              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              placeholder="What's on your mind?"
-              required
-            />
-            <input
-              type="url"
-              value={editData.imageUrl}
-              onChange={(e) => setEditData({...editData, imageUrl: e.target.value})}
-              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              placeholder="Image URL"
-            />
-            <input
-              type="text"
-              value={editData.tags}
-              onChange={(e) => setEditData({...editData, tags: e.target.value})}
-              className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              placeholder="Tags (comma separated)"
-            />
-            <div className="flex space-x-3">
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl text-sm font-medium disabled:opacity-50 hover:shadow-md transition-all transform hover:-translate-y-0.5"
-              >
-                {isLoading ? 'Saving...' : 'Save Changes'}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsEditing(false);
-                  setEditData({
-                    title: post.title,
-                    content: post.content,
-                    imageUrl: post.imageUrl,
-                    tags: post.tags.join(', ')
-                  });
-                }}
-                disabled={isLoading}
-                className="px-6 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-sm font-medium disabled:opacity-50 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-        ) : (
+       {isEditing ? (
+  <form onSubmit={handleEdit} className="mt-4 space-y-4">
+    <input
+      type="text"
+      value={editData.title}
+      onChange={(e) => setEditData({...editData, title: e.target.value})}
+      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+      placeholder="Post title"
+    />
+    <textarea
+      value={editData.content}
+      onChange={(e) => setEditData({...editData, content: e.target.value})}
+      rows="4"
+      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+      placeholder="What's on your mind?"
+      required
+    />
+    
+    {/* Image Upload Section */}
+    <div className="space-y-3">
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        Post Image
+      </label>
+      
+      {/* Current Image Preview */}
+      {post.imageUrl && !selectedImage && (
+        <div className="relative">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Current Image:</p>
+          <img
+            src={post.imageUrl}
+            alt="Current post"
+            className="w-full max-w-xs h-auto rounded-lg border border-gray-300 dark:border-gray-600"
+          />
+          <button
+            type="button"
+            onClick={() => setEditData({...editData, imageUrl: ''})}
+            className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
+      
+      {/* New Image Preview */}
+      {imagePreview && (
+        <div className="relative">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">New Image Preview:</p>
+          <img
+            src={imagePreview}
+            alt="Preview"
+            className="w-full max-w-xs h-auto rounded-lg border border-gray-300 dark:border-gray-600"
+          />
+          <button
+            type="button"
+            onClick={handleRemoveImage}
+            className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
+      
+      {/* File Upload Input */}
+      <div className="flex items-center space-x-4">
+        <label className="flex-1 cursor-pointer">
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageSelect}
+            className="hidden"
+            disabled={isUploading}
+          />
+          <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-4 text-center hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors">
+            <svg className="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              {selectedImage ? 'Change Image' : 'Upload New Image'}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+              PNG, JPG, GIF up to 5MB
+            </p>
+          </div>
+        </label>
+        
+        {/* Or use URL option */}
+        <div className="flex-1">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 text-center">Or enter URL:</p>
+          <input
+            type="url"
+            value={editData.imageUrl}
+            onChange={(e) => setEditData({...editData, imageUrl: e.target.value})}
+            className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm"
+            placeholder="https://example.com/image.jpg"
+            disabled={!!selectedImage}
+          />
+        </div>
+      </div>
+      
+      {/* Upload Progress */}
+      {isUploading && (
+        <div className="flex items-center space-x-2 text-sm text-indigo-600 dark:text-indigo-400">
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-indigo-600"></div>
+          <span>Uploading image...</span>
+        </div>
+      )}
+    </div>
+    
+    <input
+      type="text"
+      value={editData.tags}
+      onChange={(e) => setEditData({...editData, tags: e.target.value})}
+      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+      placeholder="Tags (comma separated)"
+    />
+    
+    <div className="flex space-x-3">
+      <button
+        type="submit"
+        disabled={isLoading || isUploading}
+        className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl text-sm font-medium disabled:opacity-50 hover:shadow-md transition-all transform hover:-translate-y-0.5"
+      >
+        {isLoading ? 'Saving...' : 'Save Changes'}
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          setIsEditing(false);
+          setEditData({
+            title: post.title,
+            content: post.content,
+            imageUrl: post.imageUrl,
+            tags: post.tags.join(', ')
+          });
+          setSelectedImage(null);
+          setImagePreview(null);
+        }}
+        disabled={isLoading || isUploading}
+        className="px-6 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl text-sm font-medium disabled:opacity-50 transition-colors"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
+) : (
           <>
             {post.title && (
               <h2 className="text-xl font-bold text-gray-900 dark:text-white mt-4 mb-2 leading-tight">

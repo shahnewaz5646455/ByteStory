@@ -1,4 +1,5 @@
 
+import ScrollToTop from "@/components/ScrollToTop";
 import Cta from "../../components/Cta";
 import FAQ from "../../components/Faq";
 import Feature from "../../components/Feature";
@@ -19,6 +20,7 @@ export default function Home() {
       <TestimonialSection />
       <FAQ />
       <Cta />
+      <ScrollToTop />
     </>
   );
 }

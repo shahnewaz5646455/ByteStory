@@ -50,7 +50,7 @@ export default function AdminSidebar({ onClose }) {
       icon: Users,
       badge: totalUsers !== null ? String(totalUsers) : null,
     },
-    { name: "Content", href: "/admin/content", icon: FileText, badge: "12" },
+    { name: "Content", href: "/feed", icon: FileText},
     {
       name: "Analytics",
       href: "/admin/analytics",
@@ -69,7 +69,7 @@ export default function AdminSidebar({ onClose }) {
       {/* Header */}
       <div className="flex items-center justify-between h-20 px-4 md:px-6 border-b border-gray-100/50 dark:border-gray-600/50">
         <Link
-          href="/admin"
+          href="/"
           className="group flex items-center gap-3 cursor-pointer transition-all duration-300"
           onClick={onClose}
         >
