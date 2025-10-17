@@ -44,9 +44,10 @@ export default function FeedPage() {
   };
 
   // Filter posts based on active filter and search query
-  const filteredPosts = posts.filter(post => {
+const filteredPosts = posts.filter(post => {
     const matchesSearch = post.content?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          post.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         post.authorName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          post.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     
     if (activeFilter === 'popular') {

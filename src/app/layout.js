@@ -8,6 +8,7 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { Toaster } from "@/components/ui/sonner";
 import GlobalNotepad from "../../components/GlobalNotepad";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,6 +46,7 @@ export default function RootLayout({ children }) {
               {children}
               <GlobalNotepad />
               <Footer />
+              <ScrollToTop /> 
             </GlobalStoreProvider>
             <ToastContainer />
 
