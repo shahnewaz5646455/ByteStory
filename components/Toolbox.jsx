@@ -1,6 +1,5 @@
 "use client";
 import { ArrowRight } from "lucide-react";
-import { motion } from "framer-motion";
 import Link from "next/link";
 
 const tools = [
@@ -55,12 +54,8 @@ export default function ToolboxSection() {
         {/* Tools Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-y-8 gap-x-12">
           {tools.map((tool, i) => (
-            <motion.div
+            <div
               key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: i * 0.05 }}
-              viewport={{ once: true }}
               className="flex flex-col md:flex-row items-start md:items-center gap-3"
             >
               <span className="text-indigo-500 text-xl font-semibold">✔</span>
@@ -70,7 +65,7 @@ export default function ToolboxSection() {
                 </div>
                 <p className="text-gray-600 dark:text-gray-400 text-start text-sm mt-1">{tool.desc}</p>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
