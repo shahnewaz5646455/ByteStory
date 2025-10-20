@@ -29,7 +29,7 @@ import { showToast } from "@/lib/showToast";
 import axios from "axios";
 import OtpVerification from "@/components/ui/Application/OtpVerification";
 import { useDispatch } from "react-redux";
-import GoogleG from "../../../components/GoogleG";
+// import GoogleG from "../../../components/GoogleG";
 import { GoogleLogin } from "@react-oauth/google";
 import { login } from "@/store/reducer/authReducer";
 
@@ -59,7 +59,7 @@ function LoginPage() {
     },
   });
 
-  // Handle submit
+  // Handle submit login
   const handleLoginSubmit = async (values) => {
     try {
       setLoading(true);
@@ -105,7 +105,7 @@ function LoginPage() {
         router.push(searchParams.get("callback"));
       } else {
         otpResponse.data.role === "admin"
-          ? router.push("/admin/adminDashboard")
+          ? router.push("/admin/adminDashboard/overview")
           : router.push("/website/my-account");
       }
     } catch (error) {
@@ -141,7 +141,7 @@ function LoginPage() {
         router.push(searchParams.get("callback"));
       } else {
         googleResponse.data.role === "admin"
-          ? router.push("/admin/adminDashboard")
+          ? router.push("/admin/adminDashboard/overview")
           : router.push("/website/my-account");
       }
     } catch (error) {

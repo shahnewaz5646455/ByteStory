@@ -10,7 +10,7 @@ const people = [
     name: "Mirajul Islam Miraz",
     role: "Frontend Developer",
     email: "minhajulmiraz28@gmail.com",
-    profile: "https://i.postimg.cc/dtgmX6v5/1748150704812.jpg",
+    profile: "miraz.jpg",
     connect: "https://www.linkedin.com/in/minhajul-islam-miraz/"
   },
   {
@@ -18,7 +18,7 @@ const people = [
     name: "Sohanur Rahman",
     role: "Backend Developer",
     email: "sohanuractive007@gmail.com",
-    profile: "https://i.postimg.cc/4y6hnDmd/155247604.jpg",
+    profile: "sohanur.jpg",
     connect: "https://www.linkedin.com/in/sohanurrahman007/"
   },
   {
@@ -26,7 +26,7 @@ const people = [
     name: "Shah Newaz",
     role: "Full-Stack Developer",
     email: "shahnewaz794@gmail.com",
-    profile: "https://i.postimg.cc/3xvQp33n/1754633887935.jpg",
+    profile: "newaz.jpg",
     connect: "https://www.linkedin.com/in/md-shah-newaz001/"
   },
   {
@@ -34,7 +34,7 @@ const people = [
     name: "Rubaid Islam",
     role: "UI/UX Designer",
     email: "mohammadrubaid07@gmail.com",
-    profile: "https://i.postimg.cc/KvcnRYDh/1755966330626.jpg",
+    profile: "rubaid.jpg",
     connect: "https://www.linkedin.com/in/rubaid07/"
   },
   {
@@ -42,25 +42,10 @@ const people = [
     name: "Moinul Islam Umair",
     role: "Founder & Project Lead",
     email: "moinuli359@gmail.com",
-    profile: "https://i.postimg.cc/bwrY3wrN/photo-2025-08-12-23-30-26.jpg",
+    profile: "moinul.jpg",
     connect: "https://www.linkedin.com/in/moinul505/"
   },
-  {
-    id: 6,
-    name: "Team Member",
-    role: "Developer",
-    email: "member1@example.com",
-    profile: "https://i.postimg.cc/fyRSxwNX/photo-1568602471122-7832951cc4c5.jpg",
-    connect: "#"
-  },
-  {
-    id: 7,
-    name: "Team Member",
-    role: "Designer",
-    email: "member2@example.com",
-    profile: "https://i.postimg.cc/3x4pSJDF/young-bearded-man-with-striped-shirt.jpg",
-    connect: "#"
-  }
+ 
 ];
 
 const safeImage = (e) => {

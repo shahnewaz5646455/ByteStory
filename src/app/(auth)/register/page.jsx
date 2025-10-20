@@ -3,9 +3,14 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "next-auth/react";
+
 import Link from "next/link";
 import { useState } from "react";
+
+import { GoogleLogin } from "@react-oauth/google";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { login } from "@/store/reducer/authReducer";
 
 // shadcn/ui components
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,13 +31,17 @@ import { Mail, Lock, User, Loader2, Eye, EyeOff, Sparkles } from "lucide-react";
 import { zSchema } from "@/lib/zodSchema";
 import axios from "axios";
 import { showToast } from "@/lib/showToast";
-import GoogleG from "../../../components/GoogleG";
+import GoogleG from "../../../../components/GoogleG";
+// import GoogleG from "../../../components/GoogleG";
 
 export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const router = useRouter();
+  const dispatch = useDispatch();
 
+  //  Form schema setup
   const formSchema = zSchema
     .pick({
       name: true,
@@ -57,6 +66,7 @@ export default function RegisterPage() {
     },
   });
 
+  //  Email-based registration
   const handleRegister = async (values) => {
     try {
       setLoading(true);
@@ -74,6 +84,39 @@ export default function RegisterPage() {
       showToast("success", registerResponse.message);
     } catch (error) {
       showToast("error", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //  Google-based registration/login
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setLoading(true);
+
+      const { data: googleResponse } = await axios.post(
+        "/api/test/auth/google",
+        { credential: credentialResponse.credential }
+      );
+
+      if (!googleResponse.success) {
+        throw new Error(googleResponse.message);
+      }
+
+      // Store user in Redux
+      dispatch(login(googleResponse.data));
+
+      // Show success message
+      showToast("success", googleResponse.message || "Logged in successfully");
+
+      // Redirect based on role
+      if (googleResponse.data.role === "admin") {
+        router.push("/admin/adminDashboard/overview");
+      } else {
+        router.push("/website/my-account");
+      }
+    } catch (error) {
+      showToast("error", error.message || "Google login failed");
     } finally {
       setLoading(false);
     }
@@ -98,29 +141,16 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          {/* Google Register Button */}
-
-          <button
-            onClick={() =>
-              (window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&redirect_uri=${process.env.NEXT_PUBLIC_BASE_URL}/api/test/auth/google/callback&response_type=code&scope=openid%20profile%20email`)
-            }
-            className="w-full flex items-center justify-center gap-3 px-6 py-1 
-             rounded-md font-medium text-gray-700 dark:text-gray-100 
-             border border-gray-300 dark:border-gray-600 
-             bg-white dark:bg-gray-800 
-             hover:shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 
-             transition-all duration-300 cursor-pointer"
-          >
-            {/* Google Icon */}
-            <div className="p-2 bg-white rounded-full shadow-sm dark:bg-gray-700 group-hover:scale-110 transition-transform">
-              <GoogleG className="w-5 h-5 text-[#4285F4]" />
-            </div>
-
-            {/* Text */}
-            <span className="text-sm md:text-base text-center">
-              Continue with <span className="font-semibold">Google</span>
-            </span>
-          </button>
+          {/* ✅ Google Register Button (Now Fully Functional) */}
+          <div className="w-full flex justify-center mb-4">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => showToast("error", "Google login failed")}
+              shape="rectangular"
+              text="continue_with"
+              width="320"
+            />
+          </div>
 
           {/* Separator */}
           <div className="flex items-center gap-3 my-6">
