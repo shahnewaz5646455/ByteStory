@@ -21,6 +21,9 @@ import {
   WifiOff,
   AlertTriangle,
   Instagram,
+  Key,
+  X,
+  ShoppingCart,
 } from "lucide-react";
 import {
   FacebookShareButton,
@@ -34,15 +37,96 @@ import { useSelector } from "react-redux";
 
 export default function AIWriterPage() {
   const auth = useSelector((store) => store.authStore.auth);
-  // console.log(auth);
+  
+  // ---- Blog Key State ----
+  const [blogKeyCount, setBlogKeyCount] = useState(0);
+  const [userData, setUserData] = useState(null);
+  const [showKeyModal, setShowKeyModal] = useState(false);
 
-  // ---- Share state that's needed across handlers ----
+  // // ---- Hidden developer function to log user data to console ----
+  const logUserDataToConsole = async () => {
+    if (!auth?.email) {
+      console.log("🔴 No user email found in Redux store");
+      return;
+    }
+
+    try {
+   
+      const response = await fetch(`/api/get-user-data?email=${encodeURIComponent(auth.email)}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setUserData(data.user);
+        setBlogKeyCount(data.user.blog_key || 0);
+        
+      } else {
+        console.error(" Failed to fetch user data:", data.message);
+      }
+    } catch (error) {
+      console.error(" Error fetching user data:", error);
+    }
+  };
+
+  // ---- Update Blog Key Count in Database ----
+  const updateBlogKeyInDB = async (newCount) => {
+    if (!auth?.email) return;
+
+    try {
+      const response = await fetch('/api/update-blog-keys', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: auth.email,
+          blog_key: newCount
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        console.log("✅ Blog keys updated in database:", newCount);
+        setBlogKeyCount(newCount);
+      } else {
+        console.error("❌ Failed to update blog keys:", data.message);
+      }
+    } catch (error) {
+      console.error("❌ Error updating blog keys:", error);
+    }
+  };
+
+  // ---- Automatically log user data when component mounts or auth changes ----
+  useEffect(() => {
+    if (auth?.email) {
+      // Small delay to ensure everything is loaded
+      const timer = setTimeout(() => {
+        console.log("🚀 AIWriterPage mounted - Checking user data...");
+        logUserDataToConsole();
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [auth?.email]);
+
+  // ---- Also provide a manual way to trigger from console ----
+  useEffect(() => {
+    // Make function available globally for manual triggering
+    window.debugUserData = logUserDataToConsole;
+    
+    console.log("💡 Developer Tip: Type 'debugUserData()' in console to see user data");
+    
+    return () => {
+      delete window.debugUserData;
+    };
+  }, [auth?.email]);
+
+  // ---- আপনার existing state variables ----
   const [shareId, setShareId] = useState(null);
   const [sharedUrl, setSharedUrl] = useState(
     typeof window !== "undefined" ? window.location.href : "https://yourdomain.com"
   );
 
-  // ---- Network state ----
   const [isOnline, setIsOnline] = useState(
     typeof window !== "undefined" ? navigator.onLine : true
   );
@@ -52,7 +136,6 @@ export default function AIWriterPage() {
   const [hasNetworkChanged, setHasNetworkChanged] = useState(false);
   const [pendingRequest, setPendingRequest] = useState(null);
 
-  // ---- App state ----
   const [input, setInput] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [output, setOutput] = useState("");
@@ -61,12 +144,76 @@ export default function AIWriterPage() {
   const [showTemplates, setShowTemplates] = useState(false);
   const [error, setError] = useState("");
 
-  // ---- Share UI state ----
   const [showShareMenu, setShowShareMenu] = useState(false);
   const shareBtnRef = useRef(null);
   const shareMenuRef = useRef(null);
 
-  // Close share popover on outside click / Escape
+  // ---- Check Blog Keys Before API Call ----
+  const checkAndUseBlogKey = async () => {
+   
+    if (blogKeyCount <= 0) {
+      setShowKeyModal(true);
+      return false;
+    }
+
+    // Deduct one key and update database
+    const newCount = blogKeyCount - 1;
+    await updateBlogKeyInDB(newCount);
+    return true;
+  };
+
+  // ---- Modified API functions with Blog Key Check ----
+  const executeGenerateContent = async (inputText, template) => {
+    // First check if user has blog keys
+    const hasKeys = await checkAndUseBlogKey();
+    if (!hasKeys) {
+      setIsGenerating(false);
+      return;
+    }
+
+    setIsGenerating(true);
+    setError("");
+    setOutput("");
+    try {
+      const resp = await fetch("/api/generate-content", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: inputText, template }),
+      });
+      const data = await resp.json();
+      if (resp.ok && data?.success) setOutput(data.content);
+      else setError(data?.message || "Failed to generate content. Please try again.");
+    } catch (e) {
+      console.error(e);
+      setError("Failed to generate content. Please try again.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!input.trim()) {
+      setError("Please enter a topic or description");
+      return;
+    }
+
+    if (!auth) {
+      setError("Please login to use AI writing tool");
+      return;
+    }
+
+    if (!isOnline) {
+      setPendingRequest({ input: input.trim(), template: selectedTemplate });
+      setShowWaitingButton(true);
+      setError("");
+      return;
+    }
+    
+    await executeGenerateContent(input.trim(), selectedTemplate);
+  };
+
+  // ---- আপনার existing functions ----
   useEffect(() => {
     function onClick(e) {
       if (!showShareMenu) return;
@@ -116,7 +263,6 @@ export default function AIWriterPage() {
     },
   ];
 
-  // ---- Network listeners ----
   useEffect(() => {
     const handleOnline = () => {
       setIsOnline(true);
@@ -134,7 +280,6 @@ export default function AIWriterPage() {
     };
   }, []);
 
-  // ---- Status banners + auto-run pending ----
   useEffect(() => {
     if (!hasNetworkChanged) return;
 
@@ -157,98 +302,60 @@ export default function AIWriterPage() {
     }
   }, [isOnline, hasNetworkChanged, pendingRequest]);
 
-  // ---- Generate API call ----
-  const executeGenerateContent = async (inputText, template) => {
-    setIsGenerating(true);
-    setError("");
-    setOutput("");
-    try {
-      const resp = await fetch("/api/generate-content", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: inputText, template }),
-      });
-      const data = await resp.json();
-      if (resp.ok && data?.success) setOutput(data.content);
-      else setError(data?.message || "Failed to generate content. Please try again.");
-    } catch (e) {
-      console.error(e);
-      setError("Failed to generate content. Please try again.");
-    } finally {
-      setIsGenerating(false);
+  const PostToDB = async () => {
+    if (!output.trim()) {
+      setError("No content to share");
+      throw new Error("No content to share");
     }
-  };
 
-  // ---- Submit ----
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!input.trim()) {
-      setError("Please enter a topic or description");
-      return;
-    }
-    if (!isOnline) {
-      setPendingRequest({ input: input.trim(), template: selectedTemplate });
-      setShowWaitingButton(true);
-      setError("");
-      return;
-    }
-    await executeGenerateContent(input.trim(), selectedTemplate);
-  };
-
-const PostToDB = async () => {
-  if (!output.trim()) {
-    setError("No content to share");
-    throw new Error("No content to share");
-  }
-
-  const time = new Date().toLocaleString("en-US", {
-    day: "2-digit",
-    month: "short", 
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-
-  try {
-    const resp = await fetch("/api/content-saveTo-DB", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        prompt: input,
-        template: selectedTemplate,
-        content: output,
-        type: "blog",
-        generated_time: { time },
-        visibility: "public",
-        user: { email: auth?.email, name: auth?.name },
-      }),
+    const time = new Date().toLocaleString("en-US", {
+      day: "2-digit",
+      month: "short", 
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
     });
 
-    const contentData = await resp.json();
-    
-    if (!resp.ok || !contentData?.success) {
-      throw new Error(contentData?.message || "Failed to save content");
-    }
+    try {
+      const resp = await fetch("/api/content-saveTo-DB", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: input,
+          template: selectedTemplate,
+          content: output,
+          type: "blog",
+          generated_time: { time },
+          visibility: "public",
+          user: { email: auth?.email, name: auth?.name },
+        }),
+      });
 
-    const insertedId = contentData.data.insertedId;
-    const origin = typeof window !== "undefined" ? window.location.origin : "https://yourdomain.com";
-    const shareUrl = `${origin}/Shared-Content/${insertedId}`;
-    
-    // State update (for UI if needed)
-    setShareId(insertedId);
-    setSharedUrl(shareUrl);
-    
-    console.log("✅ Content saved. Share URL:", shareUrl);
-    
-    return shareUrl;
-    
-  } catch (error) {
-    console.error("❌ Failed to save content:", error);
-    setError(error.message || "Failed to save content for sharing");
-    throw error;
-  }
-};
+      const contentData = await resp.json();
+      
+      if (!resp.ok || !contentData?.success) {
+        throw new Error(contentData?.message || "Failed to save content");
+      }
+
+      const insertedId = contentData.data.insertedId;
+      const origin = typeof window !== "undefined" ? window.location.origin : "https://yourdomain.com";
+      const shareUrl = `${origin}/Shared-Content/${insertedId}`;
+      
+      setShareId(insertedId);
+      setSharedUrl(shareUrl);
+      
+      console.log("✅ Content saved. Share URL:", shareUrl);
+      
+      return shareUrl;
+      
+    } catch (error) {
+      console.error("❌ Failed to save content:", error);
+      setError(error.message || "Failed to save content for sharing");
+      throw error;
+    }
+  };
+
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(output);
@@ -286,7 +393,137 @@ const PostToDB = async () => {
         </div>
       )}
 
+      {/* Key Purchase Modal */}
+      <AnimatePresence>
+        {showKeyModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-800"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setShowKeyModal(false)}
+                className="absolute right-4 top-4 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+              >
+                <X size={20} />
+              </button>
+
+              {/* Modal Content */}
+              <div className="text-center">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20">
+                  <Key className="h-8 w-8 text-red-600 dark:text-red-400" />
+                </div>
+                
+                <h3 className="mb-2 text-xl font-bold text-gray-900 dark:text-white">
+                  No Blog Keys Left!
+                </h3>
+                
+                <p className="mb-6 text-gray-600 dark:text-gray-300">
+                  You have used all your available blog keys. Purchase more keys to continue using the AI writing tool.
+                </p>
+
+                {/* Key Package */}
+                <div className="mb-6 rounded-xl border-2 border-amber-200 bg-amber-50 p-4 dark:border-amber-600 dark:bg-amber-900/20">
+                  <div className="flex items-center justify-between">
+                    <div className="text-left">
+                      <h4 className="font-semibold text-amber-800 dark:text-amber-200">
+                        10 Blog Keys Package
+                      </h4>
+                      <p className="text-sm text-amber-600 dark:text-amber-400">
+                        Generate 10 AI articles
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-amber-700 dark:text-amber-300">
+                        $9.99
+                      </p>
+                      <p className="text-xs text-amber-600 dark:text-amber-400">
+                        $1 per article
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowKeyModal(false)}
+                    className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-3 font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                  >
+                    Maybe Later
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      // Here you can integrate with payment gateway
+                      alert("Redirecting to payment gateway...");
+                      setShowKeyModal(false);
+                    }}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 font-medium text-white transition-all hover:from-amber-600 hover:to-orange-600"
+                  >
+                    <ShoppingCart size={18} />
+                    Buy Now
+                  </button>
+                </div>
+
+                <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">
+                  Secure payment • Instant delivery • Money back guarantee
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <main className="relative z-10 mx-auto max-w-7xl px-4 py-8">
+        {/* Blog Key Counter */}
+        {auth && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mb-6 flex justify-end"
+          >
+            <div className="flex items-center gap-3 rounded-2xl bg-gradient-to-r from-amber-50 to-yellow-50 px-4 py-3 shadow-lg border border-amber-200/50 dark:from-amber-900/20 dark:to-yellow-900/20 dark:border-amber-700/30">
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <Key className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="absolute -top-1 -right-1 h-2 w-2 bg-green-500 rounded-full"
+                  />
+                </div>
+                <span className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                  Blog Keys
+                </span>
+              </div>
+              <div className="h-6 w-px bg-amber-300 dark:bg-amber-600" />
+              <motion.div
+                key={blogKeyCount}
+                initial={{ scale: 1.5 }}
+                animate={{ scale: 1 }}
+                className="flex items-center gap-1"
+              >
+                <span className="text-xl font-bold text-amber-700 dark:text-amber-300">
+                  {blogKeyCount}
+                </span>
+                <span className="text-xs text-amber-600 dark:text-amber-400">
+                  available
+                </span>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Hero */}
         <section className="mb-16 text-center">
           <div className="mb-4 inline-flex w-full justify-center md:mb-6">
@@ -574,7 +811,6 @@ const PostToDB = async () => {
   type="button"
   onClick={async () => {
     try {
-      // ✅ প্রথমে content save করছি
       const shareUrl = await PostToDB();
       
       if (navigator.share) {
@@ -585,7 +821,6 @@ const PostToDB = async () => {
         });
         setShowShareMenu(false);
       } else {
-        // Fallback: copy to clipboard
         await navigator.clipboard.writeText(shareUrl);
         alert("Link copied to clipboard! Share this URL: " + shareUrl);
       }
@@ -650,7 +885,6 @@ const PostToDB = async () => {
             <div className="max-w-none markdown-content">
               <ReactMarkdown
                 components={{
-                  // Custom styling for markdown elements
                   h1: ({node, ...props}) => <h1 className="text-2xl font-bold mt-6 mb-4 text-gray-900 dark:text-white border-b pb-2" {...props} />,
                   h2: ({node, ...props}) => <h2 className="text-xl font-bold mt-5 mb-3 text-gray-800 dark:text-gray-200" {...props} />,
                   h3: ({node, ...props}) => <h3 className="text-lg font-semibold mt-4 mb-2 text-gray-700 dark:text-gray-300" {...props} />,
