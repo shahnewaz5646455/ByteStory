@@ -1,5 +1,5 @@
 "use client";
-
+import { loadStripe } from '@stripe/stripe-js'
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from 'react-markdown';
@@ -35,6 +35,9 @@ import Reader from "@/components/ui/Reader";
 import SpeechRecorder from "@/components/ui/speechRecorder";
 import { useSelector } from "react-redux";
 
+// Initialize Stripe with your public key
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+
 export default function AIWriterPage() {
   const auth = useSelector((store) => store.authStore.auth);
   
@@ -42,8 +45,9 @@ export default function AIWriterPage() {
   const [blogKeyCount, setBlogKeyCount] = useState(0);
   const [userData, setUserData] = useState(null);
   const [showKeyModal, setShowKeyModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // // ---- Hidden developer function to log user data to console ----
+  // ---- Hidden developer function to log user data to console ----
   const logUserDataToConsole = async () => {
     if (!auth?.email) {
       console.log("🔴 No user email found in Redux store");
@@ -51,14 +55,12 @@ export default function AIWriterPage() {
     }
 
     try {
-   
       const response = await fetch(`/api/get-user-data?email=${encodeURIComponent(auth.email)}`);
       const data = await response.json();
 
       if (data.success) {
         setUserData(data.user);
         setBlogKeyCount(data.user.blog_key || 0);
-        
       } else {
         console.error(" Failed to fetch user data:", data.message);
       }
@@ -99,7 +101,6 @@ export default function AIWriterPage() {
   // ---- Automatically log user data when component mounts or auth changes ----
   useEffect(() => {
     if (auth?.email) {
-      // Small delay to ensure everything is loaded
       const timer = setTimeout(() => {
         console.log("🚀 AIWriterPage mounted - Checking user data...");
         logUserDataToConsole();
@@ -111,9 +112,7 @@ export default function AIWriterPage() {
 
   // ---- Also provide a manual way to trigger from console ----
   useEffect(() => {
-    // Make function available globally for manual triggering
     window.debugUserData = logUserDataToConsole;
-    
     console.log("💡 Developer Tip: Type 'debugUserData()' in console to see user data");
     
     return () => {
@@ -121,7 +120,7 @@ export default function AIWriterPage() {
     };
   }, [auth?.email]);
 
-  // ---- আপনার existing state variables ----
+  // ---- Existing state variables ----
   const [shareId, setShareId] = useState(null);
   const [sharedUrl, setSharedUrl] = useState(
     typeof window !== "undefined" ? window.location.href : "https://yourdomain.com"
@@ -150,7 +149,6 @@ export default function AIWriterPage() {
 
   // ---- Check Blog Keys Before API Call ----
   const checkAndUseBlogKey = async () => {
-   
     if (blogKeyCount <= 0) {
       setShowKeyModal(true);
       return false;
@@ -213,7 +211,7 @@ export default function AIWriterPage() {
     await executeGenerateContent(input.trim(), selectedTemplate);
   };
 
-  // ---- আপনার existing functions ----
+  // ---- Existing functions ----
   useEffect(() => {
     function onClick(e) {
       if (!showShareMenu) return;
@@ -368,6 +366,47 @@ export default function AIWriterPage() {
 
   const shareTitle = output ? output.slice(0, 80) : "Check this out";
 
+  const handleCheckout = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lineItems: [
+            {
+              price_data: {
+                currency: 'usd',
+                product_data: { name: 'AI powered blog generator' },
+                unit_amount: 100,
+              },
+              quantity: 1,
+            },
+          ],
+        }),
+      })
+
+      const data = await res.json()
+
+      // Redirect using Stripe-hosted URL if available
+      if (data.url) {
+        window.location.href = data.url
+        return
+      }
+
+      // Fallback: redirect using session ID
+      if (data.id) {
+        const stripe = await stripePromise
+        await stripe.redirectToCheckout({ sessionId: data.id })
+      }
+    } catch (err) {
+      console.error(err)
+      alert('Checkout failed. See console for details.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 text-gray-900 transition-colors duration-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 dark:text-white">
       {/* Online banner */}
@@ -443,10 +482,10 @@ export default function AIWriterPage() {
                     </div>
                     <div className="text-right">
                       <p className="text-2xl font-bold text-amber-700 dark:text-amber-300">
-                        $9.99
+                        $1
                       </p>
                       <p className="text-xs text-amber-600 dark:text-amber-400">
-                        $1 per article
+                        0.1 per article
                       </p>
                     </div>
                   </div>
@@ -463,8 +502,7 @@ export default function AIWriterPage() {
                   
                   <button
                     onClick={() => {
-                      // Here you can integrate with payment gateway
-                      alert("Redirecting to payment gateway...");
+                      handleCheckout()
                       setShowKeyModal(false);
                     }}
                     className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 font-medium text-white transition-all hover:from-amber-600 hover:to-orange-600"
@@ -654,9 +692,9 @@ export default function AIWriterPage() {
                       whileTap={{ scale: 0.95 }}
                       type="submit"
                       aria-label="Send"
-                      disabled={isGenerating || !input.trim()}
+                      disabled={isGenerating || !input.trim() || !auth}
                       className={`rounded-full p-3 shadow-lg transition-all duration-300 ${
-                        isGenerating || !input.trim()
+                        isGenerating || !input.trim() || !auth
                           ? "cursor-not-allowed bg-gray-300 dark:bg-gray-600"
                           : "cursor-pointer bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-indigo-500/30 dark:hover:shadow-purple-500/20"
                       }`}
@@ -668,12 +706,23 @@ export default function AIWriterPage() {
                         >
                           <Clock size={22} className="text-white" />
                         </motion.div>
+                      ) : !auth ? (
+                        <Key size={22} className="text-gray-500" />
                       ) : (
                         <Send size={22} className="text-white" />
                       )}
                     </motion.button>
                   </div>
                 </div>
+
+                {/* Login Message */}
+                {!auth && (
+                  <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                    <p className="text-blue-600 dark:text-blue-400 text-sm text-center">
+                      🔐 Please login to use the AI Writing Assistant
+                    </p>
+                  </div>
+                )}
 
                 {showWaitingButton && (
                   <motion.div
@@ -771,70 +820,68 @@ export default function AIWriterPage() {
                           role="menu"
                         >
                           <div className="flex items-center gap-2">
-                         
-<FacebookShareButton
-  url={sharedUrl}
-  quote={shareTitle}
-  beforeOnClick={async () => {
-    try {
-      const newUrl = await PostToDB();
-      
-      setSharedUrl(newUrl);
-      return true;
-    } catch {
-      return false;
-    }
-  }}
->
-  <FacebookIcon size={36} round />
-</FacebookShareButton>
+                            <FacebookShareButton
+                              url={sharedUrl}
+                              quote={shareTitle}
+                              beforeOnClick={async () => {
+                                try {
+                                  const newUrl = await PostToDB();
+                                  setSharedUrl(newUrl);
+                                  return true;
+                                } catch {
+                                  return false;
+                                }
+                              }}
+                            >
+                              <FacebookIcon size={36} round />
+                            </FacebookShareButton>
 
-<WhatsappShareButton
-  url={sharedUrl}
-  title={shareTitle}
-  separator=" — "
-  beforeOnClick={async () => {
-    try {
-      const newUrl = await PostToDB();
-      setSharedUrl(newUrl);
-      return true;
-    } catch {
-      return false;
-    }
-  }}
->
-  <WhatsappIcon size={36} round />
-</WhatsappShareButton>
+                            <WhatsappShareButton
+                              url={sharedUrl}
+                              title={shareTitle}
+                              separator=" — "
+                              beforeOnClick={async () => {
+                                try {
+                                  const newUrl = await PostToDB();
+                                  setSharedUrl(newUrl);
+                                  return true;
+                                } catch {
+                                  return false;
+                                }
+                              }}
+                            >
+                              <WhatsappIcon size={36} round />
+                            </WhatsappShareButton>
 
-{/* Instagram-style share */}
-<button
-  type="button"
-  onClick={async () => {
-    try {
-      const shareUrl = await PostToDB();
-      
-      if (navigator.share) {
-        await navigator.share({
-          title: shareTitle,
-          text: output.slice(0, 100) + "...",
-          url: shareUrl,
-        });
-        setShowShareMenu(false);
-      } else {
-        await navigator.clipboard.writeText(shareUrl);
-        alert("Link copied to clipboard! Share this URL: " + shareUrl);
-      }
-    } catch (error) {
-      if (error.name !== "AbortError") {
-        console.error("Share failed:", error);
-        alert("Sharing failed. Please try again.");
-      }
-    }
-  }}
-  className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-pink-500 via-red-500 to-yellow-500 text-white shadow hover:opacity-90 focus:outline-none"
->
-  <Instagram size={18} />
-</button>
+                            {/* Instagram-style share */}
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                try {
+                                  const shareUrl = await PostToDB();
+                                  
+                                  if (navigator.share) {
+                                    await navigator.share({
+                                      title: shareTitle,
+                                      text: output.slice(0, 100) + "...",
+                                      url: shareUrl,
+                                    });
+                                    setShowShareMenu(false);
+                                  } else {
+                                    await navigator.clipboard.writeText(shareUrl);
+                                    alert("Link copied to clipboard! Share this URL: " + shareUrl);
+                                  }
+                                } catch (error) {
+                                  if (error.name !== "AbortError") {
+                                    console.error("Share failed:", error);
+                                    alert("Sharing failed. Please try again.");
+                                  }
+                                }
+                              }}
+                              className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-pink-500 via-red-500 to-yellow-500 text-white shadow hover:opacity-90 focus:outline-none"
+                            >
+                              <Instagram size={18} />
+                            </button>
                           </div>
                         </motion.div>
                       )}
@@ -857,64 +904,64 @@ export default function AIWriterPage() {
               </div>
 
               <div className="h-48 overflow-y-auto rounded-2xl border-2 border-indigo-100/50 bg-gradient-to-br from-white to-indigo-50/50 p-6 shadow-inner dark:from-gray-700/80 dark:to-gray-800/80 dark:border-gray-600">
-          {isGenerating ? (
-            <div className="flex h-full items-center justify-center">
-              <motion.div
-                initial={{ opacity: 0.5, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ repeat: Infinity, repeatType: "reverse", duration: 1.5 }}
-                className="flex flex-col items-center text-center"
-              >
-                <div className="relative">
-                  <Sparkles className="mb-3 h-8 w-8 text-indigo-500" />
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                    className="absolute -inset-2 rounded-full border-2 border-indigo-200 border-t-indigo-500"
-                  />
-                </div>
-                <p className="font-medium text-gray-600 dark:text-gray-400">
-                  Crafting your content...
-                </p>
-                <p className="mt-1 text-sm text-gray-500 dark:text-gray-500">
-                  This may take a few moments
-                </p>
-              </motion.div>
-            </div>
-          ) : output ? (
-            <div className="max-w-none markdown-content">
-              <ReactMarkdown
-                components={{
-                  h1: ({node, ...props}) => <h1 className="text-2xl font-bold mt-6 mb-4 text-gray-900 dark:text-white border-b pb-2" {...props} />,
-                  h2: ({node, ...props}) => <h2 className="text-xl font-bold mt-5 mb-3 text-gray-800 dark:text-gray-200" {...props} />,
-                  h3: ({node, ...props}) => <h3 className="text-lg font-semibold mt-4 mb-2 text-gray-700 dark:text-gray-300" {...props} />,
-                  p: ({node, ...props}) => <p className="mb-4 text-justify leading-relaxed text-gray-800 dark:text-gray-200" {...props} />,
-                  strong: ({node, ...props}) => <strong className="font-bold text-gray-900 dark:text-white" {...props} />,
-                  em: ({node, ...props}) => <em className="italic text-gray-700 dark:text-gray-300" {...props} />,
-                  ul: ({node, ...props}) => <ul className="mb-4 ml-6 list-disc space-y-2 text-gray-800 dark:text-gray-200" {...props} />,
-                  ol: ({node, ...props}) => <ol className="mb-4 ml-6 list-decimal space-y-2 text-gray-800 dark:text-gray-200" {...props} />,
-                  li: ({node, ...props}) => <li className="text-justify" {...props} />,
-                  blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-indigo-500 pl-4 my-4 italic text-gray-600 dark:text-gray-400" {...props} />,
-                }}
-              >
-                {output}
-              </ReactMarkdown>
-            </div>
-          ) : (
-            <div className="flex h-full flex-col items-center justify-center text-center">
-              <div className="relative mb-4">
-                <Type size={40} className="text-indigo-300 dark:text-indigo-500" />
-                <Sparkles className="absolute -right-2 -top-2 h-5 w-5 animate-pulse text-indigo-500" />
+                {isGenerating ? (
+                  <div className="flex h-full items-center justify-center">
+                    <motion.div
+                      initial={{ opacity: 0.5, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ repeat: Infinity, repeatType: "reverse", duration: 1.5 }}
+                      className="flex flex-col items-center text-center"
+                    >
+                      <div className="relative">
+                        <Sparkles className="mb-3 h-8 w-8 text-indigo-500" />
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                          className="absolute -inset-2 rounded-full border-2 border-indigo-200 border-t-indigo-500"
+                        />
+                      </div>
+                      <p className="font-medium text-gray-600 dark:text-gray-400">
+                        Crafting your content...
+                      </p>
+                      <p className="mt-1 text-sm text-gray-500 dark:text-gray-500">
+                        This may take a few moments
+                      </p>
+                    </motion.div>
+                  </div>
+                ) : output ? (
+                  <div className="max-w-none markdown-content">
+                    <ReactMarkdown
+                      components={{
+                        h1: ({node, ...props}) => <h1 className="text-2xl font-bold mt-6 mb-4 text-gray-900 dark:text-white border-b pb-2" {...props} />,
+                        h2: ({node, ...props}) => <h2 className="text-xl font-bold mt-5 mb-3 text-gray-800 dark:text-gray-200" {...props} />,
+                        h3: ({node, ...props}) => <h3 className="text-lg font-semibold mt-4 mb-2 text-gray-700 dark:text-gray-300" {...props} />,
+                        p: ({node, ...props}) => <p className="mb-4 text-justify leading-relaxed text-gray-800 dark:text-gray-200" {...props} />,
+                        strong: ({node, ...props}) => <strong className="font-bold text-gray-900 dark:text-white" {...props} />,
+                        em: ({node, ...props}) => <em className="italic text-gray-700 dark:text-gray-300" {...props} />,
+                        ul: ({node, ...props}) => <ul className="mb-4 ml-6 list-disc space-y-2 text-gray-800 dark:text-gray-200" {...props} />,
+                        ol: ({node, ...props}) => <ol className="mb-4 ml-6 list-decimal space-y-2 text-gray-800 dark:text-gray-200" {...props} />,
+                        li: ({node, ...props}) => <li className="text-justify" {...props} />,
+                        blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-indigo-500 pl-4 my-4 italic text-gray-600 dark:text-gray-400" {...props} />,
+                      }}
+                    >
+                      {output}
+                    </ReactMarkdown>
+                  </div>
+                ) : (
+                  <div className="flex h-full flex-col items-center justify-center text-center">
+                    <div className="relative mb-4">
+                      <Type size={40} className="text-indigo-300 dark:text-indigo-500" />
+                      <Sparkles className="absolute -right-2 -top-2 h-5 w-5 animate-pulse text-indigo-500" />
+                    </div>
+                    <h4 className="mb-2 font-semibold text-gray-600 dark:text-gray-400">
+                      Awaiting Your Inspiration
+                    </h4>
+                    <p className="max-w-xs text-sm text-gray-500 dark:text-gray-500">
+                      Enter your topic above and watch as AI transforms it into professional content
+                    </p>
+                  </div>
+                )}
               </div>
-              <h4 className="mb-2 font-semibold text-gray-600 dark:text-gray-400">
-                Awaiting Your Inspiration
-              </h4>
-              <p className="max-w-xs text-sm text-gray-500 dark:text-gray-500">
-                Enter your topic above and watch as AI transforms it into professional content
-              </p>
-            </div>
-          )}
-        </div>
 
               {/* Word Count & Status */}
               {output && (
