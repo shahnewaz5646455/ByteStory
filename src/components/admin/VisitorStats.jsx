@@ -1,14 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Users, Eye, TrendingUp, Globe, Clock, ArrowUpRight, RefreshCw } from "lucide-react";
+import { Users, Eye, TrendingUp, Globe, Clock, ArrowUpRight, RefreshCw, BarChart3, PieChart } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart as RechartsPieChart, Pie, Cell, Legend } from 'recharts';
 
 export function VisitorStats() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [period, setPeriod] = useState("today");
+  const [chartType, setChartType] = useState("line"); // "line", "bar", "pie"
 
   // Fetch statistics from API
   const fetchStats = async (isInitialLoad = false) => {
@@ -36,7 +38,6 @@ export function VisitorStats() {
     }
   };
 
-  // Load stats when component mounts and when period changes
   useEffect(() => {
     fetchStats(true);
 
@@ -60,6 +61,26 @@ export function VisitorStats() {
   const handleRefresh = () => {
     fetchStats(true); // Show skeleton only on manual refresh
   };
+
+  // Mock chart data - Replace with actual data from your API
+  const chartData = [
+    { name: 'Mon', visitors: 400, pageViews: 240, activeUsers: 24 },
+    { name: 'Tue', visitors: 300, pageViews: 139, activeUsers: 18 },
+    { name: 'Wed', visitors: 200, pageViews: 980, activeUsers: 32 },
+    { name: 'Thu', visitors: 278, pageViews: 390, activeUsers: 21 },
+    { name: 'Fri', visitors: 189, pageViews: 480, activeUsers: 28 },
+    { name: 'Sat', visitors: 239, pageViews: 380, activeUsers: 19 },
+    { name: 'Sun', visitors: 349, pageViews: 430, activeUsers: 25 },
+  ];
+
+  const pieData = [
+    { name: 'Direct', value: 400 },
+    { name: 'Social', value: 300 },
+    { name: 'Referral', value: 300 },
+    { name: 'Organic', value: 200 },
+  ];
+
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
   if (loading) {
     return <StatsSkeleton />;
@@ -92,7 +113,7 @@ export function VisitorStats() {
           <select
             value={period}
             onChange={(e) => setPeriod(e.target.value)}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-all duration-200"
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-all duration-200 cursor-pointer"
             disabled={loading}
           >
             <option value="today">Today</option>
@@ -104,7 +125,7 @@ export function VisitorStats() {
           <button
             onClick={handleRefresh}
             disabled={loading}
-            className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-all duration-200 disabled:opacity-50"
+            className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-all duration-200 disabled:opacity-50 cursor-pointer"
           >
             <RefreshCw className={`w-5 h-5 ${loading ? "animate-spin" : ""}`} />
           </button>
@@ -171,6 +192,137 @@ export function VisitorStats() {
         </Card>
       </div>
 
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Main Chart */}
+        <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                  <BarChart3 className="w-4 h-4 text-white" />
+                </div>
+                <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Traffic Overview</h3>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setChartType("line")}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${
+                    chartType === "line"
+                      ? "bg-indigo-500 text-white"
+                      : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
+                  }`}
+                >
+                  Line
+                </button>
+                <button
+                  onClick={() => setChartType("bar")}
+                  className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${
+                    chartType === "bar"
+                      ? "bg-indigo-500 text-white"
+                      : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
+                  }`}
+                >
+                  Bar
+                </button>
+              </div>
+            </div>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                {chartType === "line" ? (
+                  <LineChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                    <XAxis dataKey="name" stroke="#6B7280" />
+                    <YAxis stroke="#6B7280" />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        border: '1px solid #E5E7EB',
+                        borderRadius: '8px',
+                        backdropFilter: 'blur(8px)'
+                      }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="visitors" 
+                      stroke="#3B82F6" 
+                      strokeWidth={2}
+                      dot={{ fill: '#3B82F6', strokeWidth: 2, r: 4 }}
+                      activeDot={{ r: 6, fill: '#1D4ED8' }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="pageViews" 
+                      stroke="#8B5CF6" 
+                      strokeWidth={2}
+                      dot={{ fill: '#8B5CF6', strokeWidth: 2, r: 4 }}
+                      activeDot={{ r: 6, fill: '#7C3AED' }}
+                    />
+                  </LineChart>
+                ) : (
+                  <BarChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                    <XAxis dataKey="name" stroke="#6B7280" />
+                    <YAxis stroke="#6B7280" />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        border: '1px solid #E5E7EB',
+                        borderRadius: '8px',
+                        backdropFilter: 'blur(8px)'
+                      }}
+                    />
+                    <Bar dataKey="visitors" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="pageViews" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                )}
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Pie Chart */}
+        <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                <PieChart className="w-4 h-4 text-white" />
+              </div>
+              <h3 className="font-semibold text-lg text-gray-900 dark:text-white">Traffic Sources</h3>
+            </div>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsPieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      border: '1px solid #E5E7EB',
+                      borderRadius: '8px',
+                      backdropFilter: 'blur(8px)'
+                    }}
+                  />
+                  <Legend />
+                </RechartsPieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <PopularPages pages={stats.popularPages} loading={false} />
         <ActiveUsers users={stats.activeUserDetails} loading={false} />
@@ -179,9 +331,8 @@ export function VisitorStats() {
   );
 }
 
-// PopularPages এবং ActiveUsers কম্পোনেন্টে loading prop false করে দিন
+
 function PopularPages({ pages, loading }) {
-  // loading prop ব্যবহার না করে সরাসরি রেন্ডার করুন
   return (
     <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
       <div className="flex items-center gap-3 mb-6">
@@ -192,7 +343,7 @@ function PopularPages({ pages, loading }) {
       </div>
       <div className="space-y-4">
         {pages.map((page, index) => (
-          <div key={index} className="flex justify-between items-center p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
+          <div key={index} className="flex justify-between items-center p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200 cursor-pointer">
             <div className="flex-1 min-w-0">
               <span className="text-sm font-medium text-gray-900 dark:text-white truncate block">
                 {page._id}
@@ -218,7 +369,6 @@ function PopularPages({ pages, loading }) {
 }
 
 function ActiveUsers({ users, loading }) {
-  // loading prop ব্যবহার না করে সরাসরি রেন্ডার করুন
   return (
     <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
       <div className="flex items-center gap-3 mb-6">
@@ -229,7 +379,7 @@ function ActiveUsers({ users, loading }) {
       </div>
       <div className="space-y-4">
         {users.map((user, index) => (
-          <div key={index} className="flex justify-between items-center p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
+          <div key={index} className="flex justify-between items-center p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200 cursor-pointer">
             <div className="flex-1 min-w-0">
               <p className="font-medium text-gray-900 dark:text-white truncate">{user.name}</p>
               <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{user.email}</p>
@@ -254,7 +404,7 @@ function ActiveUsers({ users, loading }) {
   );
 }
 
-// Skeleton Loading Component (শুধু প্রথম লোডের জন্য)
+// Skeleton Loading Component
 function StatsSkeleton() {
   return (
     <div className="p-6">
@@ -281,6 +431,25 @@ function StatsSkeleton() {
             <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2 w-3/4"></div>
             <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-1"></div>
             <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse w-1/2"></div>
+          </div>
+        ))}
+      </div>
+
+      {/* Charts Skeleton */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {[1, 2].map((i) => (
+          <div key={i} className="bg-white/80 dark:bg-gray-800/80 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32 animate-pulse"></div>
+              </div>
+              <div className="flex gap-2">
+                <div className="w-12 h-8 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+                <div className="w-12 h-8 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+              </div>
+            </div>
+            <div className="h-80 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"></div>
           </div>
         ))}
       </div>

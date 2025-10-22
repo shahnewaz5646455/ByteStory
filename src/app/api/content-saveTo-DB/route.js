@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/database.Connection";
+import { ObjectId } from "mongodb";
 
 export async function POST(req) {
   try {
@@ -22,25 +23,26 @@ export async function POST(req) {
       );
     }
 
-    const doc = {
-      prompt: prompt ?? "",
-      template: template ?? "",
-      content,
-      type,
-      shared:true,
-      timeline:false,
-      generated_time: generated_time ?? null,
-      visibility,
-      user: {
-        email: user?.email ?? null,
-        name: user?.name ?? null,
-      },
-      createdAt: new Date(), // <- for sorting
-    };
+
+const doc = {
+  prompt: prompt ?? "",
+  template: template ?? "",
+  content: content.trim(),
+  type,
+  shared: true,
+  timeline: false,
+  generated_time: generated_time?.time ? { time: generated_time.time } : null, // ✅ Fix nested object
+  visibility,
+  user: {
+    email: user?.email ?? null,
+    name: user?.name ?? null,
+  },
+  createdAt: new Date(),
+};
 
     // Get collection via mongoose connection
     const conn = await connectDB();
-    const db = conn.connection.db;                 // important line
+    const db = conn.connection.db;
     const collection = db.collection("generated_contents");
 
     const result = await collection.insertOne(doc);
@@ -48,7 +50,7 @@ export async function POST(req) {
     return NextResponse.json(
       {
         success: true,
-        data: { insertedId: result.insertedId },
+        data: { insertedId: result.insertedId.toString() }, // Convert to string
         message: "Content saved successfully.",
       },
       { status: 201 }
@@ -65,24 +67,63 @@ export async function POST(req) {
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
-    const email = searchParams.get("email") || undefined;
+    const id = searchParams.get("id");
 
+    console.log("Received ID:", id); // Debug log
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, message: "Missing id parameter." },
+        { status: 400 }
+      );
+    }
+
+    // Connect to database
     const conn = await connectDB();
     const db = conn.connection.db;
     const collection = db.collection("generated_contents");
 
-    const query = email ? { "user.email": email } : {};
-    const items = await collection
-      .find(query)
-      .sort({ createdAt: -1 })
-      .limit(50)
-      .toArray();
+    // Validate and create ObjectId
+    let _id;
+    try {
+      // Check if the string is a valid 24-character hex string
+      if (!/^[0-9a-fA-F]{24}$/.test(id)) {
+        throw new Error("Invalid ObjectId format");
+      }
+      _id = new ObjectId(id);
+    } catch (err) {
+      console.error("Invalid ObjectId:", err);
+      return NextResponse.json(
+        { success: false, message: "Invalid id format." },
+        { status: 400 }
+      );
+    }
 
-    return NextResponse.json({ success: true, items }, { status: 200 });
+    // Find the document
+    const record = await collection.findOne({ _id });
+
+    console.log("Found record:", record ? "Yes" : "No"); // Debug log
+
+    if (!record) {
+      return NextResponse.json(
+        { success: false, message: "Content not found." },
+        { status: 404 }
+      );
+    }
+
+    // Optional visibility gate (uncomment if needed):
+    // if (record.visibility && record.visibility !== "public") {
+    //   return NextResponse.json(
+    //     { success: false, message: "This content is not public." },
+    //     { status: 403 }
+    //   );
+    // }
+
+    return NextResponse.json({ success: true, record }, { status: 200 });
   } catch (err) {
     console.error("content-saveTo-DB GET error:", err);
     return NextResponse.json(
-      { success: false, message: "Internal Server Error." },
+      { success: false, message: "Internal Server Error: " + err.message },
       { status: 500 }
     );
   }

@@ -8,12 +8,14 @@ import HowItWorks from "../../components/HowItWorks";
 import KeyBenefits from "../../components/KeyBenefits";
 import { MarqueeDemo } from "../../components/Marquee";
 import TestimonialSection from "../../components/Testimonial";
+import ToolboxSection from "../../components/Toolbox";
 
 export default function Home() {
   return (
     <>
       <Hero />
       <Feature />
+      <ToolboxSection />
       <MarqueeDemo />
       <KeyBenefits />
       <HowItWorks />

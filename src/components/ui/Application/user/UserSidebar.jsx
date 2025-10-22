@@ -13,19 +13,15 @@ import {
   ChevronRight,
   Sparkles,
   X,
+  SparklesIcon,
 } from "lucide-react";
 import LogoutButton from "../LogoutButton";
 
 const menuItems = [
   { name: "Dashboard", href: "/website", icon: LayoutDashboard, badge: null },
   { name: "Feed", href: "/feed", icon: FileText },
-  { name: "Navlink 2", href: "/", icon: Users, badge: "12" },
-  {
-    name: "Navlink 3",
-    href: "/",
-    icon: BarChart3,
-    badge: "New",
-  },
+  { name: "My Posts", href: "/my-posts", icon: SparklesIcon, badge: null },
+
   {
     name: "Profile",
     href: "/website/update-profile",

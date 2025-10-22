@@ -34,7 +34,9 @@ export default function Navbar() {
   const auth = useSelector((store) => store.authStore.auth);
   
   const profileLink =
-    auth?.role === "admin" ? "/admin/adminDashboard/overview" : "/website/my-account";
+    auth?.role === "admin"
+      ? "/admin/adminDashboard/overview"
+      : "/website/my-account";
   useEffect(() => {
     if (isSearchOpen && searchInputRef.current) {
       searchInputRef.current.focus();
@@ -152,6 +154,9 @@ export default function Navbar() {
                       </ListItem>
                       <ListItem href="/hashtag" title="Hashtag Generator">
                         Get suggested hashtags for your blog posts and content.
+                      </ListItem>
+                      <ListItem href="/email-writer" title="Email Writer">
+                        Create professional emails with AI assistance.
                       </ListItem>
                     </ul>
                   </NavigationMenuContent>
