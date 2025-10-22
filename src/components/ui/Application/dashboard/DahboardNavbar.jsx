@@ -11,13 +11,10 @@ import {
   Sun,
   Moon,
   Home,
-  Users,
-  FileText,
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  Shield,
   X,
+  Heart,
+  MessageCircle,
+  ThumbsUp,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import {
@@ -41,9 +38,6 @@ const DashboardNavbar = ({ onMenuClick }) => {
   // Refs for dropdowns
   const notificationRef = useRef(null);
   const profileRef = useRef(null);
-
-  // Check if user is admin
-  const isAdmin = auth?.role === "admin";
 
   // Fetch user profile data to get avatar
   const [userProfile, setUserProfile] = useState(null);
@@ -69,14 +63,16 @@ const DashboardNavbar = ({ onMenuClick }) => {
     }
   };
 
-  // Fetch notifications from API
+  // Fetch user notifications from API
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/admin/notifications");
+      const response = await fetch(
+        `/api/user/notifications?userId=${auth?.email}`
+      );
       const data = await response.json();
 
-      if (data.success) {
+      if (data.notifications) {
         setNotifications(data.notifications);
       }
     } catch (error) {
@@ -86,17 +82,14 @@ const DashboardNavbar = ({ onMenuClick }) => {
     }
   };
 
-  // Get user avatar URL - priority: userProfile.avatar > auth.photoURL > fallback initial
+  // Get user avatar URL
   const getUserAvatar = () => {
-    // First try: User profile avatar from database
     if (userProfile?.avatar?.url) {
       return userProfile.avatar.url;
     }
-    // Second try: photoURL from auth (if using OAuth)
     if (auth?.photoURL) {
       return auth.photoURL;
     }
-    // Fallback: Show initial
     return null;
   };
 
@@ -107,13 +100,9 @@ const DashboardNavbar = ({ onMenuClick }) => {
 
   // Safe image error handler
   const handleImageError = (e) => {
-    // Hide the image
     e.target.style.display = "none";
-
-    // Find the parent container and show the initial
     const parent = e.target.parentElement;
     if (parent) {
-      // Find or create the fallback initial element
       let fallbackElement = parent.querySelector(".avatar-fallback");
       if (!fallbackElement) {
         fallbackElement = document.createElement("span");
@@ -125,38 +114,28 @@ const DashboardNavbar = ({ onMenuClick }) => {
     }
   };
 
-  // Filter notifications based on user role
-  const getFilteredNotifications = () => {
-    if (isAdmin) {
-      // Admin sees all notifications
-      return notifications;
-    } else {
-      // Regular users see only non-user-registration notifications
-      return notifications.filter(
-        (notification) => notification.type !== "user_registered"
-      );
-    }
-  };
-
   // Mark notifications as read
   const markAsRead = async (notificationIds = []) => {
     try {
-      const response = await fetch("/api/admin/notifications", {
+      const response = await fetch("/api/user/notifications", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ notificationIds }),
+        body: JSON.stringify({
+          userId: auth?.email,
+          notificationIds,
+        }),
       });
 
       const data = await response.json();
 
-      if (data.success) {
+      if (data.message) {
         // Update local state
         setNotifications((prev) =>
           prev.map((notif) =>
-            notificationIds.includes(notif._id) || notificationIds.length === 0
-              ? { ...notif, isRead: true, readAt: new Date() }
+            notificationIds.includes(notif.id) || notificationIds.length === 0
+              ? { ...notif, isRead: true }
               : notif
           )
         );
@@ -187,16 +166,34 @@ const DashboardNavbar = ({ onMenuClick }) => {
   // Get notification icon based on type
   const getNotificationIcon = (type) => {
     switch (type) {
-      case "user_registered":
-        return <Users className="h-4 w-4 text-blue-500" />;
-      case "content_created":
-        return <FileText className="h-4 w-4 text-green-500" />;
-      case "warning":
-        return <AlertCircle className="h-4 w-4 text-yellow-500" />;
-      case "system":
-        return <AlertCircle className="h-4 w-4 text-purple-500" />;
+      case "post_like":
+        return <ThumbsUp className="h-4 w-4 text-blue-500" />;
+      case "post_comment":
+        return <MessageCircle className="h-4 w-4 text-green-500" />;
+      case "post_love":
+        return <Heart className="h-4 w-4 text-red-500" />;
+      case "comment_like":
+        return <ThumbsUp className="h-4 w-4 text-purple-500" />;
       default:
         return <Bell className="h-4 w-4 text-gray-500" />;
+    }
+  };
+
+  // Get notification message based on type
+  const getNotificationMessage = (notification) => {
+    const { type, senderName, postTitle, commentContent } = notification;
+
+    switch (type) {
+      case "post_like":
+        return `${senderName} liked your post "${postTitle}"`;
+      case "post_comment":
+        return `${senderName} commented on your post "${postTitle}": "${commentContent}"`;
+      case "comment_like":
+        return `${senderName} liked your comment on "${postTitle}"`;
+      case "post_love":
+        return `${senderName} loved your post "${postTitle}"`;
+      default:
+        return "New notification";
     }
   };
 
@@ -222,16 +219,21 @@ const DashboardNavbar = ({ onMenuClick }) => {
 
   // Fetch user profile and notifications on component mount
   useEffect(() => {
-    fetchUserProfile();
-    fetchNotifications();
+    if (auth?.email) {
+      fetchUserProfile();
+      fetchNotifications();
+    }
 
-    const interval = setInterval(fetchNotifications, 30000);
+    const interval = setInterval(() => {
+      if (auth?.email) {
+        fetchNotifications();
+      }
+    }, 30000);
 
     return () => clearInterval(interval);
-  }, [auth?._id]);
+  }, [auth?.email]);
 
-  const filteredNotifications = getFilteredNotifications();
-  const unreadCount = filteredNotifications.filter((n) => !n.isRead).length;
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
   const userAvatar = getUserAvatar();
   const userInitial = getUserInitial();
 
@@ -281,7 +283,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Notifications - Visible to all users */}
+              {/* Notifications - User specific */}
               <div className="relative" ref={notificationRef}>
                 <button
                   onClick={() => {
@@ -324,7 +326,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                               {unreadCount} new
                             </span>
                           )}
-                          {filteredNotifications.length > 0 && (
+                          {notifications.length > 0 && (
                             <button
                               onClick={markAllAsRead}
                               className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium hidden sm:block"
@@ -334,12 +336,6 @@ const DashboardNavbar = ({ onMenuClick }) => {
                           )}
                         </div>
                       </div>
-                      {isAdmin && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
-                          <Shield className="h-3 w-3 text-green-500" />
-                          Admin View - All notifications
-                        </p>
-                      )}
                     </div>
 
                     {/* Notifications List - Scrollable */}
@@ -349,29 +345,28 @@ const DashboardNavbar = ({ onMenuClick }) => {
                     >
                       {loading ? (
                         <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-                          <Clock className="h-6 w-6 animate-spin mx-auto mb-2" />
+                          <div className="h-6 w-6 animate-spin mx-auto mb-2 border-2 border-gray-300 dark:border-gray-600 border-t-blue-500 rounded-full"></div>
                           Loading notifications...
                         </div>
-                      ) : filteredNotifications.length === 0 ? (
+                      ) : notifications.length === 0 ? (
                         <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                           <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
                           <p>No notifications yet</p>
                           <p className="text-sm mt-1">
-                            {isAdmin
-                              ? "You'll be notified when new users register"
-                              : "You'll be notified about important updates"}
+                            You'll be notified when someone interacts with your
+                            posts
                           </p>
                         </div>
                       ) : (
-                        filteredNotifications.map((notification) => (
+                        notifications.map((notification) => (
                           <div
-                            key={notification._id}
-                            className={`p-4 pb-8 border-b border-gray-100/50 dark:border-gray-700/50 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200 ${
+                            key={notification.id}
+                            className={`p-4 border-b border-gray-100/50 dark:border-gray-700/50 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200 ${
                               !notification.isRead
                                 ? "bg-blue-50/80 dark:bg-blue-900/20 border-l-4 border-blue-500"
                                 : "bg-transparent"
                             }`}
-                            onClick={() => markAsRead([notification._id])}
+                            onClick={() => markAsRead([notification.id])}
                           >
                             <div className="flex items-start space-x-3">
                               <div className="flex-shrink-0 mt-1">
@@ -379,36 +374,8 @@ const DashboardNavbar = ({ onMenuClick }) => {
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-gray-900 dark:text-white break-words">
-                                  {notification.title}
+                                  {getNotificationMessage(notification)}
                                 </p>
-                                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 break-words">
-                                  {notification.message}
-                                </p>
-
-                                {/* Show user data for user registrations - Only for admin */}
-                                {notification.type === "user_registered" &&
-                                  notification.data &&
-                                  isAdmin && (
-                                    <div className="mt-2 p-2 bg-white/50 dark:bg-gray-700/50 rounded-lg">
-                                      <p className="text-xs text-gray-600 dark:text-gray-400 break-words">
-                                        <strong>Name:</strong>{" "}
-                                        {notification.data.userName}
-                                      </p>
-                                      <p className="text-xs text-gray-600 dark:text-gray-400 break-words">
-                                        <strong>Email:</strong>{" "}
-                                        {notification.data.userEmail}
-                                      </p>
-                                      <p className="text-xs text-gray-600 dark:text-gray-400">
-                                        <strong>Role:</strong>{" "}
-                                        {notification.data.userRole}
-                                      </p>
-                                      <p className="text-xs text-gray-600 dark:text-gray-400">
-                                        <strong>Provider:</strong>{" "}
-                                        {notification.data.provider}
-                                      </p>
-                                    </div>
-                                  )}
-
                                 <div className="flex items-center justify-between mt-2">
                                   <p className="text-xs text-gray-500 dark:text-gray-400">
                                     {formatTime(notification.createdAt)}
@@ -425,7 +392,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                     </div>
 
                     {/* Footer */}
-                    {filteredNotifications.length > 0 && (
+                    {notifications.length > 0 && (
                       <div className="p-3 border-t border-gray-200/50 dark:border-gray-700/50 sticky bottom-0 bg-white/95 dark:bg-gray-800/95">
                         <div className="flex flex-col sm:flex-row gap-2">
                           {/* Mobile mark all read button */}
@@ -438,7 +405,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                             </button>
                           )}
                           <Link
-                            href="/admin/notifications"
+                            href="/user/notifications"
                             className="text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium py-2"
                             onClick={() => setIsNotificationOpen(false)}
                           >
@@ -469,22 +436,15 @@ const DashboardNavbar = ({ onMenuClick }) => {
                       <span className="text-white font-semibold">
                         {userInitial}
                       </span>
-                    )} 
+                    )}
                   </div>
 
                   <div className="hidden md:block text-left">
                     <p className="text-sm font-medium text-gray-900 dark:text-white">
                       {auth?.name || "Guest User"}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                      {isAdmin ? (
-                        <>
-                          <Shield className="h-3 w-3 text-green-500" />
-                          Administrator
-                        </>
-                      ) : (
-                        "User"
-                      )}
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {auth?.email}
                     </p>
                   </div>
 
@@ -529,16 +489,6 @@ const DashboardNavbar = ({ onMenuClick }) => {
                           <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                             {auth?.email}
                           </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
-                            {isAdmin ? (
-                              <>
-                                <Shield className="h-3 w-3 text-green-500" />
-                                Administrator
-                              </>
-                            ) : (
-                              "User"
-                            )}
-                          </p>
                         </div>
                       </div>
                     </div>
@@ -553,7 +503,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                         <span>Go To Home</span>
                       </Link>
                       <Link
-                        href="/admin/adminDashboard/update-profile"
+                        href="/user/profile"
                         className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         onClick={() => setIsProfileOpen(false)}
                       >
