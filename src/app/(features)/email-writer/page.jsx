@@ -1,6 +1,6 @@
 // app/email-writer/page.jsx
 "use client";
-
+import { loadStripe } from '@stripe/stripe-js'
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,11 +29,22 @@ import {
   History,
   Sparkles,
   RefreshCw,
+  Key,
+  X,
+  ShoppingCart,
+  Wifi,
+  WifiOff,
+  AlertTriangle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
+import { motion, AnimatePresence } from "framer-motion";
+// Initialize Stripe with your public key
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
 
 export default function EmailWriter() {
+
+  
   const auth = useSelector((store) => store.authStore.auth);
   const [loading, setLoading] = useState(false);
   const [emailData, setEmailData] = useState({
@@ -46,11 +57,147 @@ export default function EmailWriter() {
   const [generatedEmail, setGeneratedEmail] = useState(null);
   const [savedTemplates, setSavedTemplates] = useState([]);
   const [activeTab, setActiveTab] = useState("compose");
+  
+  // ---- Blog Key State ----
+  const [emailKeyCount, setEmailKeyCount] = useState(0);
+  const [userData, setUserData] = useState(null);
+  const [showKeyModal, setShowKeyModal] = useState(false);
 
-  // Fetch saved templates
+  // ---- Network State ----
+  const [isOnline, setIsOnline] = useState(
+    typeof window !== "undefined" ? navigator.onLine : true
+  );
+  const [showNetStatus, setShowNetStatus] = useState(false);
+  const [showWaitingButton, setShowWaitingButton] = useState(false);
+  const [showOffNetStatus, setShowOffNetStatus] = useState(!isOnline);
+  const [hasNetworkChanged, setHasNetworkChanged] = useState(false);
+  const [pendingRequest, setPendingRequest] = useState(null);
+
+  // ---- Network listeners ----
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      setHasNetworkChanged(true);
+    };
+    const handleOffline = () => {
+      setIsOnline(false);
+      setHasNetworkChanged(true);
+    };
+    
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  // ---- Status banners + auto-run pending ----
+  useEffect(() => {
+    if (!hasNetworkChanged) return;
+
+    if (isOnline) {
+      setShowOffNetStatus(false);
+      setShowWaitingButton(false);
+      setShowNetStatus(true);
+
+      // Auto-execute pending request when network comes back
+      if (pendingRequest) {
+        executeGenerateContent(pendingRequest.emailData);
+        setPendingRequest(null);
+      }
+
+      const t = setTimeout(() => setShowNetStatus(false), 4000);
+      return () => clearTimeout(t);
+    } else {
+      setShowNetStatus(false);
+      setShowOffNetStatus(true);
+      setLoading(false);
+    }
+  }, [isOnline, hasNetworkChanged, pendingRequest]);
+
+  // ---- Fetch User Data and Blog Keys ----
+  const fetchUserData = async () => {
+    if (!auth?.email) {
+      console.log("🔴 No user email found in Redux store");
+      return;
+    }
+
+    try {
+      console.log("🔍 Fetching user data from database for:", auth.email);
+      
+      const response = await fetch(`/api/get-user-data?email=${encodeURIComponent(auth.email)}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setUserData(data.user);
+        setEmailKeyCount(data.user.email_key || 0);
+        
+        console.log("✅ USER DATA FROM DATABASE:");
+        console.log("📧 Email:", data.user.email);
+        console.log("👤 Name:", data.user.name);
+        console.log("🔑 Email Keys:", data.user.email_key);
+      } else {
+        console.error("❌ Failed to fetch user data:", data.message);
+      }
+    } catch (error) {
+      console.error("❌ Error fetching user data:", error);
+    }
+  };
+
+  // ---- Update Blog Key Count in Database ----
+  const updateEmailKeyInDB = async (newCount) => {
+    if (!auth?.email) return;
+
+    try {
+      const response = await fetch('/api/update-email-keys', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: auth.email,
+          email_key: newCount
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        console.log("✅ Email keys updated in database:", newCount);
+        setEmailKeyCount(newCount);
+      } else {
+        console.error("❌ Failed to update email keys:", data.message);
+      }
+    } catch (error) {
+      console.error("❌ Error updating email keys:", error);
+    }
+  };
+
+  // ---- Check email Keys Before API Call ----
+  const checkAndUseEmailKey = async () => {
+    if (!auth) {
+      toast.error("Please login to use AI writing tool");
+      return false;
+    }
+
+    if (emailKeyCount <= 0) {
+      setShowKeyModal(true);
+      return false;
+    }
+
+    // Deduct one key and update database
+    const newCount = emailKeyCount - 1;
+    await updateEmailKeyInDB(newCount);
+    return true;
+  };
+
+  // Fetch saved templates and user data
   useEffect(() => {
     if (auth?._id) {
       fetchTemplates();
+      fetchUserData();
     }
   }, [auth?._id]);
 
@@ -94,6 +241,47 @@ export default function EmailWriter() {
     }
   };
 
+  // ---- Modified API execution function ----
+  const executeGenerateContent = async (emailDataToUse) => {
+    // First check if user has email keys
+    const hasKeys = await checkAndUseEmailKey();
+    if (!hasKeys) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    setGeneratedEmail(null);
+    
+    try {
+      const response = await fetch("/api/email-writer/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...emailDataToUse,
+          userId: auth._id,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setGeneratedEmail(data.email);
+        toast.success("Email generated successfully!");
+      } else {
+        toast.error(data.error || "Failed to generate email");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to generate email. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const generateEmail = async () => {
     const validKeyPoints = emailData.keyPoints.filter(
       (point) => point.trim() !== ""
@@ -114,33 +302,23 @@ export default function EmailWriter() {
       return;
     }
 
-    setLoading(true);
-    try {
-      const response = await fetch("/api/email-writer/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+    if (!isOnline) {
+      // Store the request for auto-execution when network returns
+      setPendingRequest({
+        emailData: {
           ...emailData,
           keyPoints: validKeyPoints,
-          userId: auth._id,
-        }),
+        }
       });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setGeneratedEmail(data.email);
-        toast.success("Email generated successfully!");
-      } else {
-        toast.error(data.error || "Failed to generate email");
-      }
-    } catch (error) {
-      toast.error("Something went wrong");
-    } finally {
-      setLoading(false);
+      setShowWaitingButton(true);
+      toast.info("Request queued. Will process when network is restored.");
+      return;
     }
+
+    await executeGenerateContent({
+      ...emailData,
+      keyPoints: validKeyPoints,
+    });
   };
 
   const saveTemplate = async () => {
@@ -216,8 +394,165 @@ export default function EmailWriter() {
     toast.success("Template loaded!");
   };
 
+  // Error state
+  const [error, setError] = useState("");
+   const handleCheckout = async () => {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lineItems: [
+            {
+              price_data: {
+                currency: 'usd',
+                product_data: { name: 'AI powered Email compose' },
+                unit_amount: 100,
+              },
+              quantity: 1,
+            },
+          ],
+        }),
+      })
+
+      const data = await res.json()
+
+      // Redirect using Stripe-hosted URL if available
+      if (data.url) {
+        window.location.href = data.url
+        return
+      }
+
+      // Fallback: redirect using session ID
+      if (data.id) {
+        const stripe = await stripePromise
+        await stripe.redirectToCheckout({ sessionId: data.id })
+      }
+    } catch (err) {
+      console.error(err)
+      alert('Checkout failed. See console for details.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200">
+      {/* Online banner */}
+      {showNetStatus && (
+        <div className="sticky top-0 z-50 animate-pulse bg-green-500 py-3 px-4 text-center shadow-lg">
+          <div className="flex items-center justify-center gap-2">
+            <Wifi className="h-5 w-5 text-white" />
+            <h1 className="text-lg font-semibold text-white">You are back online !✅</h1>
+          </div>
+        </div>
+      )}
+
+      {/* Offline banner */}
+      {showOffNetStatus && (
+        <div className="sticky top-0 z-50 bg-red-600 py-3 px-4 text-center shadow-lg">
+          <div className="flex items-center justify-center gap-2">
+            <WifiOff className="h-5 w-5 text-white animate-pulse" />
+            <h1 className="text-lg font-semibold text-white">You are currently offline</h1>
+          </div>
+          <p className="mt-1 text-sm text-red-100">
+            Requests will be processed when network is restored
+          </p>
+        </div>
+      )}
+
+      {/* Key Purchase Modal */}
+      <AnimatePresence>
+        {showKeyModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-800"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setShowKeyModal(false)}
+                className="absolute right-4 top-4 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+              >
+                <X size={20} />
+              </button>
+
+              {/* Modal Content */}
+              <div className="text-center">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20">
+                  <Key className="h-8 w-8 text-red-600 dark:text-red-400" />
+                </div>
+                
+                <h3 className="mb-2 text-xl font-bold text-gray-900 dark:text-white">
+                  No Email Keys Left!
+                </h3>
+                
+                <p className="mb-6 text-gray-600 dark:text-gray-300">
+                  You have used all your available email keys. Purchase more keys to continue using the AI Email Writer.
+                </p>
+
+                {/* Key Package */}
+                <div className="mb-6 rounded-xl border-2 border-amber-200 bg-amber-50 p-4 dark:border-amber-600 dark:bg-amber-900/20">
+                  <div className="flex items-center justify-between">
+                    <div className="text-left">
+                      <h4 className="font-semibold text-amber-800 dark:text-amber-200">
+                        10 Email Keys Package
+                      </h4>
+                      <p className="text-sm text-amber-600 dark:text-amber-400">
+                        Generate 10 AI emails
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-amber-700 dark:text-amber-300">
+                        $1
+                      </p>
+                      <p className="text-xs text-amber-600 dark:text-amber-400">
+                        $0.10 per email
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowKeyModal(false)}
+                    className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-3 font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                  >
+                    Maybe Later
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      handleCheckout()
+                      alert("Redirecting to payment gateway...");
+                      setShowKeyModal(false);
+                    }}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 font-medium text-white transition-all hover:from-amber-600 hover:to-orange-600"
+                  >
+                    <ShoppingCart size={18} />
+                    Buy Now
+                  </button>
+                </div>
+
+                <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">
+                  Secure payment • Instant delivery • Money back guarantee
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         {/* Header */}
         <div className="text-center mb-8">
@@ -234,6 +569,46 @@ export default function EmailWriter() {
             communication, customer service, and professional networking.
           </p>
         </div>
+
+        {/* Email Key Counter */}
+        {auth && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mb-6 flex justify-end"
+          >
+            <div className="flex items-center gap-3 rounded-2xl bg-gradient-to-r from-amber-50 to-yellow-50 px-4 py-3 shadow-lg border border-amber-200/50 dark:from-amber-900/20 dark:to-yellow-900/20 dark:border-amber-700/30">
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <Key className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="absolute -top-1 -right-1 h-2 w-2 bg-green-500 rounded-full"
+                  />
+                </div>
+                <span className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                  Email Keys
+                </span>
+              </div>
+              <div className="h-6 w-px bg-amber-300 dark:bg-amber-600" />
+              <motion.div
+                key={emailKeyCount}
+                initial={{ scale: 1.5 }}
+                animate={{ scale: 1 }}
+                className="flex items-center gap-1"
+              >
+                <span className="text-xl font-bold text-amber-700 dark:text-amber-300">
+                  {emailKeyCount}
+                </span>
+                <span className="text-xs text-amber-600 dark:text-amber-400">
+                  available
+                </span>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Tabs */}
         <div className="flex space-x-1 mb-6 bg-white dark:bg-gray-800 rounded-lg p-1 shadow-sm max-w-md mx-auto cursor-pointer">
@@ -414,10 +789,56 @@ export default function EmailWriter() {
                   />
                 </div>
 
+                {/* Waiting for Network Button */}
+                {showWaitingButton && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="rounded-xl border-2 border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50 p-4 dark:border-yellow-700 dark:from-yellow-900/20 dark:to-orange-900/20"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0">
+                        <AlertTriangle className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="mb-2 text-lg font-semibold text-yellow-800 dark:text-yellow-200">
+                          Waiting for Network Connection
+                        </h4>
+                        <p className="mb-3 text-sm text-yellow-700 dark:text-yellow-300">
+                          Your request is queued and will be processed automatically when
+                          internet connection is restored.
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
+                            <motion.div
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ duration: 1.5, repeat: Infinity }}
+                              className="h-2 w-2 rounded-full bg-yellow-500"
+                            />
+                            <motion.div
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
+                              className="h-2 w-2 rounded-full bg-yellow-500"
+                            />
+                            <motion.div
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
+                              className="h-2 w-2 rounded-full bg-yellow-500"
+                            />
+                          </div>
+                          <span className="text-xs font-medium text-yellow-700 dark:text-yellow-300">
+                            Monitoring network status...
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
                 {/* Generate Button */}
                 <Button
                   onClick={generateEmail}
-                  disabled={loading}
+                  disabled={loading || !auth}
                   className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white cursor-pointer disabled:cursor-not-allowed"
                   size="lg"
                 >
@@ -426,13 +847,31 @@ export default function EmailWriter() {
                       <RefreshCw className="h-4 w-4 animate-spin mr-2" />
                       Generating...
                     </>
+                  ) : !auth ? (
+                    "Please Login to Generate"
                   ) : (
                     <>
                       <Sparkles className="h-4 w-4 mr-2" />
-                      Generate Email
+                      Generate Email ({emailKeyCount} keys left)
                     </>
                   )}
                 </Button>
+
+                {!auth && (
+                  <p className="text-sm text-center text-gray-500 dark:text-gray-400">
+                    You need to be logged in to use the AI Email Writer
+                  </p>
+                )}
+
+                {error && (
+                  <motion.p
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-3 flex items-center text-sm text-red-500"
+                  >
+                    <span className="mr-1">⚠️</span> {error}
+                  </motion.p>
+                )}
               </CardContent>
             </Card>
           )}

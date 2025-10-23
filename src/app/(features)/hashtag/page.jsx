@@ -1,16 +1,26 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Sparkles, Hash, Copy, CheckCircle, RotateCw, Settings, TrendingUp, BarChart3, Download, Plus, Minus, Wifi, WifiOff, AlertTriangle } from "lucide-react";
-import {motion} from "framer-motion"
+import { Sparkles, Hash, Copy, CheckCircle, RotateCw, Settings, TrendingUp, BarChart3, Download, Plus, Minus, Wifi, WifiOff, AlertTriangle, Key, X, ShoppingCart } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useSelector } from "react-redux";
 
 export default function Home() {
-   const [isOnline, setIsOnline] = useState(navigator.onLine); // Initialize with current status
-     const [showWaitingButton, setShowWaitingButton] = useState(false);
+  const auth = useSelector((store) => store.authStore.auth);
+  
+  // ---- Hashtag Key State ----
+  const [hashtagKeyCount, setHashtagKeyCount] = useState(0);
+  const [userData, setUserData] = useState(null);
+  const [showKeyModal, setShowKeyModal] = useState(false);
 
-const [showNetStatus, setShowNetStatus] = useState(false);
-const [showOffNetStatus, setShowOffNetStatus] = useState(false);
-const [hasNetworkChanged, setHasNetworkChanged] = useState(false); 
-const [pendingRequest,setPendingRequest]= useState({})
+  // ---- Network State ----
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [showWaitingButton, setShowWaitingButton] = useState(false);
+  const [showNetStatus, setShowNetStatus] = useState(false);
+  const [showOffNetStatus, setShowOffNetStatus] = useState(false);
+  const [hasNetworkChanged, setHasNetworkChanged] = useState(false); 
+  const [pendingRequest, setPendingRequest] = useState(null);
+
+  // ---- Form State ----
   const [category, setCategory] = useState("");
   const [title, setTitle] = useState("");
   const [platform, setPlatform] = useState("instagram");
@@ -30,64 +40,153 @@ const [pendingRequest,setPendingRequest]= useState({})
     { id: "facebook", name: "Facebook", maxHashtags: 10 },
     { id: "general", name: "General", maxHashtags: 15 }
   ];
-// Handle network status display
-useEffect(() => {
-  const handleOnline = () => {
-    setIsOnline(true);
-    setHasNetworkChanged(true); // Mark that network state has changed
-  };
-  
-  const handleOffline = () => {
-    setIsOnline(false);
-    setHasNetworkChanged(true); // Mark that network state has changed
-  };
 
-  window.addEventListener("online", handleOnline);
-  window.addEventListener("offline", handleOffline);
-
-  return () => {
-    window.removeEventListener("online", handleOnline);
-    window.removeEventListener("offline", handleOffline);
-  };
-}, []);
-
-// Handle network status display
-useEffect(() => {
-  // Only show status if network has actually changed (not on initial load)
-  if (!hasNetworkChanged) {
-    return;
-  }
-
-  if (isOnline) {
-
-    // Network came back online
-    setShowWaitingButton(false)
-    setShowOffNetStatus(false);
-    setShowNetStatus(true);
-    if(pendingRequest){
-      executeGenerate(title,category,hashtagLimit,platform)
-
+  // ---- Fetch User Data and Hashtag Keys ----
+  const fetchUserData = async () => {
+    if (!auth?.email) {
+      console.log("🔴 No user email found in Redux store");
+      return;
     }
-    const timeout = setTimeout(() => setShowNetStatus(false), 4000);
-    return () => clearTimeout(timeout);
-  } else {
-    // Network went offline
-    setShowNetStatus(false);
-    setShowOffNetStatus(true);
-  }
-}, [isOnline, hasNetworkChanged]);
-const executeGenerate =async (title,category,hashtagLimit,platform)=>{
-  console.log(category,title,hashtagLimit,platform)
-   try {
+
+    try {
+      console.log("🔍 Fetching user data from database for:", auth.email);
+      
+      const response = await fetch(`/api/get-user-data?email=${encodeURIComponent(auth.email)}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setUserData(data.user);
+        setHashtagKeyCount(data.user.hashtag_key || 0);
+        
+        console.log("✅ USER DATA FROM DATABASE:");
+        console.log("📧 Email:", data.user.email);
+        console.log("👤 Name:", data.user.name);
+        console.log("🔑 Hashtag Keys:", data.user.hashtag_key);
+      } else {
+        console.error("❌ Failed to fetch user data:", data.message);
+      }
+    } catch (error) {
+      console.error("❌ Error fetching user data:", error);
+    }
+  };
+
+  // ---- Update Hashtag Key Count in Database ----
+  const updateHashtagKeyInDB = async (newCount) => {
+    if (!auth?.email) return;
+
+    try {
+      const response = await fetch('/api/update-hashtag-keys', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: auth.email,
+          hashtag_key: newCount
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        console.log("✅ Hashtag keys updated in database:", newCount);
+        setHashtagKeyCount(newCount);
+      } else {
+        console.error("❌ Failed to update hashtag keys:", data.message);
+      }
+    } catch (error) {
+      console.error("❌ Error updating hashtag keys:", error);
+    }
+  };
+
+  // ---- Check Hashtag Keys Before API Call ----
+  const checkAndUseHashtagKey = async () => {
+    if (!auth) {
+      setError("Please login to use AI Hashtag Generator");
+      return false;
+    }
+
+    if (hashtagKeyCount <= 0) {
+      setShowKeyModal(true);
+      return false;
+    }
+
+    // Deduct one key and update database
+    const newCount = hashtagKeyCount - 1;
+    await updateHashtagKeyInDB(newCount);
+    return true;
+  };
+
+  // ---- Network listeners ----
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      setHasNetworkChanged(true);
+    };
+    
+    const handleOffline = () => {
+      setIsOnline(false);
+      setHasNetworkChanged(true);
+    };
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  // ---- Status banners + auto-run pending ----
+  useEffect(() => {
+    if (!hasNetworkChanged) return;
+
+    if (isOnline) {
+      setShowWaitingButton(false);
+      setShowOffNetStatus(false);
+      setShowNetStatus(true);
+
+      // Auto-execute pending request when network comes back
+      if (pendingRequest) {
+        executeGenerateContent(pendingRequest);
+        setPendingRequest(null);
+      }
+
+      const timeout = setTimeout(() => setShowNetStatus(false), 4000);
+      return () => clearTimeout(timeout);
+    } else {
+      setShowNetStatus(false);
+      setShowOffNetStatus(true);
+      setLoading(false);
+    }
+  }, [isOnline, hasNetworkChanged, pendingRequest]);
+
+  // ---- Fetch user data when auth changes ----
+  useEffect(() => {
+    if (auth?._id) {
+      fetchUserData();
+    }
+  }, [auth?._id]);
+
+  // ---- Modified API execution function ----
+  const executeGenerateContent = async (requestData) => {
+    // First check if user has hashtag keys
+    const hasKeys = await checkAndUseHashtagKey();
+    if (!hasKeys) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    setHashtags([]);
+    
+    try {
       const res = await fetch("/api/hashtags", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          category, 
-          title, 
-          limit: hashtagLimit,
-          platform 
-        }),
+        body: JSON.stringify(requestData),
       });
 
       const data = await res.json();
@@ -103,51 +202,41 @@ const executeGenerate =async (title,category,hashtagLimit,platform)=>{
     } finally {
       setLoading(false);
     }
-
-}
-
-
+  };
 
   const handleGenerate = async () => {
+    if (!auth) {
+      setError("Please login to use AI Hashtag Generator");
+      return;
+    }
+
+    if (!category.trim()) {
+      setError("Please enter a category");
+      return;
+    }
+
     setLoading(true);
     setError("");
     setHashtags([]);
     setCopied(false);
     setSelectedHashtags(new Set());
-    if(!isOnline){
-      setShowWaitingButton(true)
-      setPendingRequest(title,category,hashtagLimit,platform)
-    }
-else{
-   try {
-      const res = await fetch("/api/hashtags", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          category,
-          title,
-          limit: hashtagLimit,
-          platform
-        }),
-      });
 
-      const data = await res.json();
+    const requestData = {
+      category,
+      title,
+      limit: hashtagLimit,
+      platform
+    };
 
-      if (data.success) {
-        setHashtags(data.tags);
-      } else {
-        setError(data.error || "Failed to generate hashtags");
-      }
-    } catch (err) {
-      console.error(err);
-      setError("Something went wrong! Please try again.");
-    } finally {
+    if (!isOnline) {
+      setShowWaitingButton(true);
+      setPendingRequest(requestData);
       setLoading(false);
+      return;
     }
 
-}}
-   
-  
+    await executeGenerateContent(requestData);
+  };
 
   const copyToClipboard = async (specificTags = null) => {
     const tagsToCopy = specificTags || Array.from(selectedHashtags).length > 0
@@ -205,7 +294,8 @@ else{
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4">
-    {showNetStatus && (
+      {/* Online banner */}
+      {showNetStatus && (
         <div className="sticky top-0 z-50 animate-pulse bg-green-500 py-3 px-4 text-center shadow-lg">
           <div className="flex items-center justify-center gap-2">
             <Wifi className="h-5 w-5 text-white" />
@@ -213,6 +303,7 @@ else{
           </div>
         </div>
       )}
+      
       {/* Offline banner */}
       {showOffNetStatus && (
         <div className="sticky top-0 z-50 bg-red-600 py-3 px-4 text-center shadow-lg">
@@ -226,7 +317,136 @@ else{
         </div>
       )}
 
-<div className="max-w-2xl mx-auto">
+      {/* Key Purchase Modal */}
+      <AnimatePresence>
+        {showKeyModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-gray-800"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setShowKeyModal(false)}
+                className="absolute right-4 top-4 rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+              >
+                <X size={20} />
+              </button>
+
+              {/* Modal Content */}
+              <div className="text-center">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20">
+                  <Key className="h-8 w-8 text-red-600 dark:text-red-400" />
+                </div>
+                
+                <h3 className="mb-2 text-xl font-bold text-gray-900 dark:text-white">
+                  No Hashtag Keys Left!
+                </h3>
+                
+                <p className="mb-6 text-gray-600 dark:text-gray-300">
+                  You have used all your available hashtag keys. Purchase more keys to continue using the AI Hashtag Generator.
+                </p>
+
+                {/* Key Package */}
+                <div className="mb-6 rounded-xl border-2 border-amber-200 bg-amber-50 p-4 dark:border-amber-600 dark:bg-amber-900/20">
+                  <div className="flex items-center justify-between">
+                    <div className="text-left">
+                      <h4 className="font-semibold text-amber-800 dark:text-amber-200">
+                        10 Hashtag Keys Package
+                      </h4>
+                      <p className="text-sm text-amber-600 dark:text-amber-400">
+                        Generate 10 AI hashtag sets
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-amber-700 dark:text-amber-300">
+                        $1
+                      </p>
+                      <p className="text-xs text-amber-600 dark:text-amber-400">
+                        $0.10 per generation
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowKeyModal(false)}
+                    className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-3 font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                  >
+                    Maybe Later
+                  </button>
+                  
+                  <button
+                    onClick={() => {
+                      // Here you can integrate with payment gateway
+                      alert("Redirecting to payment gateway...");
+                      setShowKeyModal(false);
+                    }}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 font-medium text-white transition-all hover:from-amber-600 hover:to-orange-600"
+                  >
+                    <ShoppingCart size={18} />
+                    Buy Now
+                  </button>
+                </div>
+
+                <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">
+                  Secure payment • Instant delivery • Money back guarantee
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="max-w-2xl mx-auto">
+        {/* Hashtag Key Counter */}
+        {auth && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mb-6 flex justify-end"
+          >
+            <div className="flex items-center gap-3 rounded-2xl bg-gradient-to-r from-amber-50 to-yellow-50 px-4 py-3 shadow-lg border border-amber-200/50 dark:from-amber-900/20 dark:to-yellow-900/20 dark:border-amber-700/30">
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <Key className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="absolute -top-1 -right-1 h-2 w-2 bg-green-500 rounded-full"
+                  />
+                </div>
+                <span className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                  Hashtag Keys
+                </span>
+              </div>
+              <div className="h-6 w-px bg-amber-300 dark:bg-amber-600" />
+              <motion.div
+                key={hashtagKeyCount}
+                initial={{ scale: 1.5 }}
+                animate={{ scale: 1 }}
+                className="flex items-center gap-1"
+              >
+                <span className="text-xl font-bold text-amber-700 dark:text-amber-300">
+                  {hashtagKeyCount}
+                </span>
+                <span className="text-xs text-amber-600 dark:text-amber-400">
+                  available
+                </span>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
        
         {/* Header */}
         <div className="text-center mb-12">
@@ -331,7 +551,7 @@ else{
             <div className="flex gap-3">
               <button
                 onClick={handleGenerate}
-                disabled={loading || !category.trim()}
+                disabled={loading || !category.trim() || !auth}
                 className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 {loading ? (
@@ -339,10 +559,12 @@ else{
                     <RotateCw className="h-4 w-4 mr-2 animate-spin" />
                     Generating...
                   </>
+                ) : !auth ? (
+                  "Please Login to Generate"
                 ) : (
                   <>
                     <Sparkles className="h-4 w-4 mr-2" />
-                    Generate Hashtags
+                    Generate Hashtags ({hashtagKeyCount} keys left)
                   </>
                 )}
               </button>
@@ -358,51 +580,53 @@ else{
               )}
             </div>
           </div>
-           {/* Waiting for Network Badge */}
-                {showWaitingButton && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-4 rounded-xl border-2 border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50 p-4 dark:border-yellow-700 dark:from-yellow-900/20 dark:to-orange-900/20"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0">
-                        <AlertTriangle className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="mb-2 text-lg font-semibold text-yellow-800 dark:text-yellow-200">
-                          Waiting for Network Connection
-                        </h4>
-                        <p className="mb-3 text-sm text-yellow-700 dark:text-yellow-300">
-                          Your request is queued and will be processed automatically when
-                          internet connection is restored.
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1">
-                            <motion.div
-                              animate={{ scale: [1, 1.2, 1] }}
-                              transition={{ duration: 1.5, repeat: Infinity }}
-                              className="h-2 w-2 rounded-full bg-yellow-500"
-                            />
-                            <motion.div
-                              animate={{ scale: [1, 1.2, 1] }}
-                              transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
-                              className="h-2 w-2 rounded-full bg-yellow-500"
-                            />
-                            <motion.div
-                              animate={{ scale: [1, 1.2, 1] }}
-                              transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
-                              className="h-2 w-2 rounded-full bg-yellow-500"
-                            />
-                          </div>
-                          <span className="text-xs font-medium text-yellow-700 dark:text-yellow-300">
-                            Monitoring network status...
-                          </span>
-                        </div>
-                      </div>
+
+         
+          {/* Waiting for Network Badge */}
+          {showWaitingButton && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-4 rounded-xl border-2 border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50 p-4 dark:border-yellow-700 dark:from-yellow-900/20 dark:to-orange-900/20"
+            >
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0">
+                  <AlertTriangle className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="mb-2 text-lg font-semibold text-yellow-800 dark:text-yellow-200">
+                    Waiting for Network Connection
+                  </h4>
+                  <p className="mb-3 text-sm text-yellow-700 dark:text-yellow-300">
+                    Your request is queued and will be processed automatically when
+                    internet connection is restored.
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
+                      <motion.div
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                        className="h-2 w-2 rounded-full bg-yellow-500"
+                      />
+                      <motion.div
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
+                        className="h-2 w-2 rounded-full bg-yellow-500"
+                      />
+                      <motion.div
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
+                        className="h-2 w-2 rounded-full bg-yellow-500"
+                      />
                     </div>
-                  </motion.div>
-                )}
+                    <span className="text-xs font-medium text-yellow-700 dark:text-yellow-300">
+                      Monitoring network status...
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
           {error && (
             <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
