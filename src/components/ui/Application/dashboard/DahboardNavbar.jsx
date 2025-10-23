@@ -75,7 +75,6 @@ const DashboardNavbar = ({ onMenuClick }) => {
   };
 
   // Fetch all notifications based on user role
-  // Fetch all notifications based on user role
   const fetchAllNotifications = async () => {
     try {
       setLoading(true);
@@ -89,9 +88,6 @@ const DashboardNavbar = ({ onMenuClick }) => {
 
         const userData = await userResponse.json();
         const adminData = await adminResponse.json();
-
-        console.log("🔍 User notifications:", userData);
-        console.log("🔍 Admin notifications:", adminData);
 
         // Handle user notifications
         if (userData.notifications && Array.isArray(userData.notifications)) {
