@@ -109,7 +109,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
           setAdminNotifications(adminData.notifications);
         } else {
           setAdminNotifications([]);
-          console.warn("⚠️ Admin notifications format unexpected:", adminData);
+          console.warn(" Admin notifications format unexpected:", adminData);
         }
       } else {
         // Regular user only gets user notifications
@@ -117,8 +117,6 @@ const DashboardNavbar = ({ onMenuClick }) => {
           `/api/user/notifications?userId=${auth?.email}`
         );
         const userData = await userResponse.json();
-
-        console.log("🔍 User notifications:", userData);
 
         // Handle user notifications
         if (userData.notifications && Array.isArray(userData.notifications)) {
