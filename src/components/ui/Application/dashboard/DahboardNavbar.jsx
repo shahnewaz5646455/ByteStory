@@ -15,6 +15,8 @@ import {
   Heart,
   MessageCircle,
   ThumbsUp,
+  Users,
+  Shield,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import {
@@ -30,7 +32,8 @@ import { toast } from "sonner";
 const DashboardNavbar = ({ onMenuClick }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [notifications, setNotifications] = useState([]);
+  const [userNotifications, setUserNotifications] = useState([]);
+  const [adminNotifications, setAdminNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const { setTheme } = useTheme();
   const auth = useSelector((store) => store.authStore.auth);
@@ -39,8 +42,16 @@ const DashboardNavbar = ({ onMenuClick }) => {
   const notificationRef = useRef(null);
   const profileRef = useRef(null);
 
+  // Check if user is admin
+  const isAdmin = auth?.role === "admin";
+
   // Fetch user profile data to get avatar
   const [userProfile, setUserProfile] = useState(null);
+
+  // Combined notifications
+  const allNotifications = [...userNotifications, ...adminNotifications].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
 
   // Fetch user profile with avatar
   const fetchUserProfile = async () => {
@@ -63,20 +74,71 @@ const DashboardNavbar = ({ onMenuClick }) => {
     }
   };
 
-  // Fetch user notifications from API
-  const fetchNotifications = async () => {
+  // Fetch all notifications based on user role
+  // Fetch all notifications based on user role
+  const fetchAllNotifications = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `/api/user/notifications?userId=${auth?.email}`
-      );
-      const data = await response.json();
 
-      if (data.notifications) {
-        setNotifications(data.notifications);
+      if (isAdmin) {
+        // Admin gets both user notifications and admin notifications
+        const [userResponse, adminResponse] = await Promise.all([
+          fetch(`/api/user/notifications?userId=${auth?.email}`),
+          fetch("/api/admin/notifications"),
+        ]);
+
+        const userData = await userResponse.json();
+        const adminData = await adminResponse.json();
+
+        console.log("🔍 User notifications:", userData);
+        console.log("🔍 Admin notifications:", adminData);
+
+        // Handle user notifications
+        if (userData.notifications && Array.isArray(userData.notifications)) {
+          setUserNotifications(userData.notifications);
+        } else if (userData.success && Array.isArray(userData.notifications)) {
+          setUserNotifications(userData.notifications);
+        } else {
+          setUserNotifications([]);
+          console.warn("⚠️ User notifications format unexpected:", userData);
+        }
+
+        // Handle admin notifications
+        if (adminData.notifications && Array.isArray(adminData.notifications)) {
+          setAdminNotifications(adminData.notifications);
+        } else if (
+          adminData.success &&
+          Array.isArray(adminData.notifications)
+        ) {
+          setAdminNotifications(adminData.notifications);
+        } else {
+          setAdminNotifications([]);
+          console.warn("⚠️ Admin notifications format unexpected:", adminData);
+        }
+      } else {
+        // Regular user only gets user notifications
+        const userResponse = await fetch(
+          `/api/user/notifications?userId=${auth?.email}`
+        );
+        const userData = await userResponse.json();
+
+        console.log("🔍 User notifications:", userData);
+
+        // Handle user notifications
+        if (userData.notifications && Array.isArray(userData.notifications)) {
+          setUserNotifications(userData.notifications);
+        } else if (userData.success && Array.isArray(userData.notifications)) {
+          setUserNotifications(userData.notifications);
+        } else {
+          setUserNotifications([]);
+          console.warn("⚠️ User notifications format unexpected:", userData);
+        }
+        setAdminNotifications([]);
       }
     } catch (error) {
-      console.error("Error fetching notifications:", error);
+      console.error("❌ Error fetching notifications:", error);
+      setUserNotifications([]);
+      setAdminNotifications([]);
     } finally {
       setLoading(false);
     }
@@ -115,30 +177,47 @@ const DashboardNavbar = ({ onMenuClick }) => {
   };
 
   // Mark notifications as read
-  const markAsRead = async (notificationIds = []) => {
+  const markAsRead = async (
+    notificationIds = [],
+    isAdminNotification = false
+  ) => {
     try {
-      const response = await fetch("/api/user/notifications", {
+      const endpoint = isAdminNotification
+        ? "/api/admin/notifications"
+        : "/api/user/notifications";
+
+      const response = await fetch(endpoint, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: auth?.email,
+          userId: isAdminNotification ? null : auth?.email,
           notificationIds,
         }),
       });
 
       const data = await response.json();
 
-      if (data.message) {
+      if (data.success || data.message) {
         // Update local state
-        setNotifications((prev) =>
-          prev.map((notif) =>
-            notificationIds.includes(notif.id) || notificationIds.length === 0
-              ? { ...notif, isRead: true }
-              : notif
-          )
-        );
+        if (isAdminNotification) {
+          setAdminNotifications((prev) =>
+            prev.map((notif) =>
+              notificationIds.includes(notif._id) ||
+              notificationIds.length === 0
+                ? { ...notif, isRead: true, readAt: new Date() }
+                : notif
+            )
+          );
+        } else {
+          setUserNotifications((prev) =>
+            prev.map((notif) =>
+              notificationIds.includes(notif._id) ||
+              notificationIds.length === 0
+                ? { ...notif, isRead: true }
+                : notif
+            )
+          );
+        }
       }
     } catch (error) {
       console.error("Error marking notifications as read:", error);
@@ -147,7 +226,10 @@ const DashboardNavbar = ({ onMenuClick }) => {
 
   // Mark all as read
   const markAllAsRead = () => {
-    markAsRead(); // Empty array means mark all
+    markAsRead([], false); // User notifications
+    if (isAdmin) {
+      markAsRead([], true); // Admin notifications
+    }
     toast.success("All notifications marked as read");
   };
 
@@ -164,37 +246,70 @@ const DashboardNavbar = ({ onMenuClick }) => {
   };
 
   // Get notification icon based on type
-  const getNotificationIcon = (type) => {
-    switch (type) {
-      case "post_like":
-        return <ThumbsUp className="h-4 w-4 text-blue-500" />;
-      case "post_comment":
-        return <MessageCircle className="h-4 w-4 text-green-500" />;
-      case "post_love":
-        return <Heart className="h-4 w-4 text-red-500" />;
-      case "comment_like":
-        return <ThumbsUp className="h-4 w-4 text-purple-500" />;
-      default:
-        return <Bell className="h-4 w-4 text-gray-500" />;
+  const getNotificationIcon = (notification) => {
+    if (notification.senderId) {
+      // UserNotification (user interactions)
+      switch (notification.type) {
+        case "post_like":
+          return <ThumbsUp className="h-4 w-4 text-blue-500" />;
+        case "post_comment":
+          return <MessageCircle className="h-4 w-4 text-green-500" />;
+        case "post_love":
+          return <Heart className="h-4 w-4 text-red-500" />;
+        case "comment_like":
+          return <ThumbsUp className="h-4 w-4 text-purple-500" />;
+        default:
+          return <Bell className="h-4 w-4 text-gray-500" />;
+      }
+    } else {
+      // Admin Notification (system notifications)
+      switch (notification.type) {
+        case "user_registered":
+          return <Users className="h-4 w-4 text-blue-500" />;
+        case "content_created":
+          return <MessageCircle className="h-4 w-4 text-green-500" />;
+        case "system":
+        case "warning":
+          return <Bell className="h-4 w-4 text-yellow-500" />;
+        default:
+          return <Bell className="h-4 w-4 text-gray-500" />;
+      }
     }
   };
 
   // Get notification message based on type
   const getNotificationMessage = (notification) => {
-    const { type, senderName, postTitle, commentContent } = notification;
+    if (notification.senderId) {
+      // UserNotification message (user interactions)
+      const { type, senderName, postTitle, commentContent } = notification;
 
-    switch (type) {
-      case "post_like":
-        return `${senderName} liked your post "${postTitle}"`;
-      case "post_comment":
-        return `${senderName} commented on your post "${postTitle}": "${commentContent}"`;
-      case "comment_like":
-        return `${senderName} liked your comment on "${postTitle}"`;
-      case "post_love":
-        return `${senderName} loved your post "${postTitle}"`;
-      default:
-        return "New notification";
+      switch (type) {
+        case "post_like":
+          return `${senderName} liked your post "${postTitle}"`;
+        case "post_comment":
+          return `${senderName} commented on your post "${postTitle}": "${commentContent}"`;
+        case "comment_like":
+          return `${senderName} liked your comment on "${postTitle}"`;
+        case "post_love":
+          return `${senderName} loved your post "${postTitle}"`;
+        default:
+          return "New notification";
+      }
+    } else {
+      // Admin Notification message (system notifications)
+      return notification.message || notification.title;
     }
+  };
+
+  // Get notification identifier
+  const getNotificationId = (notification) => {
+    return notification._id || notification.id;
+  };
+
+  // Handle individual notification click
+  const handleNotificationClick = (notification) => {
+    const isAdminNotif = !notification.senderId; // Admin notifications don't have senderId
+    markAsRead([getNotificationId(notification)], isAdminNotif);
   };
 
   // Close dropdowns when clicking outside
@@ -221,19 +336,19 @@ const DashboardNavbar = ({ onMenuClick }) => {
   useEffect(() => {
     if (auth?.email) {
       fetchUserProfile();
-      fetchNotifications();
+      fetchAllNotifications();
     }
 
     const interval = setInterval(() => {
       if (auth?.email) {
-        fetchNotifications();
+        fetchAllNotifications();
       }
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [auth?.email]);
+  }, [auth?.email, isAdmin]);
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const unreadCount = allNotifications.filter((n) => !n.isRead).length;
   const userAvatar = getUserAvatar();
   const userInitial = getUserInitial();
 
@@ -283,7 +398,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              {/* Notifications - User specific */}
+              {/* Notifications - Combined System */}
               <div className="relative" ref={notificationRef}>
                 <button
                   onClick={() => {
@@ -326,7 +441,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                               {unreadCount} new
                             </span>
                           )}
-                          {notifications.length > 0 && (
+                          {allNotifications.length > 0 && (
                             <button
                               onClick={markAllAsRead}
                               className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium hidden sm:block"
@@ -336,6 +451,12 @@ const DashboardNavbar = ({ onMenuClick }) => {
                           )}
                         </div>
                       </div>
+                      {isAdmin && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
+                          <Shield className="h-3 w-3 text-green-500" />
+                          Admin View - All notifications
+                        </p>
+                      )}
                     </div>
 
                     {/* Notifications List - Scrollable */}
@@ -348,34 +469,58 @@ const DashboardNavbar = ({ onMenuClick }) => {
                           <div className="h-6 w-6 animate-spin mx-auto mb-2 border-2 border-gray-300 dark:border-gray-600 border-t-blue-500 rounded-full"></div>
                           Loading notifications...
                         </div>
-                      ) : notifications.length === 0 ? (
+                      ) : allNotifications.length === 0 ? (
                         <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                           <Bell className="h-12 w-12 mx-auto mb-4 opacity-50" />
                           <p>No notifications yet</p>
                           <p className="text-sm mt-1">
-                            You'll be notified when someone interacts with your
-                            posts
+                            {isAdmin
+                              ? "You'll be notified when new users register and users interact"
+                              : "You'll be notified when someone interacts with your posts"}
                           </p>
                         </div>
                       ) : (
-                        notifications.map((notification) => (
+                        allNotifications.map((notification) => (
                           <div
-                            key={notification.id}
+                            key={getNotificationId(notification)}
                             className={`p-4 border-b border-gray-100/50 dark:border-gray-700/50 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200 ${
                               !notification.isRead
                                 ? "bg-blue-50/80 dark:bg-blue-900/20 border-l-4 border-blue-500"
                                 : "bg-transparent"
                             }`}
-                            onClick={() => markAsRead([notification.id])}
+                            onClick={() =>
+                              handleNotificationClick(notification)
+                            }
                           >
                             <div className="flex items-start space-x-3">
                               <div className="flex-shrink-0 mt-1">
-                                {getNotificationIcon(notification.type)}
+                                {getNotificationIcon(notification)}
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-gray-900 dark:text-white break-words">
                                   {getNotificationMessage(notification)}
                                 </p>
+
+                                {/* Show user data for admin notifications */}
+                                {notification.type === "user_registered" &&
+                                  notification.data &&
+                                  isAdmin && (
+                                    <div className="mt-2 p-2 bg-white/50 dark:bg-gray-700/50 rounded-lg">
+                                      <p className="text-xs text-gray-600 dark:text-gray-400 break-words">
+                                        <strong>Name:</strong>{" "}
+                                        {notification.data.userName}
+                                      </p>
+                                      <p className="text-xs text-gray-600 dark:text-gray-400 break-words">
+                                        <strong>Email:</strong>{" "}
+                                        {notification.data.userEmail}
+                                      </p>
+                                      <p className="text-xs text-gray-600 dark:text-gray-400">
+                                        <strong>Role:</strong>{" "}
+                                        {notification.data.userRole}
+                                      </p>
+                                    </div>
+                                  )}
+
                                 <div className="flex items-center justify-between mt-2">
                                   <p className="text-xs text-gray-500 dark:text-gray-400">
                                     {formatTime(notification.createdAt)}
@@ -392,7 +537,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                     </div>
 
                     {/* Footer */}
-                    {notifications.length > 0 && (
+                    {allNotifications.length > 0 && (
                       <div className="p-3 border-t border-gray-200/50 dark:border-gray-700/50 sticky bottom-0 bg-white/95 dark:bg-gray-800/95">
                         <div className="flex flex-col sm:flex-row gap-2">
                           {/* Mobile mark all read button */}
@@ -405,7 +550,11 @@ const DashboardNavbar = ({ onMenuClick }) => {
                             </button>
                           )}
                           <Link
-                            href="/user/notifications"
+                            href={
+                              isAdmin
+                                ? "/admin/notifications"
+                                : "/user/notifications"
+                            }
                             className="text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium py-2"
                             onClick={() => setIsNotificationOpen(false)}
                           >
@@ -443,8 +592,15 @@ const DashboardNavbar = ({ onMenuClick }) => {
                     <p className="text-sm font-medium text-gray-900 dark:text-white">
                       {auth?.name || "Guest User"}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {auth?.email}
+                    <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                      {isAdmin ? (
+                        <>
+                          <Shield className="h-3 w-3 text-green-500" />
+                          Administrator
+                        </>
+                      ) : (
+                        "User"
+                      )}
                     </p>
                   </div>
 
@@ -489,6 +645,16 @@ const DashboardNavbar = ({ onMenuClick }) => {
                           <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                             {auth?.email}
                           </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
+                            {isAdmin ? (
+                              <>
+                                <Shield className="h-3 w-3 text-green-500" />
+                                Administrator
+                              </>
+                            ) : (
+                              "User"
+                            )}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -503,7 +669,11 @@ const DashboardNavbar = ({ onMenuClick }) => {
                         <span>Go To Home</span>
                       </Link>
                       <Link
-                        href="/user/profile"
+                        href={
+                          isAdmin
+                            ? "/admin/adminDashboard/update-profile"
+                            : "/user/profile"
+                        }
                         className="flex items-center space-x-2 px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         onClick={() => setIsProfileOpen(false)}
                       >
