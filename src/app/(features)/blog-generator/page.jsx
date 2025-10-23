@@ -34,7 +34,7 @@ import { useSelector } from "react-redux";
 
 export default function AIWriterPage() {
   const auth = useSelector((store) => store.authStore.auth);
-  console.log(auth);
+  // console.log(auth);
 
   // ---- Share state that's needed across handlers ----
   const [shareId, setShareId] = useState(null);
@@ -195,58 +195,60 @@ export default function AIWriterPage() {
     await executeGenerateContent(input.trim(), selectedTemplate);
   };
 
-  // ---- Save to DB before sharing (react-share will await this) ----
-  const PostToDB = async () => {
-    const time = new Date().toLocaleString("en-US", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
+const PostToDB = async () => {
+  if (!output.trim()) {
+    setError("No content to share");
+    throw new Error("No content to share");
+  }
+
+  const time = new Date().toLocaleString("en-US", {
+    day: "2-digit",
+    month: "short", 
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  try {
+    const resp = await fetch("/api/content-saveTo-DB", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        prompt: input,
+        template: selectedTemplate,
+        content: output,
+        type: "blog",
+        generated_time: { time },
+        visibility: "public",
+        user: { email: auth?.email, name: auth?.name },
+      }),
     });
 
-    try {
-      const resp = await fetch("/api/content-saveTo-DB", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt: input,
-          template: selectedTemplate,
-          content: output,
-          type: "blog",
-          generated_time: { time },
-          visibility: "public",
-          user: { email: auth?.email, name: auth?.name },
-        }),
-      });
-
-      const contentData = await resp.json().catch(() => ({}));
-      if (!resp.ok || !contentData?.data?.insertedId) {
-        throw new Error(contentData?.message || "Save failed");
-      }
-
-      const insertedId = contentData.data.insertedId;
-      setShareId(insertedId);
-      console.log(shareId);
-
-      const origin =
-        typeof window !== "undefined" ? window.location.origin : "https://yourdomain.com";
-      const nextUrl = `${origin}/Shared-Content/${insertedId}`;
-      setSharedUrl(nextUrl);
-      console.log(nextUrl);
-
-      // Let React commit state before the share dialog reads the prop
-      await new Promise((r) => setTimeout(r, 0));
-      return true;
-    } catch (e) {
-      console.error(e);
-      setError(e.message || "failed to share");
-      // Throwing prevents the share dialog from opening
-      throw e;
+    const contentData = await resp.json();
+    
+    if (!resp.ok || !contentData?.success) {
+      throw new Error(contentData?.message || "Failed to save content");
     }
-  };
 
+    const insertedId = contentData.data.insertedId;
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://yourdomain.com";
+    const shareUrl = `${origin}/Shared-Content/${insertedId}`;
+    
+    // State update (for UI if needed)
+    setShareId(insertedId);
+    setSharedUrl(shareUrl);
+    
+    console.log("✅ Content saved. Share URL:", shareUrl);
+    
+    return shareUrl;
+    
+  } catch (error) {
+    console.error("❌ Failed to save content:", error);
+    setError(error.message || "Failed to save content for sharing");
+    throw error;
+  }
+};
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(output);
@@ -532,51 +534,72 @@ export default function AIWriterPage() {
                           role="menu"
                         >
                           <div className="flex items-center gap-2">
-                            <FacebookShareButton
-                              url={sharedUrl}
-                              quote={shareTitle}
-                              beforeOnClick={PostToDB}
-                            >
-                              <FacebookIcon size={36} round />
-                            </FacebookShareButton>
+                         
+<FacebookShareButton
+  url={sharedUrl}
+  quote={shareTitle}
+  beforeOnClick={async () => {
+    try {
+      const newUrl = await PostToDB();
+      
+      setSharedUrl(newUrl);
+      return true;
+    } catch {
+      return false;
+    }
+  }}
+>
+  <FacebookIcon size={36} round />
+</FacebookShareButton>
 
-                            <WhatsappShareButton
-                              url={sharedUrl}
-                              title={shareTitle}
-                              separator=" — "
-                              beforeOnClick={PostToDB}
-                            >
-                              <WhatsappIcon size={36} round />
-                            </WhatsappShareButton>
+<WhatsappShareButton
+  url={sharedUrl}
+  title={shareTitle}
+  separator=" — "
+  beforeOnClick={async () => {
+    try {
+      const newUrl = await PostToDB();
+      setSharedUrl(newUrl);
+      return true;
+    } catch {
+      return false;
+    }
+  }}
+>
+  <WhatsappIcon size={36} round />
+</WhatsappShareButton>
 
-                            {/* Instagram-like (Web Share API) */}
-                            <button
-                              type="button"
-                              onClick={async () => {
-                                try {
-                                  await PostToDB();
-                                  if (navigator.share) {
-                                    await navigator.share({
-                                      title: shareTitle,
-                                      text: output,
-                                      url: sharedUrl,
-                                    });
-                                    setShowShareMenu(false);
-                                  } else {
-                                    alert(
-                                      "System share isn’t supported here. Instagram doesn’t allow direct web link sharing—try on mobile using the system share sheet or copy the link."
-                                    );
-                                  }
-                                } catch {
-                                  // already handled via setError
-                                }
-                              }}
-                              className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-pink-500 via-red-500 to-yellow-500 text-white shadow hover:opacity-90 focus:outline-none"
-                              title="Share via Instagram (via system share)"
-                              aria-label="Share via Instagram"
-                            >
-                              <Instagram size={18} />
-                            </button>
+{/* Instagram-style share */}
+<button
+  type="button"
+  onClick={async () => {
+    try {
+      // ✅ প্রথমে content save করছি
+      const shareUrl = await PostToDB();
+      
+      if (navigator.share) {
+        await navigator.share({
+          title: shareTitle,
+          text: output.slice(0, 100) + "...",
+          url: shareUrl,
+        });
+        setShowShareMenu(false);
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(shareUrl);
+        alert("Link copied to clipboard! Share this URL: " + shareUrl);
+      }
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        console.error("Share failed:", error);
+        alert("Sharing failed. Please try again.");
+      }
+    }
+  }}
+  className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-tr from-pink-500 via-red-500 to-yellow-500 text-white shadow hover:opacity-90 focus:outline-none"
+>
+  <Instagram size={18} />
+</button>
                           </div>
                         </motion.div>
                       )}
