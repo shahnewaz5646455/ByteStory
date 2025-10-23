@@ -48,7 +48,18 @@ export async function POST(request) {
 
     // new registration
     console.log("💾 Creating new user...");
-    const newRegistration = new UserModel({ name, email, password });
+    const newRegistration = new UserModel({
+      name,
+      email,
+      password,
+      // ===== ADD QUOTA FIELDS HERE =====
+      seo_key: 5,
+      hashtag_key: 2,
+      email_key: 2,
+      pdf_key: 2,
+      grammar_key: 5,
+      // ===== END QUOTA FIELDS =====
+    });
     await newRegistration.save();
     console.log(
       "✅ User saved to database. ID:",
