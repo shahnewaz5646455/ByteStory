@@ -40,7 +40,7 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(0)
 
   return (
-    <section className="max-w-3xl mx-auto px-4 py-16">
+    <section className="max-w-5xl mx-auto px-4 py-16">
       {/* Header */}
       <div className="text-center mb-12">
         <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">

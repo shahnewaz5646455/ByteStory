@@ -9,6 +9,7 @@ import {
   ArrowRight,
   Sparkles,
 } from "lucide-react";
+import Link from "next/link";
 
 const HowItWorks = () => {
   const steps = [
@@ -60,7 +61,7 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section className="py-16 relative overflow-hidden0">
+    <section className="py-16 relative overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
@@ -84,7 +85,7 @@ const HowItWorks = () => {
           {/* Middle Line */}
           <div className="absolute left-1/2 top-0 h-full w-1 bg-gradient-to-b from-blue-500 via-purple-500 to-pink-500 transform -translate-x-1/2"></div>
 
-          <div className="steps-container space-y-16">
+          <div className="steps-container space-y-2">
             {steps.map((step, index) => (
               <div
                 key={step.id}
@@ -128,11 +129,11 @@ const HowItWorks = () => {
 
         {/* CTA */}
         <div className="text-center mt-20">
-          <button className="group relative inline-flex items-center justify-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold px-10 py-4 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden cursor-pointer">
+          <Link href="/tools" className="group relative inline-flex items-center justify-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold px-10 py-4 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden cursor-pointer">
             <span className="relative z-10 text-lg">Start Your Free Trial</span>
             <ArrowRight className="ml-3 h-6 w-6 transition-transform group-hover:translate-x-2 duration-300" />
             <div className="absolute inset-0 bg-gradient-to-r from-purple-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          </button>
+          </Link>
           <p className="text-gray-500 dark:text-gray-400 text-base mt-5 font-medium">
             No credit card required
           </p>

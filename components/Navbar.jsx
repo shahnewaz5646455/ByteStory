@@ -164,14 +164,14 @@ export default function Navbar() {
 
                 <NavigationMenuItem>
                   <NavigationMenuLink
-                    href="/features"
+                    href="/feed"
                     className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${
                       pathname === "/features"
                         ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
                         : ""
                     }`}
                   >
-                    Features
+                    Feed
                   </NavigationMenuLink>
                 </NavigationMenuItem>
 
@@ -465,7 +465,7 @@ export default function Navbar() {
 
               {/* Other Navigation Links */}
               {[
-                { href: "/features", label: "Features" },
+                { href: "/feed", label: "Feed" },
                 { href: "/learn", label: "Learn" },
                 { href: "/about", label: "About" },
                 { href: "/contact", label: "Contact" },
