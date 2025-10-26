@@ -4,7 +4,7 @@ import Post from "@/app/models/Post";
 
 export async function GET(request, { params }) {
   try {
-    // ✅ Next.js 14 - params await করতে হবে
+    //  Next.js 14 - params await
     const { email } = await params;
 
     if (!email) {
@@ -16,7 +16,7 @@ export async function GET(request, { params }) {
 
     await connectDB();
 
-    // ✅ শুধু non-deleted posts fetch করুন
+    // only non-deleted posts fetch
     const posts = await Post.find({
       authorId: email,
       isDeleted: false,
