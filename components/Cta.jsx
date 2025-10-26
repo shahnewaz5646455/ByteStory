@@ -41,12 +41,12 @@ const Cta = () => {
                     </div>
 
                     {/* Main Heading */}
-                    <h2 className="text-4xl md:text-5xl font-bold pb-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 dark:from-indigo-400 dark:via-purple-400 dark:to-blue-400 bg-clip-text text-transparent">
+                    <h2 className="text-3xl md:text-4xl font-bold pb-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 dark:from-indigo-400 dark:via-purple-400 dark:to-blue-400 bg-clip-text text-transparent">
                         Supercharge Your Content
                     </h2>
 
                     {/* Subheading */}
-                    <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+                    <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
                         Join <span className="font-semibold text-indigo-600 dark:text-indigo-400">10,000+ content creators</span> who are already using our AI tools to save time and create better content.
                     </p>
 

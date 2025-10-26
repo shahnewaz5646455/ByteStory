@@ -42,7 +42,7 @@ export default function ToolboxSection() {
     <section className="py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center lg:text-left">
         <p className="text-indigo-500 font-semibold mb-2">Creator's Toolbox</p>
-        <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
           8 <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">AI-Powered</span> Blogging Tools
         </h2>
         <p className="text-gray-600 dark:text-gray-300 mb-12 max-w-2xl">

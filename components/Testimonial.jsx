@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Star, Quote, Sparkles } from "lucide-react";
+import { Star, Quote } from "lucide-react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 
@@ -68,11 +68,7 @@ const TestimonialSection = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center rounded-full bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 mb-4">
-            <Sparkles className="h-4 w-4 mr-2" />
-            Loved by Creators
-          </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
             What Our <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">Users Say</span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
