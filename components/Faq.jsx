@@ -43,7 +43,7 @@ export default function FAQ() {
     <section className="max-w-5xl mx-auto px-4 py-16">
       {/* Header */}
       <div className="text-center mb-12">
-        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
           Frequently Asked <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">Questions</span>
         </h2>
         <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
