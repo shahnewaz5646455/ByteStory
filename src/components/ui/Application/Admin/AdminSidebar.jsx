@@ -12,6 +12,7 @@ import {
   ChevronRight,
   Sparkles,
   X,
+  Recycle,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import LogoutButton from "../LogoutButton";
@@ -50,12 +51,17 @@ export default function AdminSidebar({ onClose }) {
       icon: Users,
       badge: totalUsers !== null ? String(totalUsers) : null,
     },
-    { name: "Content", href: "/feed", icon: FileText},
+    { name: "Content", href: "/feed", icon: FileText },
     {
       name: "Analytics",
       href: "/admin/analytics",
       icon: BarChart3,
       badge: "New",
+    },
+    {
+      name: "Recycle-Bin",
+      href: "/admin/adminDashboard/recycle-bin",
+      icon: Recycle,
     },
     {
       name: "Profile",

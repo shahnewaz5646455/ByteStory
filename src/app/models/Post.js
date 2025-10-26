@@ -1,69 +1,93 @@
-import mongoose from 'mongoose';
+// app/models/Post.js
+import mongoose from "mongoose";
 
-const CommentSchema = new mongoose.Schema({
-  content: {
-    type: String,
-    required: true,
-    trim: true
+const CommentSchema = new mongoose.Schema(
+  {
+    content: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    authorId: {
+      type: String,
+      required: true,
+    },
+    authorName: {
+      type: String,
+      required: true,
+    },
+    authorImage: {
+      type: String,
+      default: "",
+    },
+    likes: [
+      {
+        type: String,
+      },
+    ],
   },
-  authorId: {
-    type: String,
-    required: true
-  },
-  authorName: {
-    type: String,
-    required: true
-  },
-  authorImage: {
-    type: String,
-    default: ''
-  },
-  likes: [{
-    type: String
-  }]
-}, {
-  timestamps: true
-});
+  {
+    timestamps: true,
+  }
+);
 
-const PostSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    trim: true
+const PostSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      trim: true,
+    },
+    content: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    authorId: {
+      type: String,
+      required: true,
+    },
+    authorName: {
+      type: String,
+      required: true,
+    },
+    authorImage: {
+      type: String,
+      default: "",
+    },
+    imageUrl: {
+      type: String,
+      default: "",
+    },
+    tags: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    likes: [
+      {
+        type: String,
+      },
+    ],
+    loves: [
+      {
+        type: String,
+      },
+    ],
+    comments: [CommentSchema],
+    // Recycle Bin related fields
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    deletedAt: {
+      type: Date,
+      default: null,
+    },
   },
-  content: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  authorId: {
-    type: String,
-    required: true
-  },
-  authorName: {
-    type: String,
-    required: true
-  },
-  authorImage: {
-    type: String,
-    default: ''
-  },
-  imageUrl: {
-    type: String,
-    default: ''
-  },
-  tags: [{
-    type: String,
-    trim: true
-  }],
-  likes: [{
-    type: String
-  }],
-  loves: [{
-    type: String
-  }],
-  comments: [CommentSchema]
-}, {
-  timestamps: true
-});
+  {
+    timestamps: true,
+  }
+);
 
-export default mongoose.models.Post || mongoose.model('Post', PostSchema);
+export default mongoose.models.Post || mongoose.model("Post", PostSchema);

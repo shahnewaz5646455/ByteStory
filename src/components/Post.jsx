@@ -255,7 +255,7 @@ export default function Post({ post, onUpdate, onDelete }) {
       }
     } catch (error) {
       console.error("Error adding comment:", error);
-      alert("Failed to post comment. Please try again.");
+      showToast("error", "Failed to post comment. Please try again");
     } finally {
       setIsLoading(false);
     }
@@ -274,12 +274,15 @@ export default function Post({ post, onUpdate, onDelete }) {
                 try {
                   const response = await fetch(`/api/posts/${post.id}`, {
                     method: "DELETE",
-                    headers: { "x-user-email": session.email },
+                    headers: {
+                      "x-user-email": session.email, // ✅ এই লাইনটা add করুন
+                    },
                   });
 
                   if (response.ok) {
                     onDelete(post.id);
-                    toast.success("Post deleted successfully");
+
+                    showToast("success", "Post moved to recycle bin"); // ✅ Message change
                   } else {
                     const error = await response.json();
                     toast.error(error.error || "Failed to delete post");
@@ -306,10 +309,9 @@ export default function Post({ post, onUpdate, onDelete }) {
       { autoClose: false }
     );
   };
-
   const handleShare = async () => {
     if (!session) {
-      alert("Please log in to share posts");
+      showToast("error", "Please log in to share posts");
       return;
     }
 
