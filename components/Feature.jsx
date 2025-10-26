@@ -6,17 +6,20 @@ const features = [
     imagePath: '/generate.webp',
     title: 'Write Blog Posts Fast',
     description: 'Turn ideas into complete blog posts in minutes. Write faster, rank higher, and grow your traffic effortlessly.',
+    path: '/blog-generator'
   },
   {
     imagePath: '/optimize.webp',
     title: 'Smart SEO Optimization',
     description: 'Get your content search-ready automatically. Detailed reports show exactly what to improve for better rankings.',
+    path: '/seo-checker'
   },
   {
-    imagePath: '/publish.webp',
-    title: 'One-Click Publishing',
-    description: 'Publish anywhere, with one click. WordPress, Webflow, Ghost, and more, your articles go live instantly across your favorite platforms.',
-  },
+  imagePath: '/publish.webp',
+  title: 'Email Newsletter Writer',
+  description: 'Create engaging email newsletters in minutes. Write compelling content that drives opens and clicks, and grow your subscriber base effortlessly.',
+  path: '/email-writer'
+},
 ];
 
 const Feature = () => {
@@ -31,23 +34,16 @@ const Feature = () => {
               Get More Traffic
             </span>
           </h2>
-          <Link
-            href="/login"
-            className="hidden group/button relative md:inline-flex items-center justify-center overflow-hidden rounded-md hover:scale-105 bg-gray-800 backdrop-blur-lg px-6 py-2 text-base font-semibold text-white transition-all duration-150 ease-in-out hover:shadow-lg hover:shadow-gray-600/50 dark:hover:shadow-indigo-600/30 border border-white/20 dark:border-indigo-400/20 h-max"
-          >
-            <span>Get Started Free</span>
-            <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]">
-              <div className="relative h-full w-10 bg-white/20 dark:bg-indigo-300/20"></div>
-            </div>
-          </Link>
+        
         </div>
 
         {/* Features Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {features.map((feature, index) => (
-            <div
+            <Link
               key={index}
-              className="bg-white dark:bg-gray-800 rounded-xl shadow-md dark:shadow-gray-900/50 hover:shadow-lg dark:hover:shadow-indigo-900/20 transition-all duration-300 overflow-hidden group hover:-translate-y-1"
+              href={feature.path}
+              className="bg-white dark:bg-gray-800 rounded-xl shadow-md dark:shadow-gray-900/50 hover:shadow-lg dark:hover:shadow-indigo-900/20 transition-all duration-300 overflow-hidden group hover:-translate-y-1 cursor-pointer block"
             >
               <div className="relative h-48 sm:h-52 md:h-56 lg:h-60 overflow-hidden">
                 <Image
@@ -68,7 +64,7 @@ const Feature = () => {
                   {feature.description}
                 </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 

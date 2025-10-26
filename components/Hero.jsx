@@ -44,9 +44,9 @@ const Hero = () => {
           >
             Start Creating Now
           </Link>
-          <button className="bg-white dark:bg-gray-800 text-gray-800 dark:text-white border-2 border-indigo-100 dark:border-gray-700 font-semibold text-sm md:text-base px-5 py-3  md:px-8 md:py-4 rounded-lg hover:border-indigo-200 dark:hover:border-indigo-400 hover:bg-indigo-50 dark:hover:bg-gray-700 transition duration-300 flex items-center justify-center cursor-pointer w-max whitespace-nowrap">
+          <Link href="/features" className="bg-white dark:bg-gray-800 text-gray-800 dark:text-white border-2 border-indigo-100 dark:border-gray-700 font-semibold text-sm md:text-base px-5 py-3  md:px-8 md:py-4 rounded-lg hover:border-indigo-200 dark:hover:border-indigo-400 hover:bg-indigo-50 dark:hover:bg-gray-700 transition duration-300 flex items-center justify-center cursor-pointer w-max whitespace-nowrap">
             View All Features
-          </button>
+          </Link>
         </div>
       </div>
 
