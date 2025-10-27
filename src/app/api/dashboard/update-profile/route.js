@@ -5,12 +5,18 @@ import {
 } from "@/lib/cloudinaryUpload";
 import { connectDB } from "@/lib/database.Connection";
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 
 // Helper to get user ID from headers
 const getUserId = (req) => {
   const userId = req.headers.get("x-user-id");
   console.log("🔍 User ID from header:", userId);
   return userId;
+};
+
+// Check if string is a valid MongoDB ObjectId
+const isValidObjectId = (id) => {
+  return mongoose.Types.ObjectId.isValid(id) && /^[0-9a-fA-F]{24}$/.test(id);
 };
 
 // GET — Fetch logged-in user's own profile
@@ -29,9 +35,20 @@ export async function GET(req) {
       );
     }
 
-    const user = await UserModel.findById(userId).select("-password");
+    let user;
+
+    // Check if userId is a valid ObjectId
+    if (isValidObjectId(userId)) {
+      console.log("🔍 Searching by ObjectId:", userId);
+      user = await UserModel.findById(userId).select("-password");
+    } else {
+      // If not ObjectId, search by email
+      console.log("🔍 Searching by email:", userId);
+      user = await UserModel.findOne({ email: userId }).select("-password");
+    }
 
     if (!user) {
+      console.log("❌ User not found with identifier:", userId);
       return NextResponse.json(
         {
           success: false,
@@ -40,6 +57,8 @@ export async function GET(req) {
         { status: 404 }
       );
     }
+
+    console.log("✅ User found:", user.email);
 
     return NextResponse.json({
       success: true,
@@ -96,8 +115,17 @@ export async function PUT(request) {
       hasAvatar: !!avatarFile,
     });
 
-    const user = await UserModel.findById(userId);
+    let user;
+
+    // Check if userId is a valid ObjectId
+    if (isValidObjectId(userId)) {
+      user = await UserModel.findById(userId);
+    } else {
+      user = await UserModel.findOne({ email: userId });
+    }
+
     if (!user) {
+      console.log("❌ User not found with identifier:", userId);
       return NextResponse.json(
         { success: false, error: "User not found" },
         { status: 404 }
@@ -146,7 +174,16 @@ export async function PUT(request) {
     }
 
     await user.save();
-    const updatedUser = await UserModel.findById(userId).select("-password");
+
+    // Get updated user
+    let updatedUser;
+    if (isValidObjectId(userId)) {
+      updatedUser = await UserModel.findById(userId).select("-password");
+    } else {
+      updatedUser = await UserModel.findOne({ email: userId }).select(
+        "-password"
+      );
+    }
 
     return NextResponse.json({
       success: true,

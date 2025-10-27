@@ -1,4 +1,3 @@
-// app/api/recycle-cleanup/[id]/route.js
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/database.Connection";
 import Post from "@/app/models/Post";

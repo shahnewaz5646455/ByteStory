@@ -4,7 +4,7 @@ import Post from "@/app/models/Post";
 
 export async function PUT(request, { params }) {
   try {
-    // ✅ params await করুন
+    // ✅ params await
     const { id } = await params;
 
     // Get user email from headers (consistent with your frontend)

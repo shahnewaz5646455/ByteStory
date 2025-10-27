@@ -1,4 +1,3 @@
-// app/recycle-bin/page.js
 "use client";
 
 import { useState, useEffect } from "react";
