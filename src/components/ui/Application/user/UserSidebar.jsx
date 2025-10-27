@@ -10,6 +10,12 @@ import {
   X,
   SparklesIcon,
   Recycle,
+  MessagesSquareIcon,
+  ShieldQuestionMarkIcon,
+  MessagesSquare,
+  Share,
+  LucideBluetoothConnected,
+  Share2Icon,
 } from "lucide-react";
 import LogoutButton from "../LogoutButton";
 
@@ -20,6 +26,18 @@ const menuItems = [
     name: "Recycle Bin",
     href: "/website/recycle-bin",
     icon: Recycle,
+    badge: null,
+  },
+  {
+    name: "Shared with Others",
+    href: "/website/shared",
+    icon: Share2Icon,
+    badge: null,
+  },
+  {
+    name: "QnA-ByteStory",
+    href: "/website/QnA",
+    icon: MessagesSquare,
     badge: null,
   },
   {

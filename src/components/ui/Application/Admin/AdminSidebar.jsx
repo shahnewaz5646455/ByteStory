@@ -13,6 +13,7 @@ import {
   Sparkles,
   X,
   Recycle,
+  MessageCircleHeart,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import LogoutButton from "../LogoutButton";
@@ -56,6 +57,12 @@ export default function AdminSidebar({ onClose }) {
       name: "Analytics",
       href: "/admin/analytics",
       icon: BarChart3,
+      badge: "New",
+    },
+    {
+      name: "Public Messages",
+      href: "/admin/adminDashboard/public-messages",
+      icon: MessageCircleHeart,
       badge: "New",
     },
     {
