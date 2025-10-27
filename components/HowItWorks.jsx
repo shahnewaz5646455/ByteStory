@@ -65,11 +65,7 @@ const HowItWorks = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center rounded-full bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 px-5 py-2.5 text-sm font-semibold text-indigo-700 dark:text-indigo-300 mb-6 shadow-sm">
-            <Sparkles className="h-4 w-4 mr-2" />
-            How It Works
-          </div>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-5 tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-5 tracking-tight">
             Streamline Your{" "}
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
               Content Workflow
