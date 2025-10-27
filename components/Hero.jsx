@@ -4,15 +4,14 @@ import React from 'react';
 import { Brain, BarChart3, Send, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { SparklesText } from '@/components/ui/sparkles-text';
-import { BackgroundBeamsWithCollision } from '@/components/ui/background-beams-with-collision';
+import GridBackgroundView from '@/components/ui/GridBackgroundView';
 
 const Hero = () => {
   return (
     <section className="relative bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 via-white to-purple-50 px-4 overflow-hidden flex flex-col items-center justify-center py-12 md:py-16 lg:py-0 min-h-[calc(100vh-64px)]">
-      
-      <BackgroundBeamsWithCollision 
-        className="absolute inset-0  z-0"
-      />
+      <div className="absolute inset-0  z-0">
+      <GridBackgroundView />
+      </div>
       
       <div className="max-w-4xl mx-auto relative z-10 w-full">
         {/* Badge */}
@@ -24,7 +23,7 @@ const Hero = () => {
         </div>
 
         {/* Heading */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-4 md:mb-6 leading-tight text-center">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-gray-300 mb-4 md:mb-6 leading-tight text-center">
           Create, Optimize & Publish with{" "}
           <span className="inline-block">
             <SparklesText>AI Power</SparklesText>
