@@ -48,6 +48,15 @@ const userSchema = new mongoose.Schema(
     providerId: {
       type: String, // Google's user ID
     },
+    // ✅ নতুন ফিল্ড যোগ করুন এখানে
+    blog_key: {
+      type: Number,
+      default: 1,
+    },
+    email_key: {
+      type: Number,
+      default: 1,
+    },
   },
   {
     timestamps: true,
