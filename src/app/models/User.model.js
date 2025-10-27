@@ -48,6 +48,7 @@ const userSchema = new mongoose.Schema(
     providerId: {
       type: String, // Google's user ID
     },
+  
     // ===== NEW QUOTA FIELDS ADDED HERE =====
     seo_key: {
       type: Number,
@@ -62,6 +63,10 @@ const userSchema = new mongoose.Schema(
       default: 2,
     },
     pdf_key: {
+      type: Number,
+      default: 2,
+    },
+    blog_key: {
       type: Number,
       default: 2,
     },
