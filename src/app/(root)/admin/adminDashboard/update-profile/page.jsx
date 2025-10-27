@@ -141,7 +141,7 @@ const ProfilePage = () => {
     if (auth && auth._id) {
       fetchUserData();
     } else {
-      console.error("❌ No auth data or user ID found");
+      // console.error("❌ No auth data or user ID found");
       setLoading(false);
     }
   }, [auth]);
