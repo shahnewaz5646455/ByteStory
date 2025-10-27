@@ -148,7 +148,7 @@ const ProfilePage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50/30 dark:bg-gray-900/30">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <Loader className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-500" />
           <p className="text-gray-600 dark:text-gray-400">
@@ -161,7 +161,7 @@ const ProfilePage = () => {
 
   if (!userData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50/30 dark:bg-gray-900/30">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <User className="h-12 w-12 mx-auto mb-4 text-gray-400" />
           <p className="text-gray-600 dark:text-gray-400">

@@ -101,7 +101,7 @@ export default function SharedContentPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-800 dark:to-gray-950">
         <div className="flex min-h-screen items-center justify-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -129,7 +129,7 @@ export default function SharedContentPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-800 dark:to-gray-950">
         <div className="flex min-h-screen items-center justify-center px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -173,7 +173,7 @@ export default function SharedContentPage() {
   const readTime = Math.ceil(wordCount / 200);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 text-gray-900 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 dark:text-white">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 text-gray-900 dark:from-gray-950 dark:via-gray-800 dark:to-gray-950 dark:text-white">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-indigo-100 bg-white/90 backdrop-blur-md dark:border-gray-700 dark:bg-gray-800/90">
         <div className="mx-auto max-w-5xl px-4 py-4 sm:py-6">

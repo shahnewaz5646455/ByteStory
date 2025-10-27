@@ -226,7 +226,7 @@ const VideoGallery = () => {
   };
 
   return (
-    <section id="tutorials" className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 via-white to-purple-50 min-h-screen relative overflow-hidden">
+    <section id="tutorials" className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-indigo-50 dark:from-gray-950 dark:via-gray-800 dark:to-gray-950 via-white to-purple-50 min-h-screen relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div 
           ref={ref} 
