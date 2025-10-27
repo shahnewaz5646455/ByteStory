@@ -19,7 +19,7 @@ const GridBackground = () => {
 
   return (
     <div
-      className="absolute inset-0 w-full h-full overflow-hidden transition-transform duration-300 ease-out bg-white dark:bg-black"
+      className="absolute inset-0 w-full h-full overflow-hidden transition-transform duration-300 ease-out"
       style={{
         transform: `translate(${mousePosition.x / 30}px, ${mousePosition.y / 30}px)`,
       }}
@@ -35,9 +35,9 @@ const GridBackground = () => {
           backgroundSize: "40px 40px",
           animation: "moveGrid 20s linear infinite",
           maskImage:
-            "radial-gradient(circle at center, rgba(255,255,255,1) 40%, rgba(255,255,255,0) 100%)",
+            "radial-gradient(circle at center, rgba(255,255,255,1) 35%, rgba(255,255,255,0) 100%)",
           WebkitMaskImage:
-            "radial-gradient(circle at center, rgba(255,255,255,1) 40%, rgba(255,255,255,0) 100%)",
+            "radial-gradient(circle at center, rgba(255,255,255,1) 35%, rgba(255,255,255,0) 100%)",
         }}
       />
 
@@ -52,14 +52,15 @@ const GridBackground = () => {
           backgroundSize: "40px 40px",
           animation: "moveGrid 20s linear infinite",
           maskImage:
-            "radial-gradient(circle at center, rgba(255,255,255,1) 40%, rgba(255,255,255,0) 100%)",
+            "radial-gradient(circle at center, rgba(255,255,255,1) 35%, rgba(255,255,255,0) 100%)",
           WebkitMaskImage:
-            "radial-gradient(circle at center, rgba(255,255,255,1) 40%, rgba(255,255,255,0) 100%)",
+            "radial-gradient(circle at center, rgba(255,255,255,1) 35%, rgba(255,255,255,0) 100%)",
+          backgroundColor: "#0a0a0a", // Optional: dark mode base color
         }}
       />
 
       {/* Center Glow */}
-      <div className="absolute top-1/2 left-1/2 w-[60vmin] h-[60vmin] dark:bg-purple-500/25 bg-purple-300/20 rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute top-1/2 left-1/2 w-[60vmin] h-[60vmin] dark:bg-purple-600/20 bg-purple-400/10 rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2" />
 
       <style>
         {`
@@ -75,7 +76,7 @@ const GridBackground = () => {
 
 export default function GridBackgroundView() {
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-white dark:bg-black">
+    <div className="relative w-full h-screen overflow-hidden">
       <GridBackground />
     </div>
   );
