@@ -8,7 +8,7 @@ import GridBackgroundView from '@/components/ui/GridBackgroundView';
 
 const Hero = () => {
   return (
-    <section className="relative bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 via-white to-purple-50 px-4 overflow-hidden flex flex-col items-center justify-center py-12 md:py-16 lg:py-0 min-h-[calc(100vh-64px)]">
+    <section className="relative bg-gradient-to-br from-indigo-50 dark:from-gray-950 dark:via-gray-800 dark:to-gray-950 via-white to-purple-50 px-4 overflow-hidden flex flex-col items-center justify-center py-12 md:py-16 lg:py-0 min-h-[calc(100vh-64px)]">
       <div className="absolute inset-0  z-0">
       <GridBackgroundView />
       </div>

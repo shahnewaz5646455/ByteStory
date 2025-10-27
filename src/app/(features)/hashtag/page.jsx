@@ -293,7 +293,7 @@ export default function Home() {
   const maxHashtags = currentPlatform?.maxHashtags || 15;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4">
+    <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-800 dark:to-gray-950 py-12 px-4">
       {/* Online banner */}
       {showNetStatus && (
         <div className="sticky top-0 z-50 animate-pulse bg-green-500 py-3 px-4 text-center shadow-lg">
@@ -407,8 +407,8 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <div className="max-w-2xl mx-auto">
-        {/* Hashtag Key Counter */}
+        <div className="max-w-7xl mx-auto">
+          {/* Hashtag Key Counter */}
         {auth && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -447,6 +447,8 @@ export default function Home() {
             </div>
           </motion.div>
         )}
+        </div>
+      <div className="max-w-2xl mx-auto">
        
         {/* Header */}
         <div className="text-center mb-12">

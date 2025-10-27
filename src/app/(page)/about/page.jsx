@@ -34,7 +34,7 @@ const roadmap = [
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-950 dark:via-gray-800 dark:to-gray-950 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200">
       {/* Hero */}
       <section className="relative">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(40rem_20rem_at_top,rgba(99,102,241,0.08),transparent)] dark:bg-[radial-gradient(40rem_20rem_at_top,rgba(139,92,246,0.15),transparent)]" />
