@@ -48,15 +48,33 @@ const userSchema = new mongoose.Schema(
     providerId: {
       type: String, // Google's user ID
     },
-    // ✅ নতুন ফিল্ড যোগ করুন এখানে
-    blog_key: {
+  
+    // ===== NEW QUOTA FIELDS ADDED HERE =====
+    seo_key: {
       type: Number,
-      default: 1,
+      default: 5,
+    },
+    hashtag_key: {
+      type: Number,
+      default: 2,
     },
     email_key: {
       type: Number,
-      default: 1,
+      default: 2,
     },
+    pdf_key: {
+      type: Number,
+      default: 2,
+    },
+    blog_key: {
+      type: Number,
+      default: 2,
+    },
+    grammar_key: {
+      type: Number,
+      default: 5,
+    },
+    // ===== END NEW QUOTA FIELDS =====
   },
   {
     timestamps: true,

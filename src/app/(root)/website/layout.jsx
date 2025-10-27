@@ -3,13 +3,12 @@
 import React, { useEffect, useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import DashboardNavbar from "@/components/ui/Application/dashboard/DahboardNavbar";
-import AdminRoute from "@/components/routes/AdminRoute";
 import UserSidebar from "@/components/ui/Application/user/UserSidebar";
 import UserRoute from "@/components/routes/UserRoute";
 
 const WebsiteLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
 
   useEffect(() => {
     const navbar = document.querySelector("nav");
@@ -17,21 +16,26 @@ const WebsiteLayout = ({ children }) => {
     const footer = document.querySelector("footer");
     if (footer) footer.style.display = "none";
 
-    // Check if mobile
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth >= 768) {
+    // Check screen size - lg breakpoint (1024px)
+    const checkScreenSize = () => {
+      const large = window.innerWidth >= 1024;
+      setIsLargeScreen(large);
+      
+      // Auto-open sidebar on large screens, close on small screens
+      if (large) {
+        setIsSidebarOpen(true);
+      } else {
         setIsSidebarOpen(false);
       }
     };
 
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
 
     return () => {
       if (navbar) navbar.style.display = "";
       if (footer) footer.style.display = "";
-      window.removeEventListener("resize", checkMobile);
+      window.removeEventListener("resize", checkScreenSize);
     };
   }, []);
 
@@ -39,40 +43,71 @@ const WebsiteLayout = ({ children }) => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  // Close sidebar when clicking on overlay (mobile)
+  const closeSidebar = () => {
+    if (!isLargeScreen) {
+      setIsSidebarOpen(false);
+    }
+  };
+
   return (
     <UserRoute>
       <SidebarProvider>
         <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
-          {/* Sidebar Overlay for Mobile */}
-          {isMobile && isSidebarOpen && (
+          {/* Sidebar Overlay for Mobile/Tablet */}
+          {!isLargeScreen && isSidebarOpen && (
             <div
-              className="fixed inset-0 bg-gray-300/70 backdrop-blur-md bg-opacity-50 z-40 md:hidden"
-              onClick={() => setIsSidebarOpen(false)}
+              className="fixed inset-0 backdrop-blur-xs bg-black/20 z-40"
+              onClick={closeSidebar}
             />
           )}
 
-          {/* Sidebar */}
+          {/* Sidebar - Only visible on lg screens or when manually opened */}
           <div
             className={`
-          fixed md:static inset-y-0 left-0 z-50
-          transform transition-transform duration-300 ease-in-out
-          ${
-            isSidebarOpen
-              ? "translate-x-0"
-              : "-translate-x-full md:translate-x-0"
-          }
-          w-64 md:w-64 lg:w-72
-        `}
+              ${!isLargeScreen ? "fixed" : "sticky top-0 self-start"}
+              inset-y-0 left-0 z-50
+              transform transition-transform duration-300 ease-in-out
+              ${
+                isSidebarOpen 
+                  ? "translate-x-0" 
+                  : "-translate-x-full lg:translate-x-0"
+              }
+              w-64 lg:w-72
+              h-screen overflow-y-auto
+              bg-white dark:bg-gray-900 shadow-lg
+              border-r border-gray-200 dark:border-gray-700
+            `}
           >
-            <UserSidebar onClose={() => setIsSidebarOpen(false)} />
+            <UserSidebar onClose={closeSidebar} />
           </div>
 
           {/* Main Content Area */}
-          <div className="flex-1 flex flex-col min-h-screen w-full md:w-[calc(100%-16rem)] lg:w-[calc(100%-18rem)]">
-            <DashboardNavbar onMenuClick={toggleSidebar} />
+          <div className="flex-1 flex flex-col min-h-screen min-w-0">
+            {/* Navbar - with conditional z-index */}
+            <div className={`
+              sticky top-0
+              ${isSidebarOpen && !isLargeScreen ? 'z-30' : 'z-40'}
+              bg-white/95 dark:bg-gray-900/95 backdrop-blur-md
+            `}>
+              <DashboardNavbar 
+                onMenuClick={toggleSidebar} 
+                showMenuButton={!isLargeScreen}
+              />
+            </div>
 
-            {/* Main content area */}
-            <main className="flex-1 p-4 md:p-6 lg:p-8 bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white transition-colors duration-200 overflow-auto">
+            {/* Main Content */}
+            <main
+              className={`
+                flex-1 p-4 md:p-6 lg:p-8 
+                bg-gradient-to-br from-indigo-50 via-white to-purple-50 
+                dark:from-gray-950 dark:via-gray-800 dark:to-gray-950 
+                text-gray-900 dark:text-white transition-colors duration-200 
+                overflow-y-auto
+                ${isSidebarOpen && !isLargeScreen ? 'z-20' : 'z-10'}
+                relative
+              `}
+            >
               <div>{children}</div>
             </main>
           </div>

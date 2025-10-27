@@ -1,31 +1,33 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import Link from 'next/link';
-import Post from '@/components/Post';
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import Link from "next/link";
+import Post from "@/components/Post";
 
 export default function MyPostsPage() {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilter, setActiveFilter] = useState("all");
   const session = useSelector((store) => store.authStore.auth);
 
   const fetchMyPosts = async () => {
     if (!session?.email) return;
-    
+
     try {
       setIsLoading(true);
       const response = await fetch(`/api/posts/user/${session.email}`);
       if (response.ok) {
         const postsData = await response.json();
-        setPosts(postsData);
+        // Only show non-deleted posts
+        const nonDeletedPosts = postsData.filter((post) => !post.isDeleted);
+        setPosts(nonDeletedPosts);
       } else {
-        console.error('Failed to fetch posts');
+        console.error("Failed to fetch posts");
       }
     } catch (error) {
-      console.error('Error fetching posts:', error);
+      console.error("Error fetching posts:", error);
     } finally {
       setIsLoading(false);
     }
@@ -38,22 +40,25 @@ export default function MyPostsPage() {
   }, [session]);
 
   // Filter posts based on active filter and search query
-  const filteredPosts = posts.filter(post => {
-    const matchesSearch = post.content?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         post.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         post.authorName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         post.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    if (activeFilter === 'popular') {
-      return matchesSearch && (post.likes.length + post.loves.length) >= 5;
+  const filteredPosts = posts.filter((post) => {
+    const matchesSearch =
+      post.content?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.authorName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.tags?.some((tag) =>
+        tag.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+    if (activeFilter === "popular") {
+      return matchesSearch && post.likes.length + post.loves.length >= 5;
     }
-    
+
     return matchesSearch;
   });
 
   // Sort posts - popular first for popular filter, newest first otherwise
   const sortedPosts = [...filteredPosts].sort((a, b) => {
-    if (activeFilter === 'popular') {
+    if (activeFilter === "popular") {
       const aReactions = a.likes.length + a.loves.length;
       const bReactions = b.likes.length + b.loves.length;
       return bReactions - aReactions;
@@ -62,13 +67,13 @@ export default function MyPostsPage() {
   });
 
   const handlePostUpdate = (updatedPost) => {
-    setPosts(posts.map(post => 
-      post.id === updatedPost.id ? updatedPost : post
-    ));
+    setPosts(
+      posts.map((post) => (post.id === updatedPost.id ? updatedPost : post))
+    );
   };
 
   const handlePostDelete = (postId) => {
-    setPosts(posts.filter(post => post.id !== postId));
+    setPosts(posts.filter((post) => post.id !== postId));
   };
 
   const getReactionCount = (post) => {
@@ -118,8 +123,11 @@ export default function MyPostsPage() {
 
           {/* Post Skeletons */}
           <div className="space-y-6">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50 p-6 animate-pulse">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50 p-6 animate-pulse"
+              >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex space-x-3">
                     <div className="w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
@@ -136,8 +144,11 @@ export default function MyPostsPage() {
                   <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-5/6"></div>
                 </div>
                 <div className="mt-6 flex space-x-4">
-                  {[1, 2, 3, 4].map(j => (
-                    <div key={j} className="h-10 bg-gray-300 dark:bg-gray-600 rounded-lg flex-1"></div>
+                  {[1, 2, 3, 4].map((j) => (
+                    <div
+                      key={j}
+                      className="h-10 bg-gray-300 dark:bg-gray-600 rounded-lg flex-1"
+                    ></div>
                   ))}
                 </div>
               </div>
@@ -151,7 +162,6 @@ export default function MyPostsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        
         {/* Enhanced Header */}
         <div className="text-center mb-12">
           <div className="relative inline-block mb-4">
@@ -161,28 +171,40 @@ export default function MyPostsPage() {
             <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 blur-lg opacity-30 scale-110"></div>
           </div>
           <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-            Manage and track the performance of your published stories. Your voice, your stories.
+            Manage and track the performance of your published stories. Your
+            voice, your stories.
           </p>
-          
+
           {/* Stats Bar */}
           <div className="flex justify-center items-center space-x-8 mt-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{posts.length}</div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">Stories</div>
+              <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                {posts.length}
+              </div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Stories
+              </div>
             </div>
             <div className="w-px h-8 bg-gray-300 dark:bg-gray-600"></div>
             <div className="text-center">
               <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                {posts.reduce((total, post) => total + getReactionCount(post), 0)}
+                {posts.reduce(
+                  (total, post) => total + getReactionCount(post),
+                  0
+                )}
               </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">Reactions</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Reactions
+              </div>
             </div>
             <div className="w-px h-8 bg-gray-300 dark:bg-gray-600"></div>
             <div className="text-center">
               <div className="text-2xl font-bold text-pink-600 dark:text-pink-400">
                 {posts.reduce((total, post) => total + post.comments.length, 0)}
               </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">Conversations</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                Conversations
+              </div>
             </div>
           </div>
         </div>
@@ -193,8 +215,18 @@ export default function MyPostsPage() {
             {/* Search Bar */}
             <div className="relative flex-1 w-full sm:max-w-md">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <svg
+                  className="h-5 w-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
               </div>
               <input
@@ -209,21 +241,21 @@ export default function MyPostsPage() {
             {/* Filter Buttons */}
             <div className="flex space-x-2">
               <button
-                onClick={() => setActiveFilter('all')}
+                onClick={() => setActiveFilter("all")}
                 className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
-                  activeFilter === 'all'
-                    ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/25'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  activeFilter === "all"
+                    ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/25"
+                    : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
                 All Stories
               </button>
               <button
-                onClick={() => setActiveFilter('popular')}
+                onClick={() => setActiveFilter("popular")}
                 className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
-                  activeFilter === 'popular'
-                    ? 'bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-lg shadow-pink-500/25'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  activeFilter === "popular"
+                    ? "bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-lg shadow-pink-500/25"
+                    : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
                 🔥 Popular
@@ -238,18 +270,27 @@ export default function MyPostsPage() {
             <div className="text-center py-16">
               <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50 p-12">
                 <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900 dark:to-purple-900 rounded-full flex items-center justify-center">
-                  <svg className="w-12 h-12 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  <svg
+                    className="w-12 h-12 text-indigo-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="1.5"
+                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                    />
                   </svg>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                  {searchQuery ? 'No stories found' : 'No stories yet'}
+                  {searchQuery ? "No stories found" : "No stories yet"}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto leading-relaxed">
-                  {searchQuery 
+                  {searchQuery
                     ? `We couldn't find any stories matching "${searchQuery}". Try different keywords or browse all stories.`
-                    : 'Start sharing your stories with the ByteStory community! Your first post is just a click away.'
-                  }
+                    : "Start sharing your stories with the ByteStory community! Your first post is just a click away."}
                 </p>
                 {!searchQuery && (
                   <Link
@@ -267,17 +308,17 @@ export default function MyPostsPage() {
               <div className="text-sm text-gray-500 dark:text-gray-400 px-2">
                 Showing {sortedPosts.length} of {posts.length} stories
                 {searchQuery && ` for "${searchQuery}"`}
-                {activeFilter === 'popular' && ' (Most popular first)'}
+                {activeFilter === "popular" && " (Most popular first)"}
               </div>
 
               {/* Posts Grid */}
               {sortedPosts.map((post, index) => (
-                <div 
+                <div
                   key={post.id}
                   className="transform transition-all duration-300 hover:-translate-y-1"
                   style={{
                     animationDelay: `${index * 100}ms`,
-                    animation: 'fadeInUp 0.6s ease-out forwards'
+                    animation: "fadeInUp 0.6s ease-out forwards",
                   }}
                 >
                   <Post

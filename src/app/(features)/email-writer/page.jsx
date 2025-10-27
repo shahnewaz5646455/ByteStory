@@ -439,7 +439,7 @@ export default function EmailWriter() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-950 dark:via-gray-800 dark:to-gray-950 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200">
       {/* Online banner */}
       {showNetStatus && (
         <div className="sticky top-0 z-50 animate-pulse bg-green-500 py-3 px-4 text-center shadow-lg">
@@ -879,7 +879,7 @@ export default function EmailWriter() {
           {/* Templates Tab */}
           {activeTab === "templates" && (
             <Card className="border-gray-200 dark:border-gray-700 cursor-default">
-              <CardHeader className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-gray-800 dark:to-gray-700">
+              <CardHeader className="">
                 <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white cursor-default">
                   <History className="h-5 w-5 text-indigo-500 cursor-default" />
                   My Email Templates

@@ -54,6 +54,13 @@ export async function POST(req) {
         photo,
         isEmailVerified,
         provider: "google",
+        // ===== ADD QUOTA FIELDS HERE =====
+        seo_key: 5,
+        hashtag_key: 2,
+        email_key: 2,
+        pdf_key: 2,
+        grammar_key: 5,
+        // ===== END QUOTA FIELDS =====
       });
 
       console.log("✅ Google user created. ID:", user._id.toString());
