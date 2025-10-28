@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Menu,
   Bell,
@@ -37,6 +38,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
   const [loading, setLoading] = useState(false);
   const { setTheme } = useTheme();
   const auth = useSelector((store) => store.authStore.auth);
+  const router = useRouter();
 
   // Refs for dropdowns
   const notificationRef = useRef(null);
@@ -300,10 +302,56 @@ const DashboardNavbar = ({ onMenuClick }) => {
     return notification._id || notification.id;
   };
 
-  // Handle individual notification click
-  const handleNotificationClick = (notification) => {
-    const isAdminNotif = !notification.senderId; // Admin notifications don't have senderId
-    markAsRead([getNotificationId(notification)], isAdminNotif);
+  // Get navigation URL based on notification type - UPDATED
+  const getNotificationUrl = (notification) => {
+    if (notification.senderId) {
+      // User notifications - navigate to my-posts page with post highlight
+      const postId = notification.postId;
+
+      if (postId) {
+        return `/my-posts?highlight=${postId}`;
+      }
+
+      // Fallback to my-posts page
+      return "/my-posts";
+    } else {
+      // Admin notifications
+      switch (notification.type) {
+        case "user_registered":
+          return "/admin/users";
+        case "content_created":
+          return "/admin/content";
+        default:
+          return "/admin/notifications";
+      }
+    }
+  };
+
+  // Handle individual notification click - UPDATED
+  const handleNotificationClick = async (notification) => {
+    const isAdminNotif = !notification.senderId;
+    const notificationId = getNotificationId(notification);
+
+    try {
+      // Mark as read first
+      await markAsRead([notificationId], isAdminNotif);
+
+      // Get the URL to navigate to
+      const url = getNotificationUrl(notification);
+
+      console.log("🔔 Notification Click - Navigating to:", url);
+
+      // Navigate to the respective page
+      router.push(url);
+
+      // Close notification dropdown
+      setIsNotificationOpen(false);
+    } catch (error) {
+      console.error("Error handling notification click:", error);
+      // Fallback on error
+      router.push(isAdmin ? "/admin/notifications" : "/my-posts");
+      setIsNotificationOpen(false);
+    }
   };
 
   // Close dropdowns when clicking outside
