@@ -12,6 +12,7 @@ export default function MyPostsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
   const [highlightedPostId, setHighlightedPostId] = useState(null);
+  const [animatedPosts, setAnimatedPosts] = useState(new Set());
   const session = useSelector((store) => store.authStore.auth);
   const searchParams = useSearchParams();
 
@@ -34,6 +35,10 @@ export default function MyPostsPage() {
         // Only show non-deleted posts
         const nonDeletedPosts = postsData.filter((post) => !post.isDeleted);
         setPosts(nonDeletedPosts);
+
+        // Mark all posts for animation
+        const postIds = new Set(nonDeletedPosts.map((post) => post.id));
+        setAnimatedPosts(postIds);
       } else {
         console.error("Failed to fetch posts");
       }
@@ -347,25 +352,29 @@ export default function MyPostsPage() {
               </div>
 
               {/* Posts Grid */}
-              {sortedPosts.map((post, index) => (
-                <div
-                  key={post.id}
-                  id={`post-${post.id}`}
-                  className={`transform transition-all duration-300 hover:-translate-y-1 ${
-                    highlightedPostId === post.id ? "highlighted-post" : ""
-                  }`}
-                  style={{
-                    animationDelay: `${index * 100}ms`,
-                    animation: "fadeInUp 0.6s ease-out forwards",
-                  }}
-                >
-                  <Post
-                    post={post}
-                    onUpdate={handlePostUpdate}
-                    onDelete={handlePostDelete}
-                  />
-                </div>
-              ))}
+              {sortedPosts.map((post, index) => {
+                const shouldAnimate = animatedPosts.has(post.id);
+                return (
+                  <div
+                    key={post.id}
+                    id={`post-${post.id}`}
+                    className={`transform transition-all duration-300 hover:-translate-y-1 ${
+                      highlightedPostId === post.id ? "highlighted-post" : ""
+                    } ${shouldAnimate ? "fade-in-up" : ""}`}
+                    style={{
+                      animationDelay: shouldAnimate
+                        ? `${index * 100}ms`
+                        : "0ms",
+                    }}
+                  >
+                    <Post
+                      post={post}
+                      onUpdate={handlePostUpdate}
+                      onDelete={handlePostDelete}
+                    />
+                  </div>
+                );
+              })}
             </>
           )}
         </div>
@@ -373,6 +382,14 @@ export default function MyPostsPage() {
 
       {/* Custom CSS for animations and highlight effects */}
       <style jsx>{`
+        .fade-in-up {
+          animation-name: fadeInUp;
+          animation-duration: 0.6s;
+          animation-timing-function: ease-out;
+          animation-fill-mode: forwards;
+          opacity: 0;
+        }
+
         @keyframes fadeInUp {
           from {
             opacity: 0;
