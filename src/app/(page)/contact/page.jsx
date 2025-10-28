@@ -49,26 +49,42 @@ export default function Contact() {
     if (name === "message") setCharCount(value.length);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setStatus({ type: "note", text: "Sending…" });
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) throw new Error("Network error");
-      setStatus({ type: "success", text: "Thank you! Your message has been sent." });
-      setFormData({ name: "", email: "", subject: "", phone: "", topic: "", message: "" });
-      setCharCount(0);
-    } catch (err) {
-      setStatus({ type: "success", text: "Thank you! Your message has been sent." });
-    } finally {
-      setLoading(false);
+ // inside Contact component
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setStatus({ type: "note", text: "Sending…" });
+
+  try {
+    const res = await fetch("/api/public-messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        phone: formData.phone || null,
+        topic: formData.topic,
+        message: formData.message,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok || !data?.success) {
+      throw new Error(data?.message || "Failed to send message.");
     }
-  };
+
+    setStatus({ type: "success", text: "Thank you! Your message has been sent." });
+    setFormData({ name: "", email: "", subject: "", phone: "", topic: "", message: "" });
+    setCharCount(0);
+  } catch (err) {
+    // You can show the actual error if you prefer
+    setStatus({ type: "error", text: "Sorry, something went wrong. Please try again." });
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-950 dark:via-gray-800 dark:to-gray-950 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200">

@@ -553,7 +553,7 @@ export default function Home() {
             <div className="flex gap-3">
               <button
                 onClick={handleGenerate}
-                disabled={loading || !category.trim() || !auth}
+                disabled={loading  || !auth}
                 className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 {loading ? (
