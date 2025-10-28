@@ -591,17 +591,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                               Mark all as read
                             </button>
                           )}
-                          <Link
-                            href={
-                              isAdmin
-                                ? "/admin/notifications"
-                                : "/user/notifications"
-                            }
-                            className="text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium py-2"
-                            onClick={() => setIsNotificationOpen(false)}
-                          >
-                            View all notifications
-                          </Link>
+                         
                         </div>
                       </div>
                     )}
@@ -722,13 +712,6 @@ const DashboardNavbar = ({ onMenuClick }) => {
                         <User size={16} />
                         <span>Profile</span>
                       </Link>
-                    </div>
-
-                    <div className="p-2 border-t border-gray-200/50 dark:border-gray-700/50">
-                      <button className="flex items-center space-x-2 w-full px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
-                        <LogOut size={16} />
-                        <span>Sign out</span>
-                      </button>
                     </div>
                   </div>
                 )}

@@ -275,7 +275,7 @@ export default function Navbar() {
                   <NavigationMenuLink
                     href="/feed"
                     className={`hover:text-indigo-600 px-4 dark:hover:text-indigo-400 transition-colors ${
-                      pathname === "/features"
+                      pathname === "/feed"
                         ? "text-indigo-600 dark:text-indigo-400 font-semibold bg-gray-100/80 dark:bg-gray-500/20"
                         : ""
                     }`}
