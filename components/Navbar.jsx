@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Lightbulb, Menu, Moon, Search, Sun, X } from "lucide-react";
+import { Lightbulb, Menu, Moon, Search, Sun, X, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -27,58 +27,174 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [activeIndex, setActiveIndex] = useState(-1);
   const pathname = usePathname();
   const searchInputRef = useRef(null);
   const searchCardRef = useRef(null);
   const router = useRouter();
   const auth = useSelector((store) => store.authStore.auth);
-  
+
   const profileLink =
     auth?.role === "admin"
       ? "/admin/adminDashboard/overview"
       : "/website/my-account";
+
+  // --- Smart search config ---
+  const BASE_SUGGESTIONS = [
+    {
+      label: "Profile",
+      path: "/website/update-profile",
+      keywords: ["profile", "update profile", "account", "my profile"],
+      requireAuth: true,
+    },
+    {
+      label: "Blog Post Generator",
+      path: "/blog-generator",
+      keywords: ["blog", "blog generator", "blog post generator"],
+    },
+    {
+      label: "SEO Checker",
+      path: "/seo-checker",
+      keywords: ["seo", "seo checker"],
+    },
+    {
+      label: "Grammar Checker",
+      path: "/grammar-checker",
+      keywords: ["grammar", "grammer", "grammar checker", "grammer checker"],
+    },
+    {
+      label: "Summarizer",
+      path: "/AIsummarizer",
+      keywords: ["summarizer", "ai summarizer", "summary"],
+    },
+    {
+      label: "PDF Extractor",
+      path: "/pdf-converter",
+      keywords: ["pdf extractor", "pdf", "pdf converter"],
+    },
+    {
+      label: "Email Writer",
+      path: "/email-writer",
+      keywords: ["email", "email writer"],
+    },
+    {
+      label: "Hashtag Generator",
+      path: "/hashtag",
+      keywords: ["hashtag", "hashtag generator"],
+    },
+    {
+      label: "Recycle Bin",
+      path: "/website/recycle-bin",
+      keywords: ["recycle bin", "recycle", "bin", "trash"],
+      requireAuth: true,
+    },
+  ];
+
+  const SUGGESTIONS = useMemo(() => {
+    if (!auth) return BASE_SUGGESTIONS.filter((s) => !s.requireAuth);
+    return BASE_SUGGESTIONS;
+  }, [auth]);
+
+  const preferredSuggestions = SUGGESTIONS;
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return preferredSuggestions;
+    return SUGGESTIONS.filter(
+      (s) =>
+        s.keywords.some((k) => k.toLowerCase().includes(q)) ||
+        s.label.toLowerCase().includes(q)
+    );
+  }, [query, SUGGESTIONS]);
+
+  // --- Focus handling ---
   useEffect(() => {
     if (isSearchOpen && searchInputRef.current) {
       searchInputRef.current.focus();
+      setActiveIndex(filtered.length ? 0 : -1);
     }
-  }, [isSearchOpen]);
+  }, [isSearchOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     function onClickOutside(e) {
       if (
         isSearchOpen &&
         searchCardRef.current &&
+        e.target instanceof Node &&
         !searchCardRef.current.contains(e.target)
       ) {
         setIsSearchOpen(false);
+        setQuery("");
+        setActiveIndex(-1);
       }
     }
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, [isSearchOpen]);
 
-  function onSubmitSearch(e) {
-    e.preventDefault();
-    const searchTerm = query.trim().toLowerCase();
-
-    if (searchTerm === "seo") {
-      router.push("/seo-checker");
-    } else if (
-      searchTerm.includes("grammar") ||
-      searchTerm.includes("grammer")
-    ) {
-      router.push("/grammar-checker");
-    }
-
+  // --- Navigation helpers ---
+  function go(path) {
+    const absolute =
+      typeof window !== "undefined" ? `${window.location.origin}${path}` : path;
+    router.push(absolute);
     setIsSearchOpen(false);
     setQuery("");
+    setActiveIndex(-1);
+  }
+
+  function resolvePathFromQuery(q) {
+    const t = q.trim().toLowerCase();
+    if (!t) return null;
+    const hit = SUGGESTIONS.find(
+      (s) =>
+        s.keywords.some((k) => k.toLowerCase() === t) ||
+        s.label.toLowerCase() === t
+    );
+    if (hit) return hit.path;
+    const partial = SUGGESTIONS.find(
+      (s) =>
+        s.keywords.some((k) => k.toLowerCase().includes(t)) ||
+        s.label.toLowerCase().includes(t)
+    );
+    return partial ? partial.path : null;
+  }
+
+  function onSubmitSearch(e) {
+    e.preventDefault();
+    const path = resolvePathFromQuery(query);
+    if (path) {
+      go(path);
+    } else if (filtered.length) {
+      go(filtered[0].path);
+    } else {
+      setIsSearchOpen(false);
+      setQuery("");
+    }
+  }
+
+  function onKeyDown(e) {
+    if (!filtered.length) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((i) => (i + 1) % filtered.length);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((i) => (i - 1 + filtered.length) % filtered.length);
+    } else if (e.key === "Enter") {
+      if (activeIndex >= 0 && activeIndex < filtered.length) {
+        e.preventDefault();
+        go(filtered[activeIndex].path);
+      }
+    } else if (e.key === "Escape") {
+      setIsSearchOpen(false);
+    }
   }
 
   function ListItem({ title, children, href, ...props }) {
     return (
       <li>
         <NavigationMenuLink asChild>
-          <Link href={href}>
+          <Link href={href} {...props}>
             <div className="text-sm font-medium leading-none">{title}</div>
             <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
               {children}
@@ -98,16 +214,13 @@ export default function Navbar() {
             href="/"
             className="flex-shrink-0 font-bold text-2xl flex items-center gap-2 cursor-pointer transition-colors"
           >
-            <div
-              className="w-10 h-10 rounded-full flex items-center justify-center 
-                  bg-gradient-to-r from-purple-500 to-indigo-500 shadow-md"
-            >
+            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-r from-purple-500 to-indigo-500 shadow-md">
               <Lightbulb className="w-6 h-6 text-white" />
             </div>
             <p className="text-gray-800 dark:text-gray-100">ByteStory</p>
           </Link>
 
-          {/* Desktop Menu - unchanged */}
+          {/* Desktop Menu */}
           <div className="hidden lg:flex space-x-6 text-black dark:text-gray-200 font-medium">
             <NavigationMenu>
               <NavigationMenuList>
@@ -136,10 +249,7 @@ export default function Navbar() {
                       <ListItem href="/grammar-checker" title="Grammar Checker">
                         Check for grammar, spelling, and punctuation errors.
                       </ListItem>
-                      <ListItem
-                        href="/blog-generator"
-                        title="Blog Post Generator"
-                      >
+                      <ListItem href="/blog-generator" title="Blog Post Generator">
                         Generate a full blog post from a simple title.
                       </ListItem>
                       <ListItem href="/AIsummarizer" title="AI Summarizer">
@@ -149,8 +259,7 @@ export default function Navbar() {
                         Quickly get the main points from any PDF document.
                       </ListItem>
                       <ListItem href="/pdf-converter" title="PDF Extractor">
-                        Extract text from a PDF and generate a summarized
-                        version instantly.
+                        Extract text from a PDF and generate a summarized version instantly.
                       </ListItem>
                       <ListItem href="/hashtag" title="Hashtag Generator">
                         Get suggested hashtags for your blog posts and content.
@@ -242,28 +351,10 @@ export default function Navbar() {
                   <span className="sr-only">Toggle theme</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-              >
-                <DropdownMenuItem
-                  onClick={() => setTheme("light")}
-                  className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
-                >
-                  Light
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setTheme("dark")}
-                  className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
-                >
-                  Dark
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => setTheme("system")}
-                  className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
-                >
-                  System
-                </DropdownMenuItem>
+              <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                <DropdownMenuItem onClick={() => setTheme("light")} className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700">Light</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("dark")} className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700">Dark</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("system")} className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700">System</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -273,11 +364,8 @@ export default function Navbar() {
                 <div className="flex items-center space-x-3 p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
                   <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                     {auth?.avatar ? (
-                      <img
-                        src={auth.avatar}
-                        alt="avatar"
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={auth.avatar} alt="avatar" className="w-8 h-8 rounded-full object-cover" />
                     ) : (
                       auth?.name?.charAt(0) || "U"
                     )}
@@ -324,28 +412,10 @@ export default function Navbar() {
                     <span className="sr-only">Toggle theme</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-                >
-                  <DropdownMenuItem
-                    onClick={() => setTheme("light")}
-                    className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
-                  >
-                    Light
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setTheme("dark")}
-                    className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
-                  >
-                    Dark
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => setTheme("system")}
-                    className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700"
-                  >
-                    System
-                  </DropdownMenuItem>
+                <DropdownMenuContent align="end" className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                  <DropdownMenuItem onClick={() => setTheme("light")} className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700">Light</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme("dark")} className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700">Dark</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme("system")} className="cursor-pointer focus:bg-gray-100 dark:focus:bg-gray-700">System</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
               {auth && (
@@ -353,11 +423,8 @@ export default function Navbar() {
                   <div className="flex items-center p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
                     <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                       {auth?.avatar ? (
-                        <img
-                          src={auth.avatar}
-                          alt="avatar"
-                          className="w-8 h-8 rounded-full object-cover"
-                        />
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={auth.avatar} alt="avatar" className="w-8 h-8 rounded-full object-cover" />
                       ) : (
                         auth?.name?.charAt(0) || "U"
                       )}
@@ -385,41 +452,75 @@ export default function Navbar() {
               ref={searchCardRef}
               className="w-full max-w-2xl rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-xl"
             >
-              <form
-                onSubmit={onSubmitSearch}
-                className="flex items-center gap-2 p-3"
-              >
+              <form onSubmit={onSubmitSearch} className="flex items-center gap-2 p-3" role="search">
                 <Search className="h-5 w-5 text-gray-500 dark:text-gray-400" />
                 <input
                   ref={searchInputRef}
                   type="text"
                   value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search ByteStory..."
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setActiveIndex(0);
+                  }}
+                  onKeyDown={onKeyDown}
+                  placeholder="Search ByteStory…"
                   className="flex-1 bg-transparent outline-none text-gray-900 dark:text-gray-100 placeholder:text-gray-400"
+                  aria-activedescendant={activeIndex >= 0 ? `search-opt-${activeIndex}` : undefined}
+                  aria-autocomplete="list"
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
                   className="text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  onClick={() => setIsSearchOpen(false)}
+                  onClick={() => {
+                    setIsSearchOpen(false);
+                    setQuery("");
+                    setActiveIndex(-1);
+                  }}
+                  aria-label="Close search"
                 >
                   <X className="h-5 w-5" />
                 </Button>
-                <Button
-                  type="submit"
-                  size="sm"
-                  className="bg-black dark:bg-indigo-600 text-white hover:bg-gray-800 dark:hover:bg-indigo-700"
-                >
+                <Button type="submit" size="sm" className="bg-black dark:bg-indigo-600 text-white hover:bg-gray-800 dark:hover:bg-indigo-700">
                   Search
                 </Button>
               </form>
+
+              {/* Suggestions */}
+              <div role="listbox" aria-label="Search suggestions" className="px-2 pb-2">
+                {filtered.length ? (
+                  <ul className="max-h-72 overflow-y-auto divide-y divide-gray-200 dark:divide-gray-700">
+                    {filtered.map((s, idx) => (
+                      <li key={s.label} id={`search-opt-${idx}`}>
+                        <button
+                          type="button"
+                          onMouseEnter={() => setActiveIndex(idx)}
+                          onClick={() => go(s.path)}
+                          className={`w-full flex items-center justify-between gap-3 text-left px-3 py-2 rounded-md transition-colors ${
+                            idx === activeIndex
+                              ? "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                              : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200"
+                          }`}
+                          aria-selected={idx === activeIndex}
+                          role="option"
+                        >
+                          <span className="text-sm font-medium">{s.label}</span>
+                          {/* removed route path display */}
+                          <ArrowUpRight className="h-4 w-4 shrink-0" />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">No matches. Try a different keyword.</div>
+                )}
+              </div>
             </div>
           </div>
         )}
 
-        {/* Mobile Menu Dropdown - Improved Design */}
+        {/* Mobile Menu Dropdown */}
         {isOpen && (
           <div className="lg:hidden absolute left-0 right-0 top-16 bg-white dark:bg-gray-800 shadow-xl border-t border-gray-200 dark:border-gray-700 transition-all duration-300 z-50">
             <div className="px-4 py-3 space-y-1 text-black dark:text-gray-200 font-medium">
@@ -436,11 +537,9 @@ export default function Navbar() {
                 <span className="ml-2">Home</span>
               </Link>
 
-              {/* AI Tools Section with Better Visual Hierarchy */}
+              {/* AI Tools Section */}
               <div className="px-3 py-2">
-                <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2 font-semibold">
-                  AI Tools
-                </p>
+                <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2 font-semibold">AI Tools</p>
                 <div className="grid grid-cols-1 gap-1">
                   {[
                     { href: "/seo-checker", label: "SEO Checker" },
