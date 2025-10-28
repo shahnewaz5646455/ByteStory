@@ -54,12 +54,6 @@ export default function AdminSidebar({ onClose }) {
     },
     { name: "Content", href: "/feed", icon: FileText },
     {
-      name: "Analytics",
-      href: "/admin/analytics",
-      icon: BarChart3,
-      badge: "New",
-    },
-    {
       name: "Public Messages",
       href: "/admin/adminDashboard/public-messages",
       icon: MessageCircleHeart,
