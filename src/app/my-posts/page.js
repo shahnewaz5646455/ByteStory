@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import Post from "@/components/Post";
 
 export default function MyPostsPage() {
@@ -10,7 +11,17 @@ export default function MyPostsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
+  const [highlightedPostId, setHighlightedPostId] = useState(null);
   const session = useSelector((store) => store.authStore.auth);
+  const searchParams = useSearchParams();
+
+  // Get highlighted post from URL
+  useEffect(() => {
+    const highlight = searchParams.get("highlight");
+    if (highlight) {
+      setHighlightedPostId(highlight);
+    }
+  }, [searchParams]);
 
   const fetchMyPosts = async () => {
     if (!session?.email) return;
@@ -38,6 +49,29 @@ export default function MyPostsPage() {
       fetchMyPosts();
     }
   }, [session]);
+
+  // Scroll to highlighted post when posts are loaded
+  useEffect(() => {
+    if (highlightedPostId && posts.length > 0 && !isLoading) {
+      const timer = setTimeout(() => {
+        const element = document.getElementById(`post-${highlightedPostId}`);
+        if (element) {
+          element.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+
+          // Add highlight effect
+          element.classList.add("highlight-pulse");
+          setTimeout(() => {
+            element.classList.remove("highlight-pulse");
+          }, 3000);
+        }
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [highlightedPostId, posts, isLoading]);
 
   // Filter posts based on active filter and search query
   const filteredPosts = posts.filter((post) => {
@@ -309,13 +343,17 @@ export default function MyPostsPage() {
                 Showing {sortedPosts.length} of {posts.length} stories
                 {searchQuery && ` for "${searchQuery}"`}
                 {activeFilter === "popular" && " (Most popular first)"}
+                {highlightedPostId && " • Post highlighted"}
               </div>
 
               {/* Posts Grid */}
               {sortedPosts.map((post, index) => (
                 <div
                   key={post.id}
-                  className="transform transition-all duration-300 hover:-translate-y-1"
+                  id={`post-${post.id}`}
+                  className={`transform transition-all duration-300 hover:-translate-y-1 ${
+                    highlightedPostId === post.id ? "highlighted-post" : ""
+                  }`}
                   style={{
                     animationDelay: `${index * 100}ms`,
                     animation: "fadeInUp 0.6s ease-out forwards",
@@ -333,7 +371,7 @@ export default function MyPostsPage() {
         </div>
       </div>
 
-      {/* Custom CSS for animations */}
+      {/* Custom CSS for animations and highlight effects */}
       <style jsx>{`
         @keyframes fadeInUp {
           from {
@@ -344,6 +382,31 @@ export default function MyPostsPage() {
             opacity: 1;
             transform: translateY(0);
           }
+        }
+
+        .highlight-pulse {
+          animation: highlightPulse 3s ease-in-out;
+        }
+
+        @keyframes highlightPulse {
+          0% {
+            box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+          }
+          50% {
+            box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+          }
+          100% {
+            box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+          }
+        }
+
+        .highlighted-post {
+          border-left: 4px solid #6366f1;
+          background: linear-gradient(
+            90deg,
+            rgba(99, 102, 241, 0.05) 0%,
+            transparent 100%
+          );
         }
       `}</style>
     </div>
