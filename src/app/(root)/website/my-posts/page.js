@@ -136,8 +136,8 @@ export default function MyPostsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen py-8">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen p-4 sm:p-6 lg:p-8">
+        <div className="max-w-6xl mx-auto">
           {/* Header Skeleton */}
           <div className="mb-12 text-left">
             <div className="animate-pulse">
@@ -196,8 +196,8 @@ export default function MyPostsPage() {
   }
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
+      <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-12 text-left">
           <div className="relative inline-block mb-4">
@@ -206,7 +206,8 @@ export default function MyPostsPage() {
             </h1>
           </div>
           <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-            Manage and track the performance of your published stories. Your voice, your stories.
+            Manage and track the performance of your published stories. Your
+            voice, your stories.
           </p>
         </div>
 
