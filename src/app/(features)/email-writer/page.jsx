@@ -742,7 +742,7 @@ export default function EmailWriter() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Side - Input Form */}
           {activeTab === "compose" && (
-            <Card className="h-fit border-gray-200 dark:border-gray-700 cursor-default">
+            <Card className="h-fit border-gray-200 dark:border-gray-700 cursor-default bg-white dark:bg-gray-800">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white cursor-default">
                   <Sparkles className="h-5 w-5 text-indigo-500 cursor-default" />
@@ -1066,7 +1066,7 @@ export default function EmailWriter() {
 
           {/* Templates Tab */}
           {activeTab === "templates" && (
-            <Card className="border-gray-200 dark:border-gray-700 cursor-default">
+            <Card className="border-gray-200 dark:border-gray-700 cursor-default bg-white dark:bg-gray-800">
               <CardHeader className="">
                 <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white cursor-default">
                   <History className="h-5 w-5 text-indigo-500 cursor-default" />
@@ -1151,7 +1151,7 @@ export default function EmailWriter() {
           )}
 
           {/* Right Side - Generated Email */}
-          <Card className="border-gray-200 dark:border-gray-700 cursor-default">
+          <Card className="border-gray-200 dark:border-gray-700 cursor-default bg-white dark:bg-gray-800">
             <CardHeader>
               <CardTitle className="flex items-center justify-between text-gray-900 dark:text-white cursor-default">
                 <span>Generated Email</span>
