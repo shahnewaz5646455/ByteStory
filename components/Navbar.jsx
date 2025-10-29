@@ -255,10 +255,7 @@ export default function Navbar() {
                       <ListItem href="/AIsummarizer" title="AI Summarizer">
                         Summarize long articles and texts quickly.
                       </ListItem>
-                      <ListItem href="/pdf_summarizer" title="PDF Summarizer">
-                        Quickly get the main points from any PDF document.
-                      </ListItem>
-                      <ListItem href="/pdf-converter" title="PDF Extractor">
+                      <ListItem href="/pdf-converter" title="PDF Summarizer">
                         Extract text from a PDF and generate a summarized version instantly.
                       </ListItem>
                       <ListItem href="/hashtag" title="Hashtag Generator">

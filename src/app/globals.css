@@ -86,7 +86,13 @@
     opacity: 1;}
   100% {
     transform: rotate(var(--angle)) translateX(-500px);
-    opacity: 0;}}}
+    opacity: 0;}}
+  --animate-shiny-text: shiny-text 8s infinite;
+  @keyframes shiny-text {
+  0%, 90%, 100% {
+    background-position: calc(-100% - var(--shiny-width)) 0;}
+  30%, 60% {
+    background-position: calc(100% + var(--shiny-width)) 0;}}}
 
 @media (prefers-color-scheme: dark) {
   :root {
