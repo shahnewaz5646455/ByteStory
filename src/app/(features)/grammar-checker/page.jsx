@@ -108,25 +108,25 @@ const GrammarChecker = () => {
         {/* Header */}
 <div className="text-center mb-8">
   <div className="flex items-center justify-center gap-3 mb-4 cursor-default">
-    <div className="p-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full cursor-default">
-      <Sparkles className="h-8 w-8 text-white cursor-default" />
+    <div className="md:p-3 p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full cursor-default">
+      <Sparkles className="md:h-8 md:w-8 h-5 w-5 text-white cursor-default" />
     </div>
-    <h1 className="text-4xl font-bold text-gray-900 dark:text-white cursor-default">
+    <h1 className="md:text-4xl text-3xl font-bold text-gray-900 dark:text-white cursor-default">
       Grammar Checker
     </h1>
   </div>
-  <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto cursor-default">
+  <p className="md:text-lg text-base text-gray-600 dark:text-gray-300 max-w-2xl mx-auto cursor-default">
     Enhance your writing with our advanced AI-powered grammar checker
   </p>
 </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Input Section */}
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-8 border border-indigo-100 dark:border-gray-700"
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm md:p-8 p-4 border border-indigo-100 dark:border-gray-700"
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-semibold text-indigo-800 dark:text-white">Your Text</h2>
@@ -192,7 +192,7 @@ const GrammarChecker = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-8 border border-indigo-100 dark:border-gray-700"
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm md:p-8 p-4 border border-indigo-100 dark:border-gray-700"
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-semibold text-indigo-800 dark:text-white">Analysis Results</h2>
@@ -310,12 +310,12 @@ const GrammarChecker = () => {
         </div>
 
         {/* Tips Section */}
-        <section className="mx-auto max-w-6xl px-6 py-10">
+        <section className="mx-auto max-w-6xl py-10">
   <motion.div 
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.5, delay: 1 }}
-    className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 shadow-md"
+    className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 md:p-8 p-4 shadow-md"
   >
     <div className="flex items-center gap-3 mb-8">
       <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center text-white">

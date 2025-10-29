@@ -70,11 +70,11 @@ export default async function SuccessPage({ searchParams }) {
   });
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 py-12 px-4">
+    <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-800 dark:to-gray-950 text-gray-900 dark:text-white transition-colors duration-200 py-12 px-4">
       <div className="max-w-2xl mx-auto">
         {/* Success Header */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
-          <div className="bg-gradient-to-r from-green-500 to-emerald-600 px-8 py-12 text-center">
+          <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-8 py-12 text-center">
             <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6">
               <svg className="w-10 h-10 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -160,8 +160,8 @@ export default async function SuccessPage({ searchParams }) {
             <div className="mt-8 pt-6 border-t border-gray-200">
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
-                  href="/"
-                  className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200 shadow-sm"
+                  href="/email-writer"
+                  className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold text-sm md:text-base px-6 py-3 rounded-lg shadow-lg hover:shadow-xl hover:from-purple-600 hover:to-indigo-600 transition duration-150 transform cursor-pointer flex items-center justify-center w-max whitespace-nowrap"
                 >
                   Continue Shopping
                 </a>

@@ -488,7 +488,7 @@ export default function EmailWriter() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-950 dark:via-gray-800 dark:to-gray-950 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-950 dark:via-gray-800 dark:to-gray-950 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200 py-12 px-4">
       {/* Online banner */}
       {showNetStatus && (
         <div className="sticky top-0 z-50 animate-pulse bg-green-500 py-3 px-4 text-center shadow-lg">
@@ -588,7 +588,6 @@ export default function EmailWriter() {
                   <button
                     onClick={() => {
                       handleCheckout();
-                      alert("Redirecting to payment gateway...");
                       setShowKeyModal(false);
                     }}
                     className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 font-medium text-white transition-all hover:from-amber-600 hover:to-orange-600"
@@ -607,22 +606,21 @@ export default function EmailWriter() {
         )}
       </AnimatePresence>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4 cursor-default">
-            <div className="p-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full cursor-default">
-              <Mail className="h-8 w-8 text-white cursor-default" />
-            </div>
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white cursor-default">
-              AI Email Writer
-            </h1>
-          </div>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto cursor-default">
-            Generate professional emails instantly with AI. Perfect for business
-            communication, customer service, and professional networking.
-          </p>
-        </div>
+  <div className="flex items-center justify-center gap-3 mb-4 cursor-default">
+    <div className="md:p-3 p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full cursor-default">
+      <Mail className="md:h-8 md:w-8 h-5 w-5 text-white cursor-default" />
+    </div>
+    <h1 className="md:text-4xl text-3xl font-bold text-gray-900 dark:text-white cursor-default">
+      AI Email Writer
+    </h1>
+  </div>
+  <p className="md:text-lg text-base text-gray-600 dark:text-gray-300 max-w-2xl mx-auto cursor-default">
+    Generate professional emails instantly with AI. Perfect for business communication, customer service, and professional networking.
+  </p>
+</div>
 
         {/* Email Key Counter */}
         {auth && (
@@ -630,7 +628,7 @@ export default function EmailWriter() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="mb-6 flex justify-end"
+            className="mb-6 flex md:justify-end justify-center"
           >
             <div className="flex items-center gap-3 rounded-2xl bg-gradient-to-r from-amber-50 to-yellow-50 px-4 py-3 shadow-lg border border-amber-200/50 dark:from-amber-900/20 dark:to-yellow-900/20 dark:border-amber-700/30">
               <div className="flex items-center gap-2">
