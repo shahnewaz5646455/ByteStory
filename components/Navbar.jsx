@@ -420,7 +420,6 @@ export default function Navbar() {
                   <div className="flex items-center p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
                     <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                       {auth?.avatar ? (
-                        // eslint-disable-next-line @next/next/no-img-element
                         <img src={auth.avatar} alt="avatar" className="w-8 h-8 rounded-full object-cover" />
                       ) : (
                         auth?.name?.charAt(0) || "U"
@@ -520,79 +519,79 @@ export default function Navbar() {
         {/* Mobile Menu Dropdown */}
         {isOpen && (
           <div className="lg:hidden absolute left-0 right-0 top-16 bg-white dark:bg-gray-800 shadow-xl border-t border-gray-200 dark:border-gray-700 transition-all duration-300 z-50">
-            <div className="px-4 py-3 space-y-1 text-black dark:text-gray-200 font-medium">
-              {/* Main Navigation Links */}
-              <Link
-                href="/"
-                className={`flex items-center px-3 py-3 rounded-lg transition-colors ${
-                  pathname === "/"
-                    ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                    : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
-                onClick={() => setIsOpen(false)}
-              >
-                <span className="ml-2">Home</span>
-              </Link>
+           <div className="px-4 py-3 space-y-1 text-black dark:text-gray-200 font-medium">
+  {/* Main Navigation Links */}
+  <Link
+    href="/"
+    className={`flex items-center px-3 py-3 rounded-lg transition-colors ${
+      pathname === "/"
+        ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
+        : "hover:bg-gray-100 dark:hover:bg-gray-700"
+    }`}
+    onClick={() => setIsOpen(false)}
+  >
+    <span className="ml-2">Home</span>
+  </Link>
 
-              {/* AI Tools Section */}
-              <div className="px-3 py-2">
-                <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2 font-semibold">AI Tools</p>
-                <div className="grid grid-cols-1 gap-1">
-                  {[
-                    { href: "/seo-checker", label: "SEO Checker" },
-                    { href: "/grammar-checker", label: "Grammar Checker" },
-                    { href: "/blog-generator", label: "Blog Post Generator" },
-                    { href: "/AIsummarizer", label: "AI Summarizer" },
-                    { href: "/pdf_summarizer", label: "PDF Summarizer" },
-                    { href: "/pdf-converter", label: "PDF Extractor" },
-                    { href: "/hashtag", label: "Hashtag Generator" },
-                  ].map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setIsOpen(false)}
-                      className="block px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
+  {/* AI Tools Section */}
+  <div className="px-3 py-2">
+    <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2 font-semibold">AI Tools</p>
+    <div className="grid grid-cols-1 gap-1">
+      {[
+        { href: "/seo-checker", label: "SEO Checker" },
+        { href: "/grammar-checker", label: "Grammar Checker" },
+        { href: "/blog-generator", label: "Blog Post Generator" },
+        { href: "/AIsummarizer", label: "AI Summarizer" },
+        { href: "/pdf-converter", label: "PDF Summarizer" },
+        { href: "/hashtag", label: "Hashtag Generator" },
+        { href: "/email-writer", label: "Email Writer" },
+      ].map((item) => (
+        <Link
+          key={item.href}
+          href={item.href}
+          onClick={() => setIsOpen(false)}
+          className="block px-3 py-2 rounded-lg text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        >
+          {item.label}
+        </Link>
+      ))}
+    </div>
+  </div>
 
-              {/* Other Navigation Links */}
-              {[
-                { href: "/feed", label: "Feed" },
-                { href: "/learn", label: "Learn" },
-                { href: "/about", label: "About" },
-                { href: "/contact", label: "Contact" },
-              ].map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center px-3 py-3 rounded-lg transition-colors ${
-                    pathname === item.href
-                      ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
-                      : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <span className="ml-2">{item.label}</span>
-                </Link>
-              ))}
+  {/* Other Navigation Links */}
+  {[
+    { href: "/feed", label: "Feed" },
+    { href: "/learn", label: "Learn" },
+    { href: "/about", label: "About" },
+    { href: "/contact", label: "Contact" },
+  ].map((item) => (
+    <Link
+      key={item.href}
+      href={item.href}
+      className={`flex items-center px-3 py-3 rounded-lg transition-colors ${
+        pathname === item.href
+          ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-semibold"
+          : "hover:bg-gray-100 dark:hover:bg-gray-700"
+      }`}
+      onClick={() => setIsOpen(false)}
+    >
+      <span className="ml-2">{item.label}</span>
+    </Link>
+  ))}
 
-              {/* Sign In Button for Mobile */}
-              {!auth && (
-                <div className="pt-3 border-t border-gray-200 dark:border-gray-700 mt-3">
-                  <Link
-                    href="/login"
-                    className="flex items-center justify-center bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-3 py-3 rounded-lg shadow hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 font-semibold"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    Get Started
-                  </Link>
-                </div>
-              )}
-            </div>
+  {/* Sign In Button for Mobile */}
+  {!auth && (
+    <div className="pt-3 border-t border-gray-200 dark:border-gray-700 mt-3">
+      <Link
+        href="/login"
+        className="flex items-center justify-center bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-3 py-3 rounded-lg shadow hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 font-semibold"
+        onClick={() => setIsOpen(false)}
+      >
+        Get Started
+      </Link>
+    </div>
+  )}
+</div>
           </div>
         )}
       </div>

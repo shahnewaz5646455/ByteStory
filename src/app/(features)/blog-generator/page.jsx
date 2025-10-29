@@ -522,13 +522,40 @@ export default function AIWriterPage() {
       </AnimatePresence>
 
       <main className="relative z-10 mx-auto max-w-7xl px-4 py-8">
-        {/* Blog Key Counter */}
+
+        {/* Hero */}
+        <section className="mb-6 text-center">
+          <div className="mb-4 inline-flex w-full justify-center md:mb-6">
+            <span className="flex items-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 px-3 py-1 text-xs font-medium text-white shadow-md transition-shadow duration-300 hover:shadow-lg dark:hover:shadow-purple-600/20 md:px-4 md:py-2 md:text-sm">
+              <Sparkles className="mr-1 h-3 w-3 md:mr-2 md:h-4 md:w-4" />
+              AI Writing Assistant
+            </span>
+          </div>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="mb-4 text-4xl font-bold sm:text-5xl"
+          >
+            Transform Your Ideas Into
+            <span className="block bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text pb-2 text-transparent">
+              Masterful Writing
+            </span>
+          </motion.h2>
+
+          <p className="mx-auto max-w-2xl text-lg text-gray-700 dark:text-gray-300">
+            Our AI writing assistant helps you create compelling content, from
+            blog posts to professional documents, in seconds.
+          </p>
+        </section>
+         {/* Blog Key Counter */}
         {auth && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="mb-6 flex justify-end"
+            className="mb-6 flex md:justify-end justify-center"
           >
             <div className="flex items-center gap-3 rounded-2xl bg-gradient-to-r from-amber-50 to-yellow-50 px-4 py-3 shadow-lg border border-amber-200/50 dark:from-amber-900/20 dark:to-yellow-900/20 dark:border-amber-700/30">
               <div className="flex items-center gap-2">
@@ -561,33 +588,6 @@ export default function AIWriterPage() {
             </div>
           </motion.div>
         )}
-
-        {/* Hero */}
-        <section className="mb-16 text-center">
-          <div className="mb-4 inline-flex w-full justify-center md:mb-6">
-            <span className="flex items-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 px-3 py-1 text-xs font-medium text-white shadow-md transition-shadow duration-300 hover:shadow-lg dark:hover:shadow-purple-600/20 md:px-4 md:py-2 md:text-sm">
-              <Sparkles className="mr-1 h-3 w-3 md:mr-2 md:h-4 md:w-4" />
-              AI Writing Assistant
-            </span>
-          </div>
-
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="mb-4 text-4xl font-bold sm:text-5xl"
-          >
-            Transform Your Ideas Into
-            <span className="block bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text pb-2 text-transparent">
-              Masterful Writing
-            </span>
-          </motion.h2>
-
-          <p className="mx-auto mb-8 max-w-2xl text-lg text-gray-700 dark:text-gray-300">
-            Our AI writing assistant helps you create compelling content, from
-            blog posts to professional documents, in seconds.
-          </p>
-        </section>
 
         {/* Writer Interface */}
         <motion.div
