@@ -1,6 +1,5 @@
-// app/email-writer/page.jsx
 "use client";
-import { loadStripe } from '@stripe/stripe-js'
+import { loadStripe } from "@stripe/stripe-js";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,11 +39,11 @@ import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 // Initialize Stripe with your public key
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+);
 
 export default function EmailWriter() {
-
-  
   const auth = useSelector((store) => store.authStore.auth);
   const [loading, setLoading] = useState(false);
   const [emailData, setEmailData] = useState({
@@ -57,7 +56,7 @@ export default function EmailWriter() {
   const [generatedEmail, setGeneratedEmail] = useState(null);
   const [savedTemplates, setSavedTemplates] = useState([]);
   const [activeTab, setActiveTab] = useState("compose");
-  
+
   // ---- Blog Key State ----
   const [emailKeyCount, setEmailKeyCount] = useState(0);
   const [userData, setUserData] = useState(null);
@@ -83,10 +82,10 @@ export default function EmailWriter() {
       setIsOnline(false);
       setHasNetworkChanged(true);
     };
-    
+
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
-    
+
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
@@ -120,20 +119,22 @@ export default function EmailWriter() {
   // ---- Fetch User Data and Blog Keys ----
   const fetchUserData = async () => {
     if (!auth?.email) {
-      console.log("🔴 No user email found in Redux store");
+      console.log(" No user email found in Redux store");
       return;
     }
 
     try {
       console.log("🔍 Fetching user data from database for:", auth.email);
-      
-      const response = await fetch(`/api/get-user-data?email=${encodeURIComponent(auth.email)}`);
+
+      const response = await fetch(
+        `/api/get-user-data?email=${encodeURIComponent(auth.email)}`
+      );
       const data = await response.json();
 
       if (data.success) {
         setUserData(data.user);
         setEmailKeyCount(data.user.email_key || 0);
-        
+
         console.log("✅ USER DATA FROM DATABASE:");
         console.log("📧 Email:", data.user.email);
         console.log("👤 Name:", data.user.name);
@@ -151,19 +152,19 @@ export default function EmailWriter() {
     if (!auth?.email) return;
 
     try {
-      const response = await fetch('/api/update-email-keys', {
-        method: 'POST',
+      const response = await fetch("/api/update-email-keys", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           email: auth.email,
-          email_key: newCount
+          email_key: newCount,
         }),
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         console.log("✅ Email keys updated in database:", newCount);
         setEmailKeyCount(newCount);
@@ -253,7 +254,7 @@ export default function EmailWriter() {
     setLoading(true);
     setError("");
     setGeneratedEmail(null);
-    
+
     try {
       const response = await fetch("/api/email-writer/generate", {
         method: "POST",
@@ -308,7 +309,7 @@ export default function EmailWriter() {
         emailData: {
           ...emailData,
           keyPoints: validKeyPoints,
-        }
+        },
       });
       setShowWaitingButton(true);
       toast.info("Request queued. Will process when network is restored.");
@@ -396,47 +397,46 @@ export default function EmailWriter() {
 
   // Error state
   const [error, setError] = useState("");
-   const handleCheckout = async () => {
-    setLoading(true)
+  const handleCheckout = async () => {
+    setLoading(true);
     try {
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           lineItems: [
             {
               price_data: {
-                currency: 'usd',
-                product_data: { name: 'AI powered Email compose' },
+                currency: "usd",
+                product_data: { name: "AI powered Email compose" },
                 unit_amount: 100,
               },
               quantity: 1,
             },
           ],
         }),
-      })
+      });
 
-      const data = await res.json()
+      const data = await res.json();
 
       // Redirect using Stripe-hosted URL if available
       if (data.url) {
-        window.location.href = data.url
-        return
+        window.location.href = data.url;
+        return;
       }
 
       // Fallback: redirect using session ID
       if (data.id) {
-        const stripe = await stripePromise
-        await stripe.redirectToCheckout({ sessionId: data.id })
+        const stripe = await stripePromise;
+        await stripe.redirectToCheckout({ sessionId: data.id });
       }
     } catch (err) {
-      console.error(err)
-      alert('Checkout failed. See console for details.')
+      console.error(err);
+      alert("Checkout failed. See console for details.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
-
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 dark:from-gray-950 dark:via-gray-800 dark:to-gray-950 via-white to-purple-50 text-gray-900 dark:text-white transition-colors duration-200">
@@ -445,7 +445,9 @@ export default function EmailWriter() {
         <div className="sticky top-0 z-50 animate-pulse bg-green-500 py-3 px-4 text-center shadow-lg">
           <div className="flex items-center justify-center gap-2">
             <Wifi className="h-5 w-5 text-white" />
-            <h1 className="text-lg font-semibold text-white">You are back online !✅</h1>
+            <h1 className="text-lg font-semibold text-white">
+              You are back online !✅
+            </h1>
           </div>
         </div>
       )}
@@ -455,7 +457,9 @@ export default function EmailWriter() {
         <div className="sticky top-0 z-50 bg-red-600 py-3 px-4 text-center shadow-lg">
           <div className="flex items-center justify-center gap-2">
             <WifiOff className="h-5 w-5 text-white animate-pulse" />
-            <h1 className="text-lg font-semibold text-white">You are currently offline</h1>
+            <h1 className="text-lg font-semibold text-white">
+              You are currently offline
+            </h1>
           </div>
           <p className="mt-1 text-sm text-red-100">
             Requests will be processed when network is restored
@@ -491,13 +495,14 @@ export default function EmailWriter() {
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20">
                   <Key className="h-8 w-8 text-red-600 dark:text-red-400" />
                 </div>
-                
+
                 <h3 className="mb-2 text-xl font-bold text-gray-900 dark:text-white">
                   No Email Keys Left!
                 </h3>
-                
+
                 <p className="mb-6 text-gray-600 dark:text-gray-300">
-                  You have used all your available email keys. Purchase more keys to continue using the AI Email Writer.
+                  You have used all your available email keys. Purchase more
+                  keys to continue using the AI Email Writer.
                 </p>
 
                 {/* Key Package */}
@@ -530,10 +535,10 @@ export default function EmailWriter() {
                   >
                     Maybe Later
                   </button>
-                  
+
                   <button
                     onClick={() => {
-                      handleCheckout()
+                      handleCheckout();
                       alert("Redirecting to payment gateway...");
                       setShowKeyModal(false);
                     }}
@@ -557,9 +562,13 @@ export default function EmailWriter() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4 cursor-default">
-            <div className="p-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full cursor-default">
+            <div
+              className="p-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full cursor-default 
+                animate-pulse"
+            >
               <Mail className="h-8 w-8 text-white cursor-default" />
             </div>
+
             <h1 className="text-4xl font-bold text-gray-900 dark:text-white cursor-default">
               AI Email Writer
             </h1>
@@ -651,7 +660,12 @@ export default function EmailWriter() {
               <CardContent className="space-y-6 pt-6">
                 {/* Email Purpose */}
                 <div className="space-y-2">
-                  <Label htmlFor="purpose" className="text-gray-900 dark:text-white cursor-default">Email Purpose *</Label>
+                  <Label
+                    htmlFor="purpose"
+                    className="text-gray-900 dark:text-white cursor-default"
+                  >
+                    Email Purpose *
+                  </Label>
                   <Select
                     value={emailData.purpose}
                     onValueChange={(value) =>
@@ -662,34 +676,64 @@ export default function EmailWriter() {
                       <SelectValue placeholder="Select email purpose" />
                     </SelectTrigger>
                     <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
-                      <SelectItem value="business" className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer">
+                      <SelectItem
+                        value="business"
+                        className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer"
+                      >
                         Business Communication
                       </SelectItem>
-                      <SelectItem value="sales" className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer">
+                      <SelectItem
+                        value="sales"
+                        className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer"
+                      >
                         Sales & Marketing
                       </SelectItem>
-                      <SelectItem value="customer-service" className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer">
+                      <SelectItem
+                        value="customer-service"
+                        className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer"
+                      >
                         Customer Service
                       </SelectItem>
-                      <SelectItem value="follow-up" className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer">
+                      <SelectItem
+                        value="follow-up"
+                        className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer"
+                      >
                         Follow-up
                       </SelectItem>
-                      <SelectItem value="networking" className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer">
+                      <SelectItem
+                        value="networking"
+                        className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer"
+                      >
                         Networking
                       </SelectItem>
-                      <SelectItem value="job-application" className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer">
+                      <SelectItem
+                        value="job-application"
+                        className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer"
+                      >
                         Job Application
                       </SelectItem>
-                      <SelectItem value="meeting" className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer">
+                      <SelectItem
+                        value="meeting"
+                        className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer"
+                      >
                         Meeting Request
                       </SelectItem>
-                      <SelectItem value="thank-you" className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer">
+                      <SelectItem
+                        value="thank-you"
+                        className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer"
+                      >
                         Thank You
                       </SelectItem>
-                      <SelectItem value="apology" className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer">
+                      <SelectItem
+                        value="apology"
+                        className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer"
+                      >
                         Apology
                       </SelectItem>
-                      <SelectItem value="announcement" className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer">
+                      <SelectItem
+                        value="announcement"
+                        className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer"
+                      >
                         Announcement
                       </SelectItem>
                     </SelectContent>
@@ -698,7 +742,12 @@ export default function EmailWriter() {
 
                 {/* Tone */}
                 <div className="space-y-2">
-                  <Label htmlFor="tone" className="text-gray-900 dark:text-white cursor-default">Tone</Label>
+                  <Label
+                    htmlFor="tone"
+                    className="text-gray-900 dark:text-white cursor-default"
+                  >
+                    Tone
+                  </Label>
                   <Select
                     value={emailData.tone}
                     onValueChange={(value) =>
@@ -709,18 +758,45 @@ export default function EmailWriter() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
-                      <SelectItem value="professional" className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer">Professional</SelectItem>
-                      <SelectItem value="friendly" className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer">Friendly</SelectItem>
-                      <SelectItem value="formal" className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer">Formal</SelectItem>
-                      <SelectItem value="casual" className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer">Casual</SelectItem>
-                      <SelectItem value="persuasive" className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer">Persuasive</SelectItem>
+                      <SelectItem
+                        value="professional"
+                        className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer"
+                      >
+                        Professional
+                      </SelectItem>
+                      <SelectItem
+                        value="friendly"
+                        className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer"
+                      >
+                        Friendly
+                      </SelectItem>
+                      <SelectItem
+                        value="formal"
+                        className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer"
+                      >
+                        Formal
+                      </SelectItem>
+                      <SelectItem
+                        value="casual"
+                        className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer"
+                      >
+                        Casual
+                      </SelectItem>
+                      <SelectItem
+                        value="persuasive"
+                        className="hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer"
+                      >
+                        Persuasive
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 {/* Key Points */}
                 <div className="space-y-3">
-                  <Label className="text-gray-900 dark:text-white cursor-default">Key Points to Include *</Label>
+                  <Label className="text-gray-900 dark:text-white cursor-default">
+                    Key Points to Include *
+                  </Label>
                   {emailData.keyPoints.map((point, index) => (
                     <div key={index} className="flex gap-2">
                       <Input
@@ -754,7 +830,12 @@ export default function EmailWriter() {
 
                 {/* Recipient Type */}
                 <div className="space-y-2">
-                  <Label htmlFor="recipientType" className="text-gray-900 dark:text-white cursor-default">Recipient Type (Optional)</Label>
+                  <Label
+                    htmlFor="recipientType"
+                    className="text-gray-900 dark:text-white cursor-default"
+                  >
+                    Recipient Type (Optional)
+                  </Label>
                   <Input
                     id="recipientType"
                     placeholder="e.g., Client, Colleague, Hiring Manager"
@@ -771,7 +852,10 @@ export default function EmailWriter() {
 
                 {/* Custom Instructions */}
                 <div className="space-y-2">
-                  <Label htmlFor="customInstructions" className="text-gray-900 dark:text-white cursor-default">
+                  <Label
+                    htmlFor="customInstructions"
+                    className="text-gray-900 dark:text-white cursor-default"
+                  >
                     Custom Instructions (Optional)
                   </Label>
                   <Textarea
@@ -805,8 +889,8 @@ export default function EmailWriter() {
                           Waiting for Network Connection
                         </h4>
                         <p className="mb-3 text-sm text-yellow-700 dark:text-yellow-300">
-                          Your request is queued and will be processed automatically when
-                          internet connection is restored.
+                          Your request is queued and will be processed
+                          automatically when internet connection is restored.
                         </p>
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-1">
@@ -817,12 +901,20 @@ export default function EmailWriter() {
                             />
                             <motion.div
                               animate={{ scale: [1, 1.2, 1] }}
-                              transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                delay: 0.3,
+                              }}
                               className="h-2 w-2 rounded-full bg-yellow-500"
                             />
                             <motion.div
                               animate={{ scale: [1, 1.2, 1] }}
-                              transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                delay: 0.6,
+                              }}
                               className="h-2 w-2 rounded-full bg-yellow-500"
                             />
                           </div>
@@ -953,18 +1045,18 @@ export default function EmailWriter() {
                       <Copy className="h-4 w-4 mr-1" />
                       Copy
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={downloadEmail}
                       className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer"
                     >
                       <Download className="h-4 w-4 mr-1" />
                       Download
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
+                    <Button
+                      variant="outline"
+                      size="sm"
                       onClick={saveTemplate}
                       className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-gray-700 cursor-pointer"
                     >
