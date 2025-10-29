@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Post from "@/components/Post";
+import { TrendingUp } from "lucide-react";
 
 export default function MyPostsPage() {
   const [posts, setPosts] = useState([]);
@@ -115,20 +116,16 @@ export default function MyPostsPage() {
     setPosts(posts.filter((post) => post.id !== postId));
   };
 
-  const getReactionCount = (post) => {
-    return post.likes.length + post.loves.length;
-  };
-
   if (!session) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Please log in to view your posts
           </h2>
           <Link
             href="/website"
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all"
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer"
           >
             Go to Dashboard
           </Link>
@@ -139,13 +136,13 @@ export default function MyPostsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 py-8">
+      <div className="min-h-screen py-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Animated Header Skeleton */}
-          <div className="text-center mb-12">
+          {/* Header Skeleton */}
+          <div className="mb-12 text-left">
             <div className="animate-pulse">
-              <div className="h-12 bg-gradient-to-r from-gray-300 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-lg w-64 mx-auto mb-4"></div>
-              <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-96 mx-auto"></div>
+              <div className="h-8 bg-gradient-to-r from-gray-300 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-lg w-64 mb-4"></div>
+              <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-96"></div>
             </div>
           </div>
 
@@ -199,53 +196,18 @@ export default function MyPostsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 py-8">
+    <div className="min-h-screen py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Enhanced Header */}
-        <div className="text-center mb-12">
+        {/* Header */}
+        <div className="mb-12 text-left">
           <div className="relative inline-block mb-4">
-            <h1 className="text-5xl font-bold bg-gradient-to-r pb-2 from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2 relative z-10">
+            <h1 className="text-2xl pb-1 sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
               My Stories
             </h1>
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 blur-lg opacity-30 scale-110"></div>
           </div>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-            Manage and track the performance of your published stories. Your
-            voice, your stories.
+          <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+            Manage and track the performance of your published stories. Your voice, your stories.
           </p>
-
-          {/* Stats Bar */}
-          <div className="flex justify-center items-center space-x-8 mt-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-                {posts.length}
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Stories
-              </div>
-            </div>
-            <div className="w-px h-8 bg-gray-300 dark:bg-gray-600"></div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                {posts.reduce(
-                  (total, post) => total + getReactionCount(post),
-                  0
-                )}
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Reactions
-              </div>
-            </div>
-            <div className="w-px h-8 bg-gray-300 dark:bg-gray-600"></div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-pink-600 dark:text-pink-400">
-                {posts.reduce((total, post) => total + post.comments.length, 0)}
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Conversations
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Filters and Search Bar */}
@@ -291,13 +253,14 @@ export default function MyPostsPage() {
               </button>
               <button
                 onClick={() => setActiveFilter("popular")}
-                className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
+                className={`px-3 py-2 rounded-lg font-medium transition-all duration-200 text-sm flex items-center gap-2 ${
                   activeFilter === "popular"
-                    ? "bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-lg shadow-pink-500/25"
+                    ? "bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-md"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
-                🔥 Popular
+                <TrendingUp className="w-4 h-4" />
+                Popular
               </button>
             </div>
           </div>
@@ -334,7 +297,7 @@ export default function MyPostsPage() {
                 {!searchQuery && (
                   <Link
                     href="/feed"
-                    className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 inline-block"
+                    className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 inline-block cursor-pointer"
                   >
                     Create Your First Story
                   </Link>

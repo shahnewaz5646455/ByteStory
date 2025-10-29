@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useSelector } from "react-redux";
+import Link from "next/link";
+import { ArrowLeft, FileText, Heart, MessageCircle, BarChart3 } from "lucide-react";
 import {
   AreaChart,
   Area,
@@ -20,33 +22,58 @@ const MyAccount = () => {
   });
   const [chartData, setChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const session = useSelector((store) => store.authStore.auth);
 
-  // Fetch total stats from the API
+  // Fetch user-specific stats from the API
   useEffect(() => {
-    const fetchTotalStats = async () => {
-      try {
-        const response = await fetch("/api/posts/stats");
-        if (response.ok) {
-          const stats = await response.json();
-          setUserStats(stats);
+    const fetchUserStats = async () => {
+      if (!session?.email) return;
 
-          // Generate chart data based on the stats
-          const newChartData = [
-            { name: "Stories", value: stats.stories },
-            { name: "Reactions", value: stats.reactions },
-            { name: "Comments", value: stats.conversations },
-          ];
-          setChartData(newChartData);
+      try {
+        setIsLoading(true);
+        
+        // Fetch user's posts first
+        const postsResponse = await fetch(`/api/posts/user/${session.email}`);
+        if (!postsResponse.ok) {
+          throw new Error('Failed to fetch user posts');
         }
+        
+        const userPosts = await postsResponse.json();
+        
+        // Calculate stats from user's posts
+        const nonDeletedPosts = userPosts.filter((post) => !post.isDeleted);
+        const totalStories = nonDeletedPosts.length;
+        const totalReactions = nonDeletedPosts.reduce(
+          (total, post) => total + post.likes.length + post.loves.length, 
+          0
+        );
+        const totalConversations = nonDeletedPosts.reduce(
+          (total, post) => total + post.comments.length, 
+          0
+        );
+
+        setUserStats({
+          stories: totalStories,
+          reactions: totalReactions,
+          conversations: totalConversations,
+        });
+
+        // Generate chart data based on the user's stats
+        const newChartData = [
+          { name: "Stories", value: totalStories },
+          { name: "Reactions", value: totalReactions },
+          { name: "Comments", value: totalConversations },
+        ];
+        setChartData(newChartData);
       } catch (error) {
-        console.error("Error fetching stats:", error);
+        console.error("Error fetching user stats:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchTotalStats();
-  }, []);
+    fetchUserStats();
+  }, [session]);
 
   // Custom tooltip for the chart
   const CustomTooltip = ({ active, payload, label }) => {
@@ -63,16 +90,39 @@ const MyAccount = () => {
     return null;
   };
 
+  if (!session) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            Please log in to view your account
+          </h2>
+          <Link
+            href="/website"
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer"
+          >
+            Go to Dashboard
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   if (isLoading) {
     return (
-      <div className="min-h-screen ">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Header Skeleton */}
           <div className="mb-12 text-left">
             <div className="animate-pulse">
               <div className="h-8 bg-gradient-to-r from-gray-300 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-lg w-64 mb-4"></div>
               <div className="h-4 bg-gray-300 dark:bg-gray-600 rounded w-96"></div>
             </div>
+          </div>
+
+          {/* Navigation Skeleton */}
+          <div className="flex justify-start mb-8">
+            <div className="h-12 bg-gray-300 dark:bg-gray-600 rounded-xl w-40 animate-pulse"></div>
           </div>
 
           {/* Stats Cards Loading */}
@@ -101,78 +151,107 @@ const MyAccount = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header - Recycle Bin Style */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
         <div className="mb-12 text-left">
           <div className="relative inline-block mb-4">
-            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-              Community Analytics
+            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 pb-1 bg-clip-text text-transparent">
+              Story Analytics
             </h1>
           </div>
           <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-            Track your community's growth and engagement with real-time
-            analytics and insights.
+            Track your writing journey and engagement metrics. See how your stories resonate with the community.
           </p>
+
+          
         </div>
 
-        {/* Stats Cards Grid - Recycle Bin Style */}
+        {/* Navigation */}
+        <div className="flex justify-start mb-8">
+          <Link
+            href="/my-posts"
+            className="inline-flex items-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Back to My Posts
+          </Link>
+        </div>
+
+        {/* Stats Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Total Stories Card */}
+          {/* My Stories Card */}
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50 p-6">
             <div className="text-center">
-              <div className="text-4xl font-bold text-indigo-600 dark:text-indigo-400 mb-3">
+              <div className="flex justify-center mb-4">
+                <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900 rounded-full flex items-center justify-center">
+                  <FileText className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                </div>
+              </div>
+              <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">
                 {userStats.stories}
               </div>
               <div className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Stories
+                My Stories
               </div>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Total published stories
+                Stories you've published
               </p>
             </div>
           </div>
 
-          {/* Total Reactions Card */}
+          {/* My Reactions Card */}
           <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50 p-6">
             <div className="text-center">
-              <div className="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-3">
+              <div className="flex justify-center mb-4">
+                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                  <Heart className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                </div>
+              </div>
+              <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
                 {userStats.reactions}
               </div>
               <div className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Reactions
+                My Reactions
               </div>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Combined likes and loves
+                Likes and loves received
               </p>
             </div>
           </div>
 
-          {/* Total Comments Card */}
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50 p-6">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-pink-600 dark:text-pink-400 mb-3">
-                {userStats.conversations}
-              </div>
-              <div className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Comments
-              </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Total conversations
-              </p>
-            </div>
-          </div>
+         {/* My Conversations Card */}
+<div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50 p-6">
+  <div className="text-center">
+    <div className="flex justify-center mb-4">
+      <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900 rounded-full flex items-center justify-center">
+        <MessageCircle className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+      </div>
+    </div>
+    <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">
+      {userStats.conversations}
+    </div>
+    <div className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
+      My Conversations
+    </div>
+    <p className="text-sm text-gray-500 dark:text-gray-400">
+      Comments on your stories
+    </p>
+  </div>
+</div>
         </div>
 
         {/* Interactive Area Chart */}
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50 p-6 mb-8">
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              Community Engagement Overview
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
-              Visual representation of stories, reactions, and comments across
-              your community
-            </p>
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center">
+                <BarChart3 className="w-5 h-5 mr-2" />
+                Engagement Overview
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mt-2">
+                Visual breakdown of your stories, reactions, and conversations
+              </p>
+            </div>
           </div>
 
           <div className="h-80">
@@ -191,8 +270,17 @@ const MyAccount = () => {
                   stroke="#374151"
                   opacity={0.3}
                 />
-                <XAxis dataKey="name" stroke="#6B7280" fontSize={12} />
-                <YAxis stroke="#6B7280" fontSize={12} />
+                <XAxis 
+                  dataKey="name" 
+                  stroke="#6B7280" 
+                  fontSize={12}
+                  tickLine={false}
+                />
+                <YAxis 
+                  stroke="#6B7280" 
+                  fontSize={12}
+                  tickLine={false}
+                />
                 <Tooltip content={<CustomTooltip />} />
                 <defs>
                   <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
@@ -216,9 +304,41 @@ const MyAccount = () => {
             <div className="flex items-center">
               <div className="w-3 h-3 bg-purple-500 rounded-full mr-2"></div>
               <span className="text-sm text-gray-600 dark:text-gray-400">
-                Engagement Metrics
+                Your Engagement Metrics
               </span>
             </div>
+          </div>
+        </div>
+
+        {/* Quick Stats Summary */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50 p-6">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+            Performance Insights
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <span className="text-gray-600 dark:text-gray-400">Average Reactions per Story</span>
+              <span className="font-bold text-indigo-600 dark:text-indigo-400">
+                {userStats.stories > 0 ? Math.round(userStats.reactions / userStats.stories) : 0}
+              </span>
+            </div>
+            <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+              <span className="text-gray-600 dark:text-gray-400">Average Comments per Story</span>
+              <span className="font-bold text-purple-600 dark:text-purple-400">
+                {userStats.stories > 0 ? Math.round(userStats.conversations / userStats.stories) : 0}
+              </span>
+            </div>
+          </div>
+          
+          {/* Welcome Message */}
+          <div className="mt-6 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-800">
+            <p className="text-indigo-700 dark:text-indigo-300 text-sm">
+              <span className="font-semibold">Hello {session.name || session.email}!</span> 
+              {userStats.stories === 0 
+                ? " Start your journey by creating your first story in the feed!" 
+                : ` You've published ${userStats.stories} stories and received ${userStats.reactions} reactions. Keep writing!`
+              }
+            </p>
           </div>
         </div>
       </div>
