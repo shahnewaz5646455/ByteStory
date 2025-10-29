@@ -54,17 +54,19 @@ export default function Home() {
     <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-800 dark:to-gray-950 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-4">
-            <Sparkles className="h-8 w-8 text-white" />
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            AI Text <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">Summarizer</span>
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Transform long texts into concise summaries with our powerful AI technology
-          </p>
-        </div>
+<div className="text-center mb-8">
+  <div className="flex items-center justify-center gap-3 mb-4 cursor-default">
+    <div className="p-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full cursor-default">
+      <Sparkles className="h-8 w-8 text-white cursor-default" />
+    </div>
+    <h1 className="text-4xl font-bold text-gray-900 dark:text-white cursor-default">
+      AI Text Summarizer
+    </h1>
+  </div>
+  <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto cursor-default">
+    Transform long texts into concise summaries with our powerful AI technology
+  </p>
+</div>
 
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
           {/* Input Section */}

@@ -38,6 +38,7 @@ import {
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
+
 // Initialize Stripe with your public key
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
@@ -336,9 +337,8 @@ export default function EmailWriter() {
         },
         body: JSON.stringify({
           userId: auth._id,
-          title: `${
-            emailData.purpose
-          } Email - ${new Date().toLocaleDateString()}`,
+          title: `${emailData.purpose
+            } Email - ${new Date().toLocaleDateString()}`,
           purpose: emailData.purpose,
           tone: emailData.tone,
           keyPoints: emailData.keyPoints.filter((point) => point.trim() !== ""),
@@ -560,15 +560,11 @@ export default function EmailWriter() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         {/* Header */}
-        <div className="text-center mb-8">
+       <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4 cursor-default">
-            <div
-              className="p-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full cursor-default 
-                animate-pulse"
-            >
+            <div className="p-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full cursor-default">
               <Mail className="h-8 w-8 text-white cursor-default" />
             </div>
-
             <h1 className="text-4xl font-bold text-gray-900 dark:text-white cursor-default">
               AI Email Writer
             </h1>
@@ -623,21 +619,19 @@ export default function EmailWriter() {
         <div className="flex space-x-1 mb-6 bg-white dark:bg-gray-800 rounded-lg p-1 shadow-sm max-w-md mx-auto cursor-pointer">
           <button
             onClick={() => setActiveTab("compose")}
-            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-              activeTab === "compose"
+            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors cursor-pointer ${activeTab === "compose"
                 ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white"
                 : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-            }`}
+              }`}
           >
             Compose
           </button>
           <button
             onClick={() => setActiveTab("templates")}
-            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-              activeTab === "templates"
+            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors cursor-pointer ${activeTab === "templates"
                 ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white"
                 : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-            }`}
+              }`}
           >
             My Templates
           </button>

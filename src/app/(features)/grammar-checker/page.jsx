@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, AlertCircle, Loader2, Copy, Edit3, Sparkles, BookOpen, ArrowRight, X, ChevronRight, Star, Zap, Shield, Languages, Moon, Sun, Monitor } from 'lucide-react';
+import { CheckCircle, AlertCircle, Loader2, Copy, Edit3, Sparkles, BookOpen, ArrowRight, X, ChevronRight, Star, Zap, Shield, Languages, Moon, Sun, Monitor, CheckCircle2 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { AuroraText } from '@/components/ui/aurora-text';
 import { TextAnimate } from '@/components/ui/text-animate';
@@ -106,48 +106,19 @@ const GrammarChecker = () => {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-800 dark:to-gray-950 py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-16"
-        >
-           <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="text-4xl sm:text-5xl font-bold mb-4"
-          >
-           Perfect Your
-            <span className="block bg-clip-text pb-2 text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-              <AuroraText>Masterful Writing</AuroraText>
-            </span>
-          </motion.h2>
-
-          <TextAnimate
-            animation="slideLeft"
-            by="character"
-            className="text-md text-gray-700 dark:text-gray-300 max-w-2xl mx-auto mb-8"
-          >
-              Enhance your writing with our advanced ByteStory-powered grammar checker.Get instant feedback on spelling, punctuation, and grammar mistakes. Perfect Your Writing
-          </TextAnimate>
-
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-10 max-w-2xl mx-auto">
-            {stats.map((stat, index) => (
-              <motion.div 
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-indigo-100 dark:border-gray-700"
-              >
-                <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{stat.value}</div>
-                <div className="text-sm text-indigo-500 dark:text-indigo-300 mt-1">{stat.label}</div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+<div className="text-center mb-8">
+  <div className="flex items-center justify-center gap-3 mb-4 cursor-default">
+    <div className="p-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full cursor-default">
+      <Sparkles className="h-8 w-8 text-white cursor-default" />
+    </div>
+    <h1 className="text-4xl font-bold text-gray-900 dark:text-white cursor-default">
+      Grammar Checker
+    </h1>
+  </div>
+  <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto cursor-default">
+    Enhance your writing with our advanced AI-powered grammar checker
+  </p>
+</div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Input Section */}
@@ -155,7 +126,7 @@ const GrammarChecker = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-indigo-100 dark:border-gray-700"
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-8 border border-indigo-100 dark:border-gray-700"
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-semibold text-indigo-800 dark:text-white">Your Text</h2>
@@ -188,7 +159,7 @@ const GrammarChecker = () => {
               <button
                 onClick={checkGrammar}
                 disabled={isLoading || !text.trim()}
-                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 text-white font-medium py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-indigo-200 dark:hover:shadow-purple-900/30"
+                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:opacity-50 text-white font-medium py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center shadow-sm hover:shadow-indigo-200 dark:hover:shadow-purple-900/30"
               >
                 {isLoading ? (
                   <>
@@ -221,7 +192,7 @@ const GrammarChecker = () => {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-indigo-100 dark:border-gray-700"
+            className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-8 border border-indigo-100 dark:border-gray-700"
           >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-semibold text-indigo-800 dark:text-white">Analysis Results</h2>
@@ -338,93 +309,75 @@ const GrammarChecker = () => {
           </motion.div>
         </div>
 
-        {/* Features Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="mt-20"
-        >
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-indigo-900 dark:text-white mb-4">Why Choose Our Grammar Checker?</h2>
-            <p className="text-indigo-700 dark:text-indigo-300 max-w-2xl mx-auto">Advanced features that make your writing stand out</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.8 + index * 0.1 }}
-                className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-indigo-100 dark:border-gray-700 hover:shadow-xl transition-shadow"
-              >
-                <div className="bg-indigo-100 dark:bg-indigo-900 w-14 h-14 rounded-xl flex items-center justify-center mb-4">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-semibold text-indigo-800 dark:text-white mb-2">{feature.title}</h3>
-                <p className="text-indigo-600 dark:text-indigo-300">{feature.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
         {/* Tips Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 1 }}
-          className="mt-20 bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-700 dark:to-purple-800 rounded-2xl shadow-xl overflow-hidden"
-        >
-          <div className="p-10 text-white">
-            <h2 className="text-3xl font-bold mb-2">Pro Writing Tips</h2>
-            <p className="text-indigo-100 dark:text-indigo-200 mb-8 max-w-2xl">Elevate your writing with these expert suggestions</p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="bg-white/10 dark:bg-white/5 p-5 rounded-xl backdrop-blur-sm">
-                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-4">
-                  <span className="font-bold">1</span>
-                </div>
-                <h3 className="font-semibold text-lg mb-2">Be Specific</h3>
-                <p className="text-indigo-100 dark:text-indigo-200 text-sm">Use precise language to convey your message clearly and avoid ambiguity.</p>
-              </div>
-              
-              <div className="bg-white/10 dark:bg-white/5 p-5 rounded-xl backdrop-blur-sm">
-                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-4">
-                  <span className="font-bold">2</span>
-                </div>
-                <h3 className="font-semibold text-lg mb-2">Vary Sentence Length</h3>
-                <p className="text-indigo-100 dark:text-indigo-200 text-sm">Mix short and long sentences to create rhythm and maintain reader engagement.</p>
-              </div>
-              
-              <div className="bg-white/10 dark:bg-white/5 p-5 rounded-xl backdrop-blur-sm">
-                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-4">
-                  <span className="font-bold">3</span>
-                </div>
-                <h3 className="font-semibold text-lg mb-2">Proofread</h3>
-                <p className="text-indigo-100 dark:text-indigo-200 text-sm">Always review your writing multiple times to catch errors and improve clarity.</p>
-              </div>
+        <section className="mx-auto max-w-6xl px-6 py-10">
+  <motion.div 
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay: 1 }}
+    className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 shadow-md"
+  >
+    <div className="flex items-center gap-3 mb-8">
+      <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center text-white">
+        <Edit3 className="h-5 w-5" />
+      </div>
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Pro Writing Tips</h2>
+    </div>
+    
+    <div className="grid gap-6 md:grid-cols-3">
+      <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/10 dark:to-purple-900/10 rounded-xl border border-indigo-100 dark:border-gray-700 p-5">
+        <span className="inline-block bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-3 py-1 rounded-full text-xs font-medium mb-4">
+          Tip 1
+        </span>
+        <div className="space-y-3">
+          <div className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
+            <div className="w-5 h-5 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <CheckCircle2 className="h-3 w-3 text-indigo-600 dark:text-indigo-400" />
             </div>
+            <span className="font-semibold">Be Specific</span>
           </div>
-        </motion.div>
-
-        {/* CTA Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 1.2 }}
-          className="mt-16 text-center"
-        >
-          <h3 className="text-2xl font-bold text-indigo-900 dark:text-white mb-4">Ready to improve your writing?</h3>
-          <p className="text-indigo-700 dark:text-indigo-300 mb-6">Join thousands of writers who trust our grammar checker</p>
-          <button
-            onClick={focusTextArea}
-            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-xl transition-all shadow-lg hover:shadow-indigo-200 dark:hover:shadow-purple-900/30"
-          >
-            Start Checking Now
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </button>
-        </motion.div>
+          <p className="text-sm text-gray-600 dark:text-gray-400 ml-7">
+            Use precise language to convey your message clearly and avoid ambiguity.
+          </p>
+        </div>
+      </div>
+      
+      <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/10 dark:to-purple-900/10 rounded-xl border border-indigo-100 dark:border-gray-700 p-5">
+        <span className="inline-block bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-3 py-1 rounded-full text-xs font-medium mb-4">
+          Tip 2
+        </span>
+        <div className="space-y-3">
+          <div className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
+            <div className="w-5 h-5 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <CheckCircle2 className="h-3 w-3 text-indigo-600 dark:text-indigo-400" />
+            </div>
+            <span className="font-semibold">Vary Sentence Length</span>
+          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-400 ml-7">
+            Mix short and long sentences to create rhythm and maintain reader engagement.
+          </p>
+        </div>
+      </div>
+      
+      <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/10 dark:to-purple-900/10 rounded-xl border border-indigo-100 dark:border-gray-700 p-5">
+        <span className="inline-block bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-3 py-1 rounded-full text-xs font-medium mb-4">
+          Tip 3
+        </span>
+        <div className="space-y-3">
+          <div className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
+            <div className="w-5 h-5 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <CheckCircle2 className="h-3 w-3 text-indigo-600 dark:text-indigo-400" />
+            </div>
+            <span className="font-semibold">Proofread</span>
+          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-400 ml-7">
+            Always review your writing multiple times to catch errors and improve clarity.
+          </p>
+        </div>
+      </div>
+    </div>
+  </motion.div>
+</section>
       </div>
     </div>
   );
