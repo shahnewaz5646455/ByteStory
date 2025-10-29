@@ -325,7 +325,13 @@ export default function AdminMessagesBoardPage() {
 
             {/* Top bar */}
             <div className="border-b border-gray-200 dark:border-gray-800 pb-4 flex items-center gap-3">
-                <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">Contact Messages (Admin)</div>
+               <div>
+                 <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">Contact Messages (Admin)</div>
+                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+  {items.length} messages • {items.filter(m => m.status === 'new').length} new
+</p>
+               </div>
+                
 
                 {/* Search + Filters */}
                 <div className="ml-auto flex items-center gap-3">
