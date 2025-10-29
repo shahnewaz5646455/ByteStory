@@ -6,7 +6,13 @@ import { useSelector } from "react-redux";
 import { ThumbsUp, Heart, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { showToast } from "@/lib/showToast";
-import { ArrowLeft, Clock, AlertTriangle, Trash2, RotateCcw } from "lucide-react";
+import {
+  ArrowLeft,
+  Clock,
+  AlertTriangle,
+  Trash2,
+  RotateCcw,
+} from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -130,7 +136,7 @@ export default function RecycleBinPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
       <div>
         {/* Header */}
         <div className="mb-12 text-left">
@@ -353,11 +359,13 @@ export default function RecycleBinPage() {
               Permanent Delete Confirmation
             </AlertDialogTitle>
             <AlertDialogDescription className="pt-2">
-              Are you sure you want to permanently delete this post? This action cannot be undone and the post will be permanently removed from our servers.
+              Are you sure you want to permanently delete this post? This action
+              cannot be undone and the post will be permanently removed from our
+              servers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel 
+            <AlertDialogCancel
               onClick={closeDeleteDialog}
               className="cursor-pointer"
             >

@@ -24,7 +24,7 @@ import {
 export default function MyContentPage() {
   const auth = useSelector((s) => s?.authStore?.auth);
   const router = useRouter();
-  
+
   // State
   const [contents, setContents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,12 +37,15 @@ export default function MyContentPage() {
   // Load user's shared content
   async function loadUserContents(page = 1) {
     if (!auth?.email) return;
-    
+
     try {
       setLoading(true);
       setError(null);
-      
-      const url = new URL("/api/user/generated-contents", window.location.origin);
+
+      const url = new URL(
+        "/api/user/generated-contents",
+        window.location.origin
+      );
       url.searchParams.set("email", auth.email);
       url.searchParams.set("page", String(page));
       url.searchParams.set("limit", "12");
@@ -82,13 +85,14 @@ export default function MyContentPage() {
 
   // Filter content based on search and filters
   const filteredContents = contents.filter((content) => {
-    const matchesSearch = searchQuery.trim() === "" || 
+    const matchesSearch =
+      searchQuery.trim() === "" ||
       content.content?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       content.prompt?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       content.template?.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     const matchesType = typeFilter === "all" || content.type === typeFilter;
-    
+
     return matchesSearch && matchesType;
   });
 
@@ -108,17 +112,40 @@ export default function MyContentPage() {
   // Content type badge
   function ContentTypeBadge({ type }) {
     const typeConfig = {
-      blog: { label: "Blog Post", color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300" },
-      email: { label: "Email", color: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300" },
-      hashtag: { label: "Hashtags", color: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300" },
-      summary: { label: "Summary", color: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300" },
-      social: { label: "Social Media", color: "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300" },
+      blog: {
+        label: "Blog Post",
+        color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+      },
+      email: {
+        label: "Email",
+        color:
+          "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+      },
+      hashtag: {
+        label: "Hashtags",
+        color:
+          "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
+      },
+      summary: {
+        label: "Summary",
+        color:
+          "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300",
+      },
+      social: {
+        label: "Social Media",
+        color: "bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300",
+      },
     };
 
-    const config = typeConfig[type] || { label: type, color: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300" };
+    const config = typeConfig[type] || {
+      label: type,
+      color: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300",
+    };
 
     return (
-      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${config.color}`}>
+      <span
+        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${config.color}`}
+      >
         <Sparkles className="h-3 w-3" />
         {config.label}
       </span>
@@ -144,17 +171,17 @@ export default function MyContentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className=" min-h-screen p-4 sm:p-6 lg:p-8">
+      <div className="max-w-6xl">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-                <FileText className="h-8 w-8 text-blue-600" />
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 pb-1 bg-clip-text text-transparent mb-4">
+                {/* <FileText className="h-8 w-8 text-blue-600" /> */}
                 My Generated Content
               </h1>
-              <p className="mt-2 text-gray-600 dark:text-gray-400">
+              <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
                 All your AI-generated content that you've shared
               </p>
             </div>
@@ -167,7 +194,9 @@ export default function MyContentPage() {
                 disabled={loading}
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
               >
-                <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+                <RefreshCw
+                  className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
+                />
                 Refresh
               </button>
             </div>
@@ -227,17 +256,19 @@ export default function MyContentPage() {
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
             <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-              {searchQuery || typeFilter !== "all" ? "No matching content found" : "No shared content yet"}
+              {searchQuery || typeFilter !== "all"
+                ? "No matching content found"
+                : "No shared content yet"}
             </h3>
             <p className="text-gray-500 dark:text-gray-400 mb-6">
-              {searchQuery || typeFilter !== "all" 
-                ? "Try adjusting your search or filters" 
+              {searchQuery || typeFilter !== "all"
+                ? "Try adjusting your search or filters"
                 : "Start generating and sharing AI-powered content to see it here!"}
             </p>
             {!searchQuery && typeFilter === "all" && (
               <button
                 onClick={() => router.push("/dashboard")}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white cursor-pointer rounded-xl"
               >
                 <Sparkles className="h-5 w-5" />
                 Generate New Content
@@ -259,16 +290,18 @@ export default function MyContentPage() {
                       <ContentTypeBadge type={content.type} />
                       <VisibilityBadge visibility={content.visibility} />
                     </div>
-                    
+
                     {content.prompt && (
                       <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-2">
-                        <span className="font-medium">Prompt:</span> {content.prompt}
+                        <span className="font-medium">Prompt:</span>{" "}
+                        {content.prompt}
                       </p>
                     )}
-                    
+
                     {content.template && (
                       <p className="text-xs text-gray-500 dark:text-gray-500">
-                        <span className="font-medium">Template:</span> {content.template}
+                        <span className="font-medium">Template:</span>{" "}
+                        {content.template}
                       </p>
                     )}
                   </div>
@@ -288,11 +321,11 @@ export default function MyContentPage() {
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          {content.generated_time?.time || 
+                          {content.generated_time?.time ||
                             new Date(content.createdAt).toLocaleDateString()}
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => copyShareLink(content._id)}
@@ -305,7 +338,7 @@ export default function MyContentPage() {
                             <Copy className="h-4 w-4" />
                           )}
                         </button>
-                        
+
                         <a
                           href={`/content/${content._id}`}
                           target="_blank"
@@ -332,11 +365,11 @@ export default function MyContentPage() {
                 >
                   Previous
                 </button>
-                
+
                 <span className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">
                   Page {meta.page} of {meta.pages}
                 </span>
-                
+
                 <button
                   onClick={() => loadUserContents(meta.page + 1)}
                   disabled={meta.page >= meta.pages}

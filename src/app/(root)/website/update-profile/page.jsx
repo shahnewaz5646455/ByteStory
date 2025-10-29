@@ -190,7 +190,7 @@ const ProfilePage = () => {
           </div>
           <Button
             onClick={() => setEditDialogOpen(true)}
-            className="mt-4 sm:mt-0 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
+            className="mt-4 sm:mt-0 cursor-pointer bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
           >
             <Camera className="h-4 w-4 mr-2" />
             Edit Profile
