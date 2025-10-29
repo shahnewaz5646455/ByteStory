@@ -7,10 +7,22 @@ import { ThumbsUp, Heart, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { showToast } from "@/lib/showToast";
 import { ArrowLeft, Clock, AlertTriangle, Trash2, RotateCcw } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function RecycleBinPage() {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [postToDelete, setPostToDelete] = useState(null);
   const session = useSelector((store) => store.authStore.auth);
 
   const fetchRecycledPosts = async () => {
@@ -58,17 +70,21 @@ export default function RecycleBinPage() {
     }
   };
 
-  const handlePermanentDelete = async (postId) => {
-    if (
-      !confirm(
-        "Are you sure you want to permanently delete this post? This action cannot be undone."
-      )
-    ) {
-      return;
-    }
+  const openDeleteDialog = (postId) => {
+    setPostToDelete(postId);
+    setDeleteDialogOpen(true);
+  };
+
+  const closeDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setPostToDelete(null);
+  };
+
+  const handlePermanentDelete = async () => {
+    if (!postToDelete) return;
 
     try {
-      const response = await fetch(`/api/posts/recycle/${postId}`, {
+      const response = await fetch(`/api/posts/recycle/${postToDelete}`, {
         method: "DELETE",
         headers: {
           "x-user-email": session.email,
@@ -76,8 +92,7 @@ export default function RecycleBinPage() {
       });
 
       if (response.ok) {
-        setPosts(posts.filter((post) => post.id !== postId));
-
+        setPosts(posts.filter((post) => post.id !== postToDelete));
         showToast("success", "Post permanently deleted!");
       } else {
         showToast("error", "Failed to delete post");
@@ -85,6 +100,8 @@ export default function RecycleBinPage() {
     } catch (error) {
       console.error("Error deleting post:", error);
       showToast("error", "Error deleting post");
+    } finally {
+      closeDeleteDialog();
     }
   };
 
@@ -289,43 +306,73 @@ export default function RecycleBinPage() {
                 </div>
 
                 {/* Stats */}
-<div className="flex items-center space-x-6 text-sm text-gray-500 dark:text-gray-400 mb-4">
-  <div className="flex items-center space-x-1">
-    <ThumbsUp className="w-4 h-4" />
-    <span>{post.likes?.length || 0}</span>
-  </div>
-  <div className="flex items-center space-x-1">
-    <Heart className="w-4 h-4" />
-    <span>{post.loves?.length || 0}</span>
-  </div>
-  <div className="flex items-center space-x-1">
-    <MessageCircle className="w-4 h-4" />
-    <span>{post.comments?.length || 0}</span>
-  </div>
-</div>
+                <div className="flex items-center space-x-6 text-sm text-gray-500 dark:text-gray-400 mb-4">
+                  <div className="flex items-center space-x-1">
+                    <ThumbsUp className="w-4 h-4" />
+                    <span>{post.likes?.length || 0}</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Heart className="w-4 h-4" />
+                    <span>{post.loves?.length || 0}</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <MessageCircle className="w-4 h-4" />
+                    <span>{post.comments?.length || 0}</span>
+                  </div>
+                </div>
 
                 {/* Action Buttons */}
-              <div className="flex space-x-3">
-  <button
-    onClick={() => handleRestore(post.id)}
-    className="flex-1 dark:bg-green-700 bg-green-600 dark:hover:bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-200 flex items-center justify-center cursor-pointer"
-  >
-    <RotateCcw className="w-4 h-4 mr-2" />
-    Restore
-  </button>
-  <button
-    onClick={() => handlePermanentDelete(post.id)}
-    className="flex-1 dark:bg-red-700 bg-red-600 dark:hover:bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-200 flex items-center justify-center cursor-pointer"
-  >
-    <Trash2 className="w-4 h-4 mr-2" />
-    Delete Forever
-  </button>
-</div>
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => handleRestore(post.id)}
+                    className="flex-1 dark:bg-green-700 bg-green-600 dark:hover:bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-200 flex items-center justify-center cursor-pointer"
+                  >
+                    <RotateCcw className="w-4 h-4 mr-2" />
+                    Restore
+                  </button>
+                  <button
+                    onClick={() => openDeleteDialog(post.id)}
+                    className="flex-1 dark:bg-red-700 bg-red-600 dark:hover:bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-200 flex items-center justify-center cursor-pointer"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete Forever
+                  </button>
+                </div>
               </div>
             ))
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Alert Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-red-600 flex items-center">
+              <Trash2 className="w-5 h-5 mr-2" />
+              Permanent Delete Confirmation
+            </AlertDialogTitle>
+            <AlertDialogDescription className="pt-2">
+              Are you sure you want to permanently delete this post? This action cannot be undone and the post will be permanently removed from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              onClick={closeDeleteDialog}
+              className="cursor-pointer"
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handlePermanentDelete}
+              className="bg-red-600 hover:bg-red-700 text-white cursor-pointer"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete Forever
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

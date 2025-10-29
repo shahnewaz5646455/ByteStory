@@ -13,6 +13,13 @@ import {
     Clock,
     X,
 } from "lucide-react";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function AdminMessagesBoardPage() {
     const auth = useSelector((s) => s?.authStore?.auth);
@@ -30,7 +37,7 @@ export default function AdminMessagesBoardPage() {
     const [detailLoading, setDetailLoading] = useState(false);
     const [detailError, setDetailError] = useState(null);
 
-    // Reply popup state
+    // Reply popup state - shadcn dialog ব্যবহার করা হচ্ছে
     const [showReplyPopup, setShowReplyPopup] = useState(false);
     const [replyingToMessage, setReplyingToMessage] = useState(null);
     const [replyText, setReplyText] = useState("");
@@ -113,10 +120,12 @@ export default function AdminMessagesBoardPage() {
     // Close reply popup
     function closeReplyPopup() {
         setShowReplyPopup(false);
-        setReplyingToMessage(null);
-        setReplyText("");
-        setReplyError(null);
-        setReplySuccess(null);
+        setTimeout(() => {
+            setReplyingToMessage(null);
+            setReplyText("");
+            setReplyError(null);
+            setReplySuccess(null);
+        }, 300);
     }
 
     // Send reply
@@ -240,40 +249,34 @@ export default function AdminMessagesBoardPage() {
 
     return (
         <div className="h-[calc(100vh-64px)] max-h-screen">
-            {/* Reply Popup Modal */}
-            {showReplyPopup && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
-                        {/* Header */}
-                        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-                            <div>
-                                <h3 className="text-lg font-semibold">Reply to Message</h3>
-                                <p className="text-sm text-gray-500 mt-1">
-                                    Replying to: {replyingToMessage?.subject || "No subject"}
-                                </p>
-                                <p className="text-xs text-gray-400">
-                                    From: {replyingToMessage?.name} ({replyingToMessage?.email})
-                                </p>
-                            </div>
-                            <button
-                                onClick={closeReplyPopup}
-                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                            >
-                                <X className="h-5 w-5" />
-                            </button>
-                        </div>
-
+            {/* Shadcn Dialog for Reply Modal */}
+            <Dialog open={showReplyPopup} onOpenChange={setShowReplyPopup}>
+                <DialogContent className="w-[95%] sm:max-w-md md:max-w-lg lg:max-w-2xl max-h-[90vh] overflow-y-auto bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+                    <DialogHeader>
+                        <DialogTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-lg sm:text-xl">
+                            Reply to Message
+                        </DialogTitle>
+                        <DialogDescription className="text-gray-600 dark:text-gray-400 text-sm text-start">
+                            Replying to: {replyingToMessage?.subject || "No subject"}
+                            <br />
+                            From: {replyingToMessage?.name} ({replyingToMessage?.email})
+                        </DialogDescription>
+                    </DialogHeader>
+                    
+                    <div className="grid gap-4 sm:gap-6 py-4">
                         {/* Original Message Preview */}
-                        <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 max-h-32 overflow-y-auto">
-                            <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Original Message:</div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-line line-clamp-3">
+                        <div className="p-4 bg-gray-50 dark:bg-gray-900/30 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Original Message:
+                            </div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400 whitespace-pre-line max-h-32 overflow-y-auto">
                                 {replyingToMessage?.message}
                             </div>
                         </div>
 
                         {/* Reply Form */}
-                        <div className="p-4">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                                 Your Reply
                             </label>
                             <textarea
@@ -281,46 +284,48 @@ export default function AdminMessagesBoardPage() {
                                 value={replyText}
                                 onChange={(e) => setReplyText(e.target.value)}
                                 placeholder="Write your reply here..."
-                                className="w-full min-h-[200px] rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 text-sm resize-none"
+                                className="w-full min-h-[200px] rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 text-sm resize-none text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                                 disabled={replySending}
                             />
 
                             {/* Status Messages */}
                             {replyError && (
-                                <div className="mt-2 text-sm text-rose-600 dark:text-rose-300">{replyError}</div>
+                                <div className="mt-3 p-3 rounded-lg bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-300 text-sm">
+                                    {replyError}
+                                </div>
                             )}
                             {replySuccess && (
-                                <div className="mt-2 text-sm text-emerald-600 dark:text-emerald-300">
+                                <div className="mt-3 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-300 text-sm">
                                     {replySuccess}
                                 </div>
                             )}
+                        </div>
 
-                            {/* Actions */}
-                            <div className="mt-4 flex items-center justify-end gap-3">
-                                <button
-                                    onClick={closeReplyPopup}
-                                    disabled={replySending}
-                                    className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={sendReply}
-                                    disabled={replySending || !replyText.trim()}
-                                    className="inline-flex items-center gap-2 rounded-lg bg-gray-900 text-white px-4 py-2 text-sm hover:bg-gray-800 disabled:opacity-60"
-                                >
-                                    <Reply className="h-4 w-4" />
-                                    {replySending ? "Sending..." : "Send Reply"}
-                                </button>
-                            </div>
+                        {/* Actions */}
+                        <div className="flex items-center justify-end gap-3 pt-2">
+                            <button
+                                onClick={closeReplyPopup}
+                                disabled={replySending}
+                                className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 text-gray-700 dark:text-gray-300 transition-all duration-200 hover:shadow-sm"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={sendReply}
+                                disabled={replySending || !replyText.trim()}
+                                className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold text-sm md:text-base px-4 py-2 rounded-lg shadow-lg hover:shadow-xl hover:from-purple-600 hover:to-indigo-600 transition duration-150 transform cursor-pointer flex items-center justify-center w-max whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed"
+                            >
+                                <Reply className="h-4 w-4" />
+                                {replySending ? "Sending..." : "Send Reply"}
+                            </button>
                         </div>
                     </div>
-                </div>
-            )}
+                </DialogContent>
+            </Dialog>
 
             {/* Top bar */}
-            <div className="border-b border-gray-200 dark:border-gray-800 px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-3">
-                <div className="text-lg font-semibold">Contact Messages (Admin)</div>
+            <div className="border-b border-gray-200 dark:border-gray-800 pb-4 flex items-center gap-3">
+                <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">Contact Messages (Admin)</div>
 
                 {/* Search + Filters */}
                 <div className="ml-auto flex items-center gap-3">
@@ -329,7 +334,7 @@ export default function AdminMessagesBoardPage() {
                             value={q}
                             onChange={(e) => setQ(e.target.value)}
                             placeholder="Search subject, email, message…"
-                            className="w-64 sm:w-80 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 pl-9 pr-3 py-2 text-sm"
+                            className="w-64 sm:w-80 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 pl-9 pr-3 py-2 text-sm transition-all duration-200 focus:ring-2 focus:ring-indigo-700 focus:border-transparent"
                         />
                         <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                     </div>
@@ -337,7 +342,7 @@ export default function AdminMessagesBoardPage() {
                         <select
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
-                            className="appearance-none rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 pr-8 text-sm"
+                            className="appearance-none rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 pr-8 text-sm transition-all duration-200 focus:ring-2 focus:ring-indigo-700 focus:border-transparent"
                         >
                             <option value="">All statuses</option>
                             <option value="new">New</option>
@@ -352,7 +357,7 @@ export default function AdminMessagesBoardPage() {
                             loadList(controller.signal);
                             setTimeout(() => controller.abort(), 10000);
                         }}
-                        className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800"
+                        className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 hover:shadow-sm"
                     >
                         <RefreshCcw className="h-4 w-4" /> Refresh
                     </button>
@@ -370,15 +375,20 @@ export default function AdminMessagesBoardPage() {
                     ) : list.length === 0 ? (
                         <div className="p-6 text-gray-600 dark:text-gray-300">No messages.</div>
                     ) : (
-                        <ul className="divide-y divide-gray-100 dark:divide-gray-800">
+                        <ul className="divide-y divide-gray-100 dark:divide-gray-800 bg-white rounded-sm dark:bg-gray-900 ">
                             {list.map((m) => {
                                 const created = m.createdAt ? new Date(m.createdAt) : null;
                                 const isActive = selected?._id === m._id;
                                 return (
                                     <li
+                                     onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        openReplyPopup(m);
+                                                    }}
                                         key={m._id}
-                                        className={`cursor-pointer px-4 sm:px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-900/40 ${isActive ? "bg-gray-50 dark:bg-gray-900/40" : ""
-                                            }`}
+                                        className={`cursor-pointer px-4 sm:px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-200 ${
+                                            isActive ? "bg-gray-50 dark:bg-gray-900/40" : ""
+                                        }`}
                                     >
                                         <div className="flex items-start justify-between gap-3">
                                             <div onClick={() => openDetail(m)} className="min-w-0 flex-1">
@@ -404,7 +414,7 @@ export default function AdminMessagesBoardPage() {
                                                         e.stopPropagation();
                                                         openReplyPopup(m);
                                                     }}
-                                                    className="inline-flex items-center gap-1 rounded-md border border-gray-300 dark:border-gray-700 px-2.5 py-1.5 text-xs hover:bg-gray-50 dark:hover:bg-gray-800"
+                                                    className="cursor-pointer inline-flex items-center gap-1 rounded-md border border-gray-300 dark:border-gray-700 px-2.5 py-1.5 text-xs hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 hover:shadow-sm"
                                                 >
                                                     <Reply className="h-3.5 w-3.5" />
                                                     Reply
@@ -440,7 +450,7 @@ export default function AdminMessagesBoardPage() {
                                 </div>
                                 <button
                                     onClick={() => openReplyPopup(selected)}
-                                    className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800"
+                                    className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 hover:shadow-sm"
                                 >
                                     <Reply className="h-4 w-4" />
                                     Reply
@@ -479,7 +489,7 @@ export default function AdminMessagesBoardPage() {
                                             {selected.replies.map((r) => (
                                                 <div
                                                     key={r._id}
-                                                    className="rounded-lg bg-white dark:bg-gray-800/70 border border-gray-200 dark:border-gray-700 p-3"
+                                                    className="rounded-lg bg-white dark:bg-gray-800/70 border border-gray-200 dark:border-gray-700 p-3 transition-all duration-200 hover:shadow-sm"
                                                 >
                                                     <div className="flex items-center justify-between gap-2">
                                                         <div className="text-sm font-medium">

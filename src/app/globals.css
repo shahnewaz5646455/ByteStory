@@ -269,3 +269,7 @@
 .dark .markdown-content em {
   color: #9ca3af;
 }
+/* globals.css */
+.spectral-font {
+  font-family: var(--font-spectral);
+}
