@@ -21,7 +21,7 @@ import LogoutButton from "../LogoutButton";
 
 const menuItems = [
   { name: "Dashboard", href: "/website/my-account", icon: LayoutDashboard, badge: null },
-  { name: "My Posts", href: "/my-posts", icon: SparklesIcon, badge: null },
+  { name: "My Posts", href: "/website/my-posts", icon: SparklesIcon, badge: null },
   {
     name: "Recycle Bin",
     href: "/website/recycle-bin",
