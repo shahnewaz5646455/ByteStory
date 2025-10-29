@@ -1,13 +1,28 @@
+// app/recycle-bin/page.js
 "use client";
 
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { ThumbsUp, Heart, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { showToast } from "@/lib/showToast";
+import { ArrowLeft, Clock, AlertTriangle, Trash2, RotateCcw } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function RecycleBinPage() {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [postToDelete, setPostToDelete] = useState(null);
   const session = useSelector((store) => store.authStore.auth);
 
   const fetchRecycledPosts = async () => {
@@ -55,17 +70,21 @@ export default function RecycleBinPage() {
     }
   };
 
-  const handlePermanentDelete = async (postId) => {
-    if (
-      !confirm(
-        "Are you sure you want to permanently delete this post? This action cannot be undone."
-      )
-    ) {
-      return;
-    }
+  const openDeleteDialog = (postId) => {
+    setPostToDelete(postId);
+    setDeleteDialogOpen(true);
+  };
+
+  const closeDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setPostToDelete(null);
+  };
+
+  const handlePermanentDelete = async () => {
+    if (!postToDelete) return;
 
     try {
-      const response = await fetch(`/api/posts/recycle/${postId}`, {
+      const response = await fetch(`/api/posts/recycle/${postToDelete}`, {
         method: "DELETE",
         headers: {
           "x-user-email": session.email,
@@ -73,8 +92,7 @@ export default function RecycleBinPage() {
       });
 
       if (response.ok) {
-        setPosts(posts.filter((post) => post.id !== postId));
-
+        setPosts(posts.filter((post) => post.id !== postToDelete));
         showToast("success", "Post permanently deleted!");
       } else {
         showToast("error", "Failed to delete post");
@@ -82,6 +100,8 @@ export default function RecycleBinPage() {
     } catch (error) {
       console.error("Error deleting post:", error);
       showToast("error", "Error deleting post");
+    } finally {
+      closeDeleteDialog();
     }
   };
 
@@ -100,7 +120,7 @@ export default function RecycleBinPage() {
           </h2>
           <Link
             href="/website"
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all"
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer"
           >
             Go to Dashboard
           </Link>
@@ -110,25 +130,24 @@ export default function RecycleBinPage() {
   }
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen">
+      <div>
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="mb-12 text-left">
           <div className="relative inline-block mb-4">
-            <h1 className="text-5xl font-bold bg-gradient-to-r pb-2 from-orange-600 via-red-600 to-pink-600 bg-clip-text text-transparent mb-2 relative z-10">
+            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
               Recycle Bin
             </h1>
-            <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-red-600 blur-lg opacity-30 scale-110"></div>
           </div>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
             Deleted posts will be automatically permanently deleted after 7
             days. Restore them before it's too late!
           </p>
 
           {/* Stats Bar */}
-          <div className="flex justify-center items-center space-x-8 mt-6">
+          <div className="flex items-center space-x-8 mt-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+              <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
                 {posts.length}
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -137,7 +156,7 @@ export default function RecycleBinPage() {
             </div>
             <div className="w-px h-8 bg-gray-300 dark:bg-gray-600"></div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+              <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
                 {posts.filter((post) => post.daysLeft <= 3).length}
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -148,21 +167,22 @@ export default function RecycleBinPage() {
         </div>
 
         {/* Navigation */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-start mb-8">
           <Link
             href="/my-posts"
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all"
+            className="inline-flex items-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer"
           >
-            ← Back to My Posts
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Back to My Posts
           </Link>
         </div>
 
         {/* Posts List */}
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {isLoading ? (
-            // Loading skeleton
-            <div className="space-y-6">
-              {[1, 2, 3].map((i) => (
+            // Loading skeleton with 2 column grid
+            <>
+              {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
                   className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50 p-6 animate-pulse"
@@ -184,9 +204,9 @@ export default function RecycleBinPage() {
                   </div>
                 </div>
               ))}
-            </div>
+            </>
           ) : posts.length === 0 ? (
-            <div className="text-center py-16">
+            <div className="col-span-2 text-center py-16">
               <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50 p-12">
                 <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900 dark:to-emerald-900 rounded-full flex items-center justify-center">
                   <svg
@@ -216,7 +236,7 @@ export default function RecycleBinPage() {
             posts.map((post, index) => (
               <div
                 key={post.id}
-                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50 p-6 transform transition-all duration-300 hover:-translate-y-1"
+                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/20 dark:border-gray-700/50 p-6"
               >
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center space-x-3">
@@ -235,7 +255,7 @@ export default function RecycleBinPage() {
                     </div>
                   </div>
                   <div
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                    className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center ${
                       post.daysLeft > 3
                         ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                         : post.daysLeft > 0
@@ -243,6 +263,13 @@ export default function RecycleBinPage() {
                         : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
                     }`}
                   >
+                    {post.daysLeft > 3 ? (
+                      <Clock className="w-3 h-3 mr-1" />
+                    ) : post.daysLeft > 0 ? (
+                      <AlertTriangle className="w-3 h-3 mr-1" />
+                    ) : (
+                      <AlertTriangle className="w-3 h-3 mr-1" />
+                    )}
                     {post.daysLeft > 0
                       ? `${post.daysLeft} days left`
                       : "Expired"}
@@ -250,7 +277,7 @@ export default function RecycleBinPage() {
                 </div>
 
                 {post.title && (
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-3 line-clamp-2">
                     {post.title}
                   </h2>
                 )}
@@ -280,23 +307,34 @@ export default function RecycleBinPage() {
 
                 {/* Stats */}
                 <div className="flex items-center space-x-6 text-sm text-gray-500 dark:text-gray-400 mb-4">
-                  <span>👍 {post.likes?.length || 0}</span>
-                  <span>❤️ {post.loves?.length || 0}</span>
-                  <span>💬 {post.comments?.length || 0}</span>
+                  <div className="flex items-center space-x-1">
+                    <ThumbsUp className="w-4 h-4" />
+                    <span>{post.likes?.length || 0}</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Heart className="w-4 h-4" />
+                    <span>{post.loves?.length || 0}</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <MessageCircle className="w-4 h-4" />
+                    <span>{post.comments?.length || 0}</span>
+                  </div>
                 </div>
 
                 {/* Action Buttons */}
                 <div className="flex space-x-3">
                   <button
                     onClick={() => handleRestore(post.id)}
-                    className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white py-2 px-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-200"
+                    className="flex-1 dark:bg-green-700 bg-green-600 dark:hover:bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-200 flex items-center justify-center cursor-pointer"
                   >
+                    <RotateCcw className="w-4 h-4 mr-2" />
                     Restore
                   </button>
                   <button
-                    onClick={() => handlePermanentDelete(post.id)}
-                    className="flex-1 bg-gradient-to-r from-red-600 to-pink-600 text-white py-2 px-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-200"
+                    onClick={() => openDeleteDialog(post.id)}
+                    className="flex-1 dark:bg-red-700 bg-red-600 dark:hover:bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-xl font-semibold hover:shadow-lg transition-all duration-200 flex items-center justify-center cursor-pointer"
                   >
+                    <Trash2 className="w-4 h-4 mr-2" />
                     Delete Forever
                   </button>
                 </div>
@@ -305,6 +343,36 @@ export default function RecycleBinPage() {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Alert Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-red-600 flex items-center">
+              <Trash2 className="w-5 h-5 mr-2" />
+              Permanent Delete Confirmation
+            </AlertDialogTitle>
+            <AlertDialogDescription className="pt-2">
+              Are you sure you want to permanently delete this post? This action cannot be undone and the post will be permanently removed from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              onClick={closeDeleteDialog}
+              className="cursor-pointer"
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handlePermanentDelete}
+              className="bg-red-600 hover:bg-red-700 text-white cursor-pointer"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete Forever
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

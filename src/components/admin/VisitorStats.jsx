@@ -231,64 +231,108 @@ export function VisitorStats() {
                 </button>
               </div>
             </div>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                {chartData.length === 0 ? (
-                  <div className="flex items-center justify-center h-full">
-                    <div className="text-center text-gray-500 dark:text-gray-400">
-                      <BarChart3 className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                      <p>No data available for the selected period</p>
+           <div className="h-80">
+  <ResponsiveContainer width="100%" height="100%">
+    {chartData.length === 0 ? (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-center text-gray-500 dark:text-gray-400">
+          <BarChart3 className="w-12 h-12 mx-auto mb-3 opacity-50" />
+          <p>No data available for the selected period</p>
+        </div>
+      </div>
+    ) : chartType === "line" ? (
+      <LineChart data={chartData}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+        <XAxis dataKey="name" stroke="#6B7280" />
+        <YAxis stroke="#6B7280" />
+        <Tooltip 
+          content={({ active, payload, label }) => {
+            if (active && payload && payload.length) {
+              return (
+                <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3 space-y-2">
+                  <p className="font-medium text-gray-900 dark:text-white text-sm">
+                    {label}
+                  </p>
+                  {payload.map((entry, index) => (
+                    <div key={index} className="flex items-center justify-between gap-4 text-xs">
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className="w-3 h-3 rounded-full" 
+                          style={{ backgroundColor: entry.color }}
+                        />
+                        <span className="text-gray-600 dark:text-gray-300 capitalize">
+                          {entry.dataKey === "visitors" ? "Visitors" : "Page Views"}
+                        </span>
+                      </div>
+                      <span className="font-semibold text-gray-900 dark:text-white">
+                        {entry.value.toLocaleString()}
+                      </span>
                     </div>
-                  </div>
-                ) : chartType === "line" ? (
-                  <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
-                    <XAxis dataKey="name" stroke="#6B7280" />
-                    <YAxis stroke="#6B7280" />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                        border: '1px solid #E5E7EB',
-                        borderRadius: '8px',
-                        backdropFilter: 'blur(8px)'
-                      }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="visitors" 
-                      stroke="#3B82F6" 
-                      strokeWidth={2}
-                      dot={{ fill: '#3B82F6', strokeWidth: 2, r: 4 }}
-                      activeDot={{ r: 6, fill: '#1D4ED8' }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="pageViews" 
-                      stroke="#8B5CF6" 
-                      strokeWidth={2}
-                      dot={{ fill: '#8B5CF6', strokeWidth: 2, r: 4 }}
-                      activeDot={{ r: 6, fill: '#7C3AED' }}
-                    />
-                  </LineChart>
-                ) : (
-                  <BarChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
-                    <XAxis dataKey="name" stroke="#6B7280" />
-                    <YAxis stroke="#6B7280" />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                        border: '1px solid #E5E7EB',
-                        borderRadius: '8px',
-                        backdropFilter: 'blur(8px)'
-                      }}
-                    />
-                    <Bar dataKey="visitors" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="pageViews" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                )}
-              </ResponsiveContainer>
-            </div>
+                  ))}
+                </div>
+              );
+            }
+            return null;
+          }}
+        />
+        <Line 
+          type="monotone" 
+          dataKey="visitors" 
+          stroke="#3B82F6" 
+          strokeWidth={2}
+          dot={{ fill: '#3B82F6', strokeWidth: 2, r: 4 }}
+          activeDot={{ r: 6, fill: '#1D4ED8' }}
+        />
+        <Line 
+          type="monotone" 
+          dataKey="pageViews" 
+          stroke="#8B5CF6" 
+          strokeWidth={2}
+          dot={{ fill: '#8B5CF6', strokeWidth: 2, r: 4 }}
+          activeDot={{ r: 6, fill: '#7C3AED' }}
+        />
+      </LineChart>
+    ) : (
+      <BarChart data={chartData}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+        <XAxis dataKey="name" stroke="#6B7280" />
+        <YAxis stroke="#6B7280" />
+        <Tooltip 
+          content={({ active, payload, label }) => {
+            if (active && payload && payload.length) {
+              return (
+                <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3 space-y-2">
+                  <p className="font-medium text-gray-900 dark:text-white text-sm">
+                    {label}
+                  </p>
+                  {payload.map((entry, index) => (
+                    <div key={index} className="flex items-center justify-between gap-4 text-xs">
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className="w-3 h-3 rounded-full" 
+                          style={{ backgroundColor: entry.color }}
+                        />
+                        <span className="text-gray-600 dark:text-gray-300 capitalize">
+                          {entry.dataKey === "visitors" ? "Visitors" : "Page Views"}
+                        </span>
+                      </div>
+                      <span className="font-semibold text-gray-900 dark:text-white">
+                        {entry.value.toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              );
+            }
+            return null;
+          }}
+        />
+        <Bar dataKey="visitors" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="pageViews" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+      </BarChart>
+    )}
+  </ResponsiveContainer>
+</div>
           </CardContent>
         </Card>
 

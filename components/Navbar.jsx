@@ -239,7 +239,7 @@ export default function Navbar() {
 
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="hover:text-indigo-600 dark:bg-gray-900 dark:hover:text-indigo-400 transition-colors">
-                    AI Tools
+                    Ai Tools
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="grid w-[300px] gap-2 p-4 md:w-[400px] md:grid-cols-2 lg:w-[500px]">

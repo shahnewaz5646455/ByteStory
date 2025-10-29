@@ -631,7 +631,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                           Administrator
                         </>
                       ) : (
-                        "User"
+                        ""
                       )}
                     </p>
                   </div>
@@ -684,7 +684,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
                                 Administrator
                               </>
                             ) : (
-                              "User"
+                              ""
                             )}
                           </p>
                         </div>
