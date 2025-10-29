@@ -309,11 +309,11 @@ const DashboardNavbar = ({ onMenuClick }) => {
       const postId = notification.postId;
 
       if (postId) {
-        return `/my-posts?highlight=${postId}`;
+        return `/website/my-posts?highlight=${postId}`;
       }
 
       // Fallback to my-posts page
-      return "/my-posts";
+      return "/website/my-posts";
     } else {
       // Admin notifications
       switch (notification.type) {
@@ -349,7 +349,7 @@ const DashboardNavbar = ({ onMenuClick }) => {
     } catch (error) {
       console.error("Error handling notification click:", error);
       // Fallback on error
-      router.push(isAdmin ? "/admin/notifications" : "/my-posts");
+      router.push(isAdmin ? "/admin/notifications" : "/website/my-posts");
       setIsNotificationOpen(false);
     }
   };
@@ -591,7 +591,6 @@ const DashboardNavbar = ({ onMenuClick }) => {
                               Mark all as read
                             </button>
                           )}
-                         
                         </div>
                       </div>
                     )}
