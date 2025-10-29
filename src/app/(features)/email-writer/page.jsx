@@ -20,6 +20,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Mail,
   Copy,
   Download,
@@ -35,7 +43,6 @@ import {
   WifiOff,
   AlertTriangle,
   Trash2,
-  Edit3,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
@@ -74,6 +81,10 @@ export default function EmailWriter() {
   const [showOffNetStatus, setShowOffNetStatus] = useState(!isOnline);
   const [hasNetworkChanged, setHasNetworkChanged] = useState(false);
   const [pendingRequest, setPendingRequest] = useState(null);
+
+  // ---- Delete Dialog State ----
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [templateToDelete, setTemplateToDelete] = useState(null);
 
   // ---- Network listeners ----
   useEffect(() => {
@@ -222,11 +233,15 @@ export default function EmailWriter() {
     }
   };
 
-  // Delete template function
+  // Delete template function with Shadcn Dialog
   const deleteTemplate = async (templateId) => {
-    if (!confirm("Are you sure you want to delete this template?")) {
-      return;
-    }
+    setTemplateToDelete(templateId);
+    setDeleteDialogOpen(true);
+  };
+
+  // Actual delete function
+  const confirmDelete = async () => {
+    if (!templateToDelete) return;
 
     try {
       const response = await fetch("/api/email-writer/templates", {
@@ -235,7 +250,7 @@ export default function EmailWriter() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          templateId: templateId,
+          templateId: templateToDelete,
           userId: auth._id,
         }),
       });
@@ -246,14 +261,14 @@ export default function EmailWriter() {
         toast.success("Template deleted successfully!");
         // Remove from local state
         setSavedTemplates((prev) =>
-          prev.filter((template) => template._id !== templateId)
+          prev.filter((template) => template._id !== templateToDelete)
         );
 
         // If the deleted template is currently loaded, clear it
         if (
           generatedEmail &&
-          savedTemplates.find((t) => t._id === templateId)?.generatedEmail ===
-            generatedEmail
+          savedTemplates.find((t) => t._id === templateToDelete)
+            ?.generatedEmail === generatedEmail
         ) {
           setGeneratedEmail(null);
         }
@@ -263,6 +278,9 @@ export default function EmailWriter() {
     } catch (error) {
       console.error("Error deleting template:", error);
       toast.error("Something went wrong while deleting template");
+    } finally {
+      setDeleteDialogOpen(false);
+      setTemplateToDelete(null);
     }
   };
 
@@ -379,15 +397,16 @@ export default function EmailWriter() {
     }
 
     try {
-      const response = await fetch("/api/email-writer/save", {
+      const response = await fetch("/api/email-writer/templates", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           userId: auth._id,
-          title: `${emailData.purpose
-            } Email - ${new Date().toLocaleDateString()}`,
+          title: `${
+            emailData.purpose
+          } Email - ${new Date().toLocaleDateString()}`,
           purpose: emailData.purpose,
           tone: emailData.tone,
           keyPoints: emailData.keyPoints.filter((point) => point.trim() !== ""),
@@ -516,6 +535,39 @@ export default function EmailWriter() {
         </div>
       )}
 
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-red-600">
+              <Trash2 className="h-5 w-5" />
+              Delete Template
+            </DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this email template? This action
+              cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex flex-row gap-2 justify-end">
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+              className="cursor-pointer"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              className="cursor-pointer"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Key Purchase Modal */}
       <AnimatePresence>
         {showKeyModal && (
@@ -609,7 +661,7 @@ export default function EmailWriter() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         {/* Header */}
-       <div className="text-center mb-8">
+        <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4 cursor-default">
             <div className="p-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full cursor-default">
               <Mail className="h-8 w-8 text-white cursor-default" />
@@ -668,19 +720,21 @@ export default function EmailWriter() {
         <div className="flex space-x-1 mb-6 bg-white dark:bg-gray-800 rounded-lg p-1 shadow-sm max-w-md mx-auto cursor-pointer">
           <button
             onClick={() => setActiveTab("compose")}
-            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors cursor-pointer ${activeTab === "compose"
+            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+              activeTab === "compose"
                 ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white"
                 : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-              }`}
+            }`}
           >
             Compose
           </button>
           <button
             onClick={() => setActiveTab("templates")}
-            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors cursor-pointer ${activeTab === "templates"
+            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+              activeTab === "templates"
                 ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white"
                 : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-              }`}
+            }`}
           >
             My Templates
           </button>
