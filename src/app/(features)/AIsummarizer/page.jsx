@@ -56,17 +56,18 @@ export default function Home() {
         {/* Header */}
 <div className="text-center mb-8">
   <div className="flex items-center justify-center gap-3 mb-4 cursor-default">
-    <div className="p-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full cursor-default">
-      <Sparkles className="h-8 w-8 text-white cursor-default" />
+    <div className="md:p-3 p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full cursor-default">
+      <Sparkles className="md:h-8 md:w-8 h-5 w-5 text-white cursor-default" />
     </div>
-    <h1 className="text-4xl font-bold text-gray-900 dark:text-white cursor-default">
+    <h1 className="md:text-4xl text-3xl font-bold text-gray-900 dark:text-white cursor-default">
       AI Text Summarizer
     </h1>
   </div>
-  <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto cursor-default">
+  <p className="md:text-lg text-base text-gray-600 dark:text-gray-300 max-w-2xl mx-auto cursor-default">
     Transform long texts into concise summaries with our powerful AI technology
   </p>
 </div>
+
 
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
           {/* Input Section */}

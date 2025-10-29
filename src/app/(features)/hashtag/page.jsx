@@ -407,14 +407,30 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-        <div className="max-w-7xl mx-auto">
-          {/* Hashtag Key Counter */}
+     
+
+      {/* Header */}
+      <div className="text-center mb-8">
+        <div className="flex items-center justify-center gap-3 mb-4 cursor-default">
+          <div className="md:p-3 p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full cursor-default">
+            <Hash className="md:h-8 md:w-8 h-5 w-5 text-white cursor-default" />
+          </div>
+          <h1 className="md:text-4xl text-3xl font-bold text-gray-900 dark:text-white cursor-default">
+            AI Hashtag Generator
+          </h1>
+        </div>
+        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto cursor-default">
+          Generate perfect, platform-optimized hashtags for your content
+        </p>
+      </div>
+       <div className="max-w-7xl mx-auto">
+        {/* Hashtag Key Counter */}
         {auth && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="mb-6 flex justify-end"
+            className="mb-6 flex justify-center md:justify-end"
           >
             <div className="flex items-center gap-3 rounded-2xl bg-gradient-to-r from-amber-50 to-yellow-50 px-4 py-3 shadow-lg border border-amber-200/50 dark:from-amber-900/20 dark:to-yellow-900/20 dark:border-amber-700/30">
               <div className="flex items-center gap-2">
@@ -447,26 +463,13 @@ export default function Home() {
             </div>
           </motion.div>
         )}
-        </div>
-      <div className="max-w-2xl mx-auto">
-       
-        {/* Header */}
-<div className="text-center mb-8">
-  <div className="flex items-center justify-center gap-3 mb-4 cursor-default">
-    <div className="p-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full cursor-default">
-      <Hash className="h-8 w-8 text-white cursor-default" />
-    </div>
-    <h1 className="text-4xl font-bold text-gray-900 dark:text-white cursor-default">
-      AI Hashtag Generator
-    </h1>
-  </div>
-  <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto cursor-default">
-    Generate perfect, platform-optimized hashtags for your content
-  </p>
-</div>
+      </div>
 
-        {/* Form Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-6 mb-6">
+      {/* Main Content - Two Column Layout */}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        {/* Left Column - Input Form */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
           <div className="space-y-6">
             {/* Platform Selection */}
             <div>
@@ -585,7 +588,6 @@ export default function Home() {
             </div>
           </div>
 
-         
           {/* Waiting for Network Badge */}
           {showWaitingButton && (
             <motion.div
@@ -639,109 +641,125 @@ export default function Home() {
           )}
         </div>
 
-        {/* Results */}
-        {hashtags.length > 0 && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                <TrendingUp className="h-5 w-5 text-indigo-500 mr-2" />
-                Generated Hashtags ({hashtags.length})
-                <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                  for {platforms.find(p => p.id === platform)?.name}
-                </span>
-              </h2>
-              <div className="flex gap-2">
-                <button
-                  onClick={selectAllHashtags}
-                  className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
-                >
-                  Select All
-                </button>
-                <span className="text-gray-400">•</span>
-                <button
-                  onClick={deselectAllHashtags}
-                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-                >
-                  Deselect
-                </button>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2 mb-4">
-              {hashtags.map((tag, idx) => (
-                <span
-                  key={idx}
-                  className={`px-3 py-2 rounded-full text-sm font-medium border transition-all cursor-pointer ${selectedHashtags.has(tag)
-                      ? "bg-indigo-600 text-white border-indigo-600"
-                      : "bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-700/50 hover:scale-105"
-                    }`}
-                  onClick={() => toggleHashtagSelection(tag)}
-                >
-                  #{tag}
-                </span>
-              ))}
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => copyToClipboard()}
-                className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center"
-              >
-                {copied ? (
-                  <>
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-4 w-4 mr-2" />
-                    {selectedHashtags.size > 0 ? `Copy Selected (${selectedHashtags.size})` : "Copy All"}
-                  </>
-                )}
-              </button>
-              <button
-                onClick={downloadHashtags}
-                className="px-4 py-2 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors flex items-center"
-              >
-                <Download className="h-4 w-4 mr-1" />
-                Download
-              </button>
-            </div>
-
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-3 text-center">
-              Click on hashtags to select/deselect • Platform: {platforms.find(p => p.id === platform)?.name}
-            </p>
-          </div>
-        )}
-
-        {/* Platform Tips */}
-        {hashtags.length === 0 && (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-              <BarChart3 className="h-5 w-5 text-purple-500 mr-2" />
-              Platform-Specific Tips
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="font-medium text-indigo-600 dark:text-indigo-400">Instagram:</span>
-                <p className="text-gray-600 dark:text-gray-300">Use 5-15 relevant hashtags. Mix popular and niche tags.</p>
-              </div>
-              <div>
-                <span className="font-medium text-blue-600 dark:text-blue-400">Twitter/X:</span>
-                <p className="text-gray-600 dark:text-gray-300">2-3 hashtags maximum. Focus on trending topics.</p>
-              </div>
-              <div>
-                <span className="font-medium text-red-600 dark:text-red-400">TikTok:</span>
-                <p className="text-gray-600 dark:text-gray-300">3-5 hashtags. Include viral challenges and sounds.</p>
-              </div>
-              <div>
-                <span className="font-medium text-blue-500 dark:text-blue-300">LinkedIn:</span>
-                <p className="text-gray-600 dark:text-gray-300">3-5 professional hashtags. Industry-specific tags work best.</p>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Right Column - Output/Results */}
+       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-8 border border-indigo-100 dark:border-gray-700">
+  <div className="flex items-center justify-between mb-6">
+    <h2 className="text-2xl font-semibold text-indigo-800 dark:text-white">Analysis Results</h2>
+    {hashtags.length > 0 && (
+      <div className="flex items-center space-x-2 bg-green-50 dark:bg-green-900/20 rounded-full px-3 py-1">
+        <CheckCircle size={18} className="text-green-500 dark:text-green-400" />
+        <span className="text-sm text-green-600 dark:text-green-400">
+          {hashtags.length} hashtags generated
+        </span>
       </div>
+    )}
+  </div>
+  
+  <div className="min-h-72">
+    {loading ? (
+      <div className="flex items-center justify-center h-72">
+        <div className="text-center">
+          <RotateCw size={40} className="animate-spin text-indigo-600 dark:text-indigo-400 mx-auto mb-4" />
+          <p className="text-indigo-700 dark:text-indigo-300 font-medium">Generating hashtags...</p>
+          <p className="text-indigo-500 dark:text-indigo-400 text-sm mt-1">Creating optimized hashtags for your content</p>
+        </div>
+      </div>
+    ) : hashtags.length > 0 ? (
+      <div>
+        <div className="mb-6">
+          <h3 className="font-semibold text-indigo-800 dark:text-white mb-3 flex items-center">
+            <TrendingUp size={18} className="mr-2" />
+            Generated Hashtags
+          </h3>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {hashtags.map((tag, idx) => (
+              <span
+                key={idx}
+                className={`px-3 py-2 rounded-full text-sm font-medium border transition-all cursor-pointer ${
+                  selectedHashtags.has(tag)
+                    ? "bg-indigo-600 text-white border-indigo-600"
+                    : "bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-700/50 hover:scale-105"
+                }`}
+                onClick={() => toggleHashtagSelection(tag)}
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        </div>
+        
+        <div className="flex space-x-4">
+          <button
+            onClick={() => copyToClipboard()}
+            className="flex items-center px-5 py-2.5 bg-indigo-100 dark:bg-indigo-800 text-indigo-700 dark:text-indigo-200 rounded-lg hover:bg-indigo-200 dark:hover:bg-indigo-700 transition-colors font-medium"
+          >
+            <Copy size={16} className="mr-2" />
+            {copied ? 'Copied!' : 'Copy Hashtags'}
+          </button>
+          
+          <button
+            onClick={downloadHashtags}
+            className="flex items-center px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-lg transition-all font-medium shadow-md"
+          >
+            <Download size={16} className="mr-2" />
+            Download
+          </button>
+        </div>
+
+        <div className="flex gap-2 mt-4 justify-center">
+          <button
+            onClick={selectAllHashtags}
+            className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+          >
+            Select All
+          </button>
+          <span className="text-gray-400">•</span>
+          <button
+            onClick={deselectAllHashtags}
+            className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+          >
+            Deselect All
+          </button>
+        </div>
+      </div>
+    ) : (
+      <div className="flex flex-col items-center justify-center h-72 text-center p-6 border-2 border-dashed border-indigo-200 dark:border-indigo-800 rounded-xl bg-indigo-50/50 dark:bg-indigo-900/20">
+        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 p-3 rounded-full mb-4">
+          <Sparkles size={32} className="text-white" />
+        </div>
+        <h3 className="text-lg font-medium text-indigo-800 dark:text-indigo-200 mb-2">Awaiting Your Input</h3>
+        <p className="text-indigo-600 dark:text-indigo-300">Your hashtag results will appear here</p>
+        <p className="text-sm text-indigo-500 dark:text-indigo-400 mt-2">Generate optimized hashtags for your social media content</p>
+      </div>
+    )}
+  </div>
+</div>
+      </div>
+ {/* Platform Tips Section - Below the main content */}
+<div className="mt-8 max-w-7xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-8 border border-indigo-100 dark:border-gray-700">
+  <h3 className="text-2xl font-semibold text-indigo-800 dark:text-white mb-6 flex items-center">
+    <BarChart3 className="h-6 w-6 text-purple-500 mr-3" />
+    Platform-Specific Tips
+  </h3>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl border border-indigo-200 dark:border-indigo-800">
+      <span className="font-semibold text-lg text-indigo-600 dark:text-indigo-400">Instagram</span>
+      <p className="text-indigo-700 dark:text-indigo-300 mt-2">Use 5-15 relevant hashtags. Mix popular and niche tags for better reach.</p>
+    </div>
+    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+      <span className="font-semibold text-lg text-blue-600 dark:text-blue-400">Twitter/X</span>
+      <p className="text-blue-700 dark:text-blue-300 mt-2">2-3 hashtags maximum. Focus on trending topics and current events.</p>
+    </div>
+    <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl border border-purple-200 dark:border-purple-800">
+      <span className="font-semibold text-lg text-purple-600 dark:textpurple-red-400">TikTok</span>
+      <p className="text-purple-700 dark:text-purple-300 mt-2">3-5 hashtags. Include viral challenges, sounds, and trending tags.</p>
+    </div>
+    <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800">
+      <span className="font-semibold text-lg text-green-600 dark:text-green-400">LinkedIn</span>
+      <p className="text-green-700 dark:text-green-300 mt-2">3-5 professional hashtags. Industry-specific and career-focused tags work best.</p>
+    </div>
+  </div>
+</div>
     </main>
   );
 }
