@@ -41,15 +41,6 @@ const tools = [
   },
   {
     name: "PDF Summarizer",
-    desc: "Quickly get the main points from any PDF document.",
-    icon: FileText,
-    href: "/pdf_summarizer",
-    color: "from-indigo-500 to-blue-500",
-    bgColor: "bg-indigo-50 dark:bg-indigo-900/20",
-    tag: "Time Saver"
-  },
-  {
-    name: "PDF Extractor",
     desc: "Extract text from PDF and generate summarized version instantly.",
     icon: Sparkles,
     href: "/pdf-converter",
