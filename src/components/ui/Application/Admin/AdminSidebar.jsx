@@ -14,6 +14,8 @@ import {
   X,
   Recycle,
   MessageCircleHeart,
+  Eye,
+  TrendingUp,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import LogoutButton from "../LogoutButton";
@@ -21,23 +23,40 @@ import LogoutButton from "../LogoutButton";
 export default function AdminSidebar({ onClose }) {
   const pathname = usePathname();
   const [totalUsers, setTotalUsers] = useState(null);
+  const [quickStats, setQuickStats] = useState(null);
+  const [statsLoading, setStatsLoading] = useState(true);
 
-  // facing data user
+  // Fetch user count and quick stats
   useEffect(() => {
-    const fetchUserCount = async () => {
+    const fetchStats = async () => {
       try {
-        const res = await fetch("/api/visitors/stats");
+        const res = await fetch("/api/visitors/stats?period=today&compare=true");
         const data = await res.json();
+        
         if (data.success) {
           setTotalUsers(data.data?.totals?.users || 0);
+          
+          // Set quick stats for sidebar using the new API structure
+          setQuickStats({
+            activeUsers: data.data?.realtime?.activeUsers || data.data?.period?.activeUsers || 0,
+            todayVisitors: data.data?.period?.visitors || 0,
+            pageViews: data.data?.period?.pageViews || 0,
+            percentageChange: data.data?.comparison?.percentageChange?.visitorsFormatted || "+0%"
+          });
         }
       } catch (error) {
-        console.error("Failed to fetch user stats:", error);
+        console.error("Failed to fetch stats:", error);
+      } finally {
+        setStatsLoading(false);
       }
     };
 
-    fetchUserCount();
-  }, []);
+    fetchStats();
+
+    // Refresh stats every 30 seconds
+    const interval = setInterval(fetchStats, 30000);
+    return () => clearInterval(interval);
+  }, []); // Remove previousStats dependency
 
   // menuItems
   const menuItems = [
@@ -191,10 +210,28 @@ export default function AdminSidebar({ onClose }) {
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-purple-600 dark:text-purple-400 font-semibold">
-              42 visits
+              {statsLoading ? "Loading..." : `${quickStats?.todayVisitors || 0} visits`}
             </span>
-            <span className="text-gray-500 dark:text-gray-400">+12%</span>
+            <span className={`text-xs font-medium ${
+              quickStats?.percentageChange?.startsWith('+') 
+                ? 'text-green-500' 
+                : 'text-red-500'
+            }`}>
+              {statsLoading ? "..." : quickStats?.percentageChange}
+            </span>
           </div>
+          {!statsLoading && quickStats && (
+            <div className="mt-2 flex justify-between text-xs">
+              <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
+                <Users className="h-3 w-3" />
+                <span>{quickStats.activeUsers} active</span>
+              </div>
+              <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
+                <Eye className="h-3 w-3" />
+                <span>{quickStats.pageViews} views</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Logout */}

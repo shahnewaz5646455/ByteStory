@@ -17,7 +17,7 @@ const features = [
   {
   imagePath: '/publish.webp',
   title: 'Email Newsletter Writer',
-  description: 'Create engaging email newsletters in minutes. Write compelling content that drives opens and clicks, and grow your subscriber base effortlessly.',
+  description: 'Create engaging email newsletters in minutes. Write compelling content that drives opens and clicks.',
   path: '/email-writer'
 },
 ];
