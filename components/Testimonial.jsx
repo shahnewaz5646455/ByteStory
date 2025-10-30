@@ -16,7 +16,7 @@ const testimonials = [
     name: "Shah Newaz",
     role: "Content Creator",
     avatar: "newaz.jpg",
-    content: "This platform has completely transformed my blogging workflow. The AI suggestions are incredibly accurate and save me hours of research time.",
+    content: "This platform transforms my blogging process. AI suggestions are precise, saving hours while improving my overall writing quality.",
     rating: 5
   },
   {
@@ -24,7 +24,7 @@ const testimonials = [
     name: "Minhajul Islam Miraz",
     role: "Marketing Director",
     avatar: "miraz.jpg",
-    content: "The SEO optimization tools are game-changing. Our organic traffic increased by 157% in just three months after implementing the recommendations.",
+    content: "These SEO tools changed everything. Our organic traffic grew rapidly, proving how powerful the AI-driven recommendations are.",
     rating: 5
   },
   {
@@ -52,6 +52,7 @@ const testimonials = [
     rating: 5
   },
 ];
+
 
 const TestimonialSection = () => {
   const renderStars = (rating) => {

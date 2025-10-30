@@ -178,53 +178,6 @@ export default function FeedPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Enhanced Header */}
-        <div className="text-center mb-12">
-          <div className="relative inline-block mb-2">
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent pb-2 relative z-10">
-              ByteStory
-            </h1>
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 blur-lg opacity-30 scale-110"></div>
-          </div>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-            Where stories come to life. Share your journey, inspire others, and
-            connect with a community of passionate writers.
-          </p>
-
-          {/* Stats Bar */}
-          <div className="flex justify-center items-center space-x-8 mt-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-                {posts.length}
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Stories
-              </div>
-            </div>
-            <div className="w-px h-8 bg-gray-300 dark:bg-gray-600"></div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                {posts.reduce(
-                  (total, post) =>
-                    total + post.likes.length + post.loves.length,
-                  0
-                )}
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Reactions
-              </div>
-            </div>
-            <div className="w-px h-8 bg-gray-300 dark:bg-gray-600"></div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-pink-600 dark:text-pink-400">
-                {posts.reduce((total, post) => total + post.comments.length, 0)}
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Conversations
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Create Post Section */}
         <div className="mb-8">

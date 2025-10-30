@@ -560,7 +560,7 @@ export default function Navbar() {
 
   {/* Other Navigation Links */}
   {[
-    { href: "/feed", label: "Feed" },
+    { href: "/feed", label: "Story Feed" },
     { href: "/learn", label: "Learn" },
     { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },
