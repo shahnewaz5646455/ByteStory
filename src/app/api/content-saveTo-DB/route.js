@@ -30,7 +30,7 @@ const doc = {
   content: content.trim(),
   type,
   shared: true,
-  timeline: false,
+  
   generated_time: generated_time?.time ? { time: generated_time.time } : null, // ✅ Fix nested object
   visibility,
   user: {

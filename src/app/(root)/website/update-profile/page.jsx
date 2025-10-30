@@ -141,14 +141,14 @@ const ProfilePage = () => {
     if (auth && auth._id) {
       fetchUserData();
     } else {
-      console.error("❌ No auth data or user ID found");
+      // console.error("❌ No auth data or user ID found");
       setLoading(false);
     }
   }, [auth]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50/30 dark:bg-gray-900/30">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <Loader className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-500" />
           <p className="text-gray-600 dark:text-gray-400">
@@ -161,7 +161,7 @@ const ProfilePage = () => {
 
   if (!userData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50/30 dark:bg-gray-900/30">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <User className="h-12 w-12 mx-auto mb-4 text-gray-400" />
           <p className="text-gray-600 dark:text-gray-400">
@@ -176,33 +176,33 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/30 dark:bg-gray-900/30 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-4">
               My Profile
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
+            <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
               Manage your personal information and account settings
             </p>
           </div>
           <Button
             onClick={() => setEditDialogOpen(true)}
-            className="mt-4 sm:mt-0 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
+            className="mt-4 sm:mt-0 cursor-pointer bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white"
           >
             <Camera className="h-4 w-4 mr-2" />
             Edit Profile
           </Button>
         </div>
 
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Grid - Centered content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
           {/* Left Column - Profile Card */}
-          <div className="lg:col-span-1 space-y-6">
-            <Card className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-sm">
-              <CardHeader className="text-center pb-4">
+          <div className="lg:col-span-1">
+            <Card className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-sm h-full flex flex-col">
+              <CardHeader className="text-center pb-4 flex-shrink-0">
                 <div className="relative mx-auto mb-4">
                   <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white dark:border-gray-800 shadow-lg overflow-hidden bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900 dark:to-blue-900">
                     {userData.avatar?.url ? (
@@ -299,7 +299,7 @@ const ProfilePage = () => {
 
           {/* Right Column - Personal Information */}
           <div className="lg:col-span-2">
-            <Card className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-sm">
+            <Card className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-sm h-full">
               <CardHeader>
                 <CardTitle className="text-gray-900 dark:text-white">
                   Personal Information

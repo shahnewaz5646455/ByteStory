@@ -4,24 +4,42 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  Users,
-  FileText,
   Settings,
-  BarChart3,
-  LogOut,
   Lightbulb,
   ChevronRight,
-  Sparkles,
   X,
   SparklesIcon,
+  Recycle,
+  MessagesSquareIcon,
+  ShieldQuestionMarkIcon,
+  MessagesSquare,
+  Share,
+  LucideBluetoothConnected,
+  Share2Icon,
 } from "lucide-react";
 import LogoutButton from "../LogoutButton";
 
 const menuItems = [
-  { name: "Dashboard", href: "/website", icon: LayoutDashboard, badge: null },
-  { name: "Feed", href: "/feed", icon: FileText },
-  { name: "My Posts", href: "/my-posts", icon: SparklesIcon, badge: null },
-
+  { name: "Dashboard", href: "/website/my-account", icon: LayoutDashboard, badge: null },
+  { name: "My Posts", href: "/website/my-posts", icon: SparklesIcon, badge: null },
+  {
+    name: "Recycle Bin",
+    href: "/website/recycle-bin",
+    icon: Recycle,
+    badge: null,
+  },
+  {
+    name: "Shared with Others",
+    href: "/website/shared",
+    icon: Share2Icon,
+    badge: null,
+  },
+  {
+    name: "QnA-ByteStory",
+    href: "/website/QnA",
+    icon: MessagesSquare,
+    badge: null,
+  },
   {
     name: "Profile",
     href: "/website/update-profile",
@@ -32,6 +50,13 @@ const menuItems = [
 
 export default function UserSidebar({ onClose }) {
   const pathname = usePathname();
+
+  const isActiveLink = (href) => {
+    if (href === "/website") {
+      return pathname === "/website";
+    }
+    return pathname === href || pathname.startsWith(href + "/");
+  };
 
   return (
     <aside className="h-screen w-full bg-white/95 dark:bg-gray-900/95 border-r border-gray-200/50 dark:border-gray-600/50 backdrop-blur-md flex flex-col shadow-xl">
@@ -68,8 +93,7 @@ export default function UserSidebar({ onClose }) {
       <nav className="flex-1 px-2 md:px-4 py-4 md:py-8 space-y-1 overflow-y-auto">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive =
-            pathname === item.href || pathname.startsWith(item.href + "/");
+          const isActive = isActiveLink(item.href);
 
           return (
             <Link
@@ -109,15 +133,18 @@ export default function UserSidebar({ onClose }) {
                 )}
 
                 {isActive && (
-                  <ChevronRight className="h-3 w-3 text-purple-500 animate-pulse" />
+                  <ChevronRight
+                    className="h-3 w-3 animate-pulse text-purple-500"
+                  />
                 )}
               </div>
 
-              {/* Hover gradient overlay */}
               <div
-                className={`absolute inset-0 bg-gradient-to-r from-purple-500 to-indigo-500 opacity-0 group-hover:opacity-5 transition-opacity duration-300 ${
-                  isActive ? "opacity-10" : ""
-                }`}
+                className={`absolute inset-0 transition-opacity duration-300 ${
+                  isActive
+                    ? "bg-gradient-to-r from-purple-500 to-indigo-500 opacity-10"
+                    : "opacity-0 group-hover:opacity-5"
+                } bg-gradient-to-r from-purple-500 to-indigo-500`}
               ></div>
             </Link>
           );

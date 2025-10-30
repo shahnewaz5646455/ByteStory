@@ -12,6 +12,8 @@ import {
   ChevronRight,
   Sparkles,
   X,
+  Recycle,
+  MessageCircleHeart,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import LogoutButton from "../LogoutButton";
@@ -50,12 +52,17 @@ export default function AdminSidebar({ onClose }) {
       icon: Users,
       badge: totalUsers !== null ? String(totalUsers) : null,
     },
-    { name: "Content", href: "/feed", icon: FileText},
+    { name: "Content", href: "/feed", icon: FileText },
     {
-      name: "Analytics",
-      href: "/admin/analytics",
-      icon: BarChart3,
+      name: "Public Messages",
+      href: "/admin/adminDashboard/public-messages",
+      icon: MessageCircleHeart,
       badge: "New",
+    },
+    {
+      name: "Recycle-Bin",
+      href: "/admin/adminDashboard/recycle-bin",
+      icon: Recycle,
     },
     {
       name: "Profile",

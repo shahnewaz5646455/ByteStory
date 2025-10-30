@@ -103,7 +103,7 @@ const AdminLayout = ({ children }) => {
                 className={`
                   flex-1 p-4 md:p-6 lg:p-8 
                   bg-gradient-to-br from-indigo-50 via-white to-purple-50 
-                  dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 
+                  dark:from-gray-950 dark:via-gray-800 dark:to-gray-950 
                   text-gray-900 dark:text-white transition-colors duration-200 
                   overflow-y-auto
                   ${isSidebarOpen && !isLargeScreen ? 'z-20' : 'z-10'}

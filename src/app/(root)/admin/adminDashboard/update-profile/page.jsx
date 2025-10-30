@@ -141,7 +141,7 @@ const ProfilePage = () => {
     if (auth && auth._id) {
       fetchUserData();
     } else {
-      console.error("❌ No auth data or user ID found");
+      // console.error("❌ No auth data or user ID found");
       setLoading(false);
     }
   }, [auth]);
@@ -197,12 +197,12 @@ const ProfilePage = () => {
           </Button>
         </div>
 
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Grid - Equal height cards */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
           {/* Left Column - Profile Card */}
-          <div className="lg:col-span-1 space-y-6">
-            <Card className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-sm">
-              <CardHeader className="text-center pb-4">
+          <div className="lg:col-span-1">
+            <Card className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-sm h-full flex flex-col">
+              <CardHeader className="text-center pb-4 flex-shrink-0">
                 <div className="relative mx-auto mb-4">
                   <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-white dark:border-gray-800 shadow-lg overflow-hidden bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900 dark:to-blue-900">
                     {userData.avatar?.url ? (
@@ -244,7 +244,7 @@ const ProfilePage = () => {
                 </div>
               </CardHeader>
 
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 flex-1">
                 <div
                   className={`p-3 rounded-lg border ${
                     userData.isEmailVerified
@@ -299,8 +299,8 @@ const ProfilePage = () => {
 
           {/* Right Column - Personal Information */}
           <div className="lg:col-span-2">
-            <Card className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-sm">
-              <CardHeader>
+            <Card className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-sm h-full flex flex-col">
+              <CardHeader className="flex-shrink-0">
                 <CardTitle className="text-gray-900 dark:text-white">
                   Personal Information
                 </CardTitle>
@@ -309,7 +309,7 @@ const ProfilePage = () => {
                 </CardDescription>
               </CardHeader>
 
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-6 flex-1">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Name */}
                   <div className="space-y-4">
@@ -403,7 +403,7 @@ const ProfilePage = () => {
                 </div>
 
                 {/* Security Note */}
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 mt-auto">
                   <div className="flex items-start gap-3">
                     <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
                     <div>

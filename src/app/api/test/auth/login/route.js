@@ -1,9 +1,7 @@
-import OTPModel from "@/app/models/Otp.model";
 import UserModel from "@/app/models/User.model";
 import { emailVerificationLink } from "@/email/emailVerificationLink";
-import { otpEmail } from "@/email/otpEmail";
 import { connectDB } from "@/lib/database.Connection";
-import { catchError, generateOTP, response } from "@/lib/helperFunction";
+import { response } from "@/lib/helperFunction";
 import { sendMailer } from "@/lib/sendMail";
 import { zSchema } from "@/lib/zodSchema";
 import { SignJWT } from "jose";
@@ -64,29 +62,20 @@ export async function POST(request) {
     if (!isPasswordVerified)
       return response(false, 400, "Invalid login credentials");
 
-    // otp generation
-    await OTPModel.deleteMany({ email });
-    const otp = generateOTP();
+    // Remove OTP system completely and directly return user data
+    const userData = {
+      _id: getUser._id,
+      name: getUser.name,
+      email: getUser.email,
+      role: getUser.role,
+      isEmailVerified: getUser.isEmailVerified,
+      createdAt: getUser.createdAt,
+      token: "auth-token-" + getUser._id,
+    };
 
-    const newOtpData = new OTPModel({
-      email,
-      otp,
-      expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 mins
-    });
-    await newOtpData.save();
-    // console.log("OTP saved in DB:", newOtpData);
-
-    const otpEmailStatus = await sendMailer(
-      "Your login verification code",
-      email,
-      otpEmail(otp)
-    );
-    if (!otpEmailStatus.success)
-      return response(false, 400, "Failed to send OTP");
-
-    return response(true, 200, "Please verify your device");
+    return response(true, 200, "Login successful", userData);
   } catch (error) {
-    console.error("Login OTP error:", error);
+    console.error("Login error:", error);
     return response(false, 500, "Internal server error", error.message);
   }
 }

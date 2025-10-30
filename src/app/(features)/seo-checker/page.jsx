@@ -68,20 +68,22 @@ export default function SEOChecker() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white transition-colors duration-200 py-12 px-4">
+    <main className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-800 dark:to-gray-950 text-gray-900 dark:text-white transition-colors duration-200 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-6">
-            <TrendingUp className="h-8 w-8 text-white" />
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold pb-4 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-            SEO Score Analyzer
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Get instant SEO insights and actionable recommendations to improve your content's search engine performance
-          </p>
-        </div>
+<div className="text-center mb-8">
+  <div className="flex items-center justify-center gap-3 mb-4 cursor-default">
+    <div className="md:p-3 p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full cursor-default">
+      <TrendingUp className="md:h-8 md:w-8 h-5 w-5 text-white cursor-default" />
+    </div>
+    <h1 className="md:text-4xl text-3xl font-bold text-gray-900 dark:text-white cursor-default">
+      SEO Score Analyzer
+    </h1>
+  </div>
+  <p className="md:text-lg text-base text-gray-600 dark:text-gray-300 max-w-2xl mx-auto cursor-default">
+    Get instant SEO insights and actionable recommendations to improve your content's search engine performance
+  </p>
+</div>
 
         {/* Error Display */}
         {error && (
@@ -93,7 +95,7 @@ export default function SEOChecker() {
         {/* Main Content */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
           {/* Input Section */}
-          <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+          <div className="md:p-6 p-4 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
               <label className="flex items-center text-sm font-semibold text-gray-700 dark:text-gray-300">
                 <Sparkles className="h-4 w-4 mr-2 text-indigo-600 dark:text-indigo-400" />
@@ -112,14 +114,14 @@ export default function SEOChecker() {
               onChange={handleInputChange}
             />
 
-            <div className="flex justify-between items-center mt-4">
+            <div className="sm:flex sm:justify-between items-center mt-4">
               <span className="text-sm text-gray-500 dark:text-gray-400">
                 Minimum 50 characters recommended
               </span>
               <button
                 onClick={handleCheck}
                 disabled={!input.trim() || isLoading || input.length < 50}
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center mt-4 sm:mt-0"
               >
                 {isLoading ? (
                   <>
