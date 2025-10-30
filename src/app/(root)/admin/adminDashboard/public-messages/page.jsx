@@ -12,6 +12,10 @@ import {
   Send,
   Clock,
   X,
+  MessageCircle,
+  User,
+  Mail,
+  Calendar,
 } from "lucide-react";
 import {
   Dialog,
@@ -226,15 +230,15 @@ export default function AdminMessagesBoardPage() {
     return () => controller.abort();
   }, [auth?.role, page, statusFilter]);
 
-  // auto-refresh every 30s
-  useEffect(() => {
-    const id = setInterval(() => {
-      const controller = new AbortController();
-      loadList(controller.signal);
-      setTimeout(() => controller.abort(), 25000);
-    }, 30000);
-    return () => clearInterval(id);
-  }, [page, statusFilter]);
+  // AUTO-REFRESH COMMENTED OUT - No background reloading
+  // useEffect(() => {
+  //   const id = setInterval(() => {
+  //     const controller = new AbortController();
+  //     loadList(controller.signal);
+  //     setTimeout(() => controller.abort(), 25000);
+  //   }, 30000);
+  //   return () => clearInterval(id);
+  // }, [page, statusFilter]);
 
   // client-side search
   const list = useMemo(() => {
@@ -293,18 +297,19 @@ export default function AdminMessagesBoardPage() {
   }
 
   return (
-    <div className="h-[calc(100vh-64px)] max-h-screen">
+    <div className="min-h-screen">
       {/* Shadcn Dialog for Reply Modal */}
       <Dialog open={showReplyPopup} onOpenChange={setShowReplyPopup}>
-        <DialogContent className="w-[95%] sm:max-w-md md:max-w-lg lg:max-w-2xl max-h-[90vh] overflow-y-auto bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+        <DialogContent className="w-[95%] sm:max-w-md md:max-w-lg lg:max-w-2xl max-h-[90vh] overflow-y-auto bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-gray-900 dark:text-white text-lg sm:text-xl">
+              <Reply className="h-5 w-5" />
               Reply to Message
             </DialogTitle>
             <DialogDescription className="text-gray-600 dark:text-gray-400 text-sm text-start">
-              Replying to: {replyingToMessage?.subject || "No subject"}
+              Replying to: <span className="font-medium">{replyingToMessage?.subject || "No subject"}</span>
               <br />
-              From: {replyingToMessage?.name} ({replyingToMessage?.email})
+              From: <span className="font-medium">{replyingToMessage?.name}</span> ({replyingToMessage?.email})
             </DialogDescription>
           </DialogHeader>
 
@@ -347,18 +352,18 @@ export default function AdminMessagesBoardPage() {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-end gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2">
               <button
                 onClick={closeReplyPopup}
                 disabled={replySending}
-                className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 text-gray-700 dark:text-gray-300 transition-all duration-200 hover:shadow-sm"
+                className="w-full sm:w-auto px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 text-gray-700 dark:text-gray-300 transition-all duration-200 hover:shadow-sm"
               >
                 Cancel
               </button>
               <button
                 onClick={sendReply}
                 disabled={replySending || !replyText.trim()}
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold text-sm md:text-base px-4 py-2 rounded-lg shadow-lg hover:shadow-xl hover:from-purple-600 hover:to-indigo-600 transition duration-150 transform cursor-pointer flex items-center justify-center w-max whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold text-sm md:text-base px-4 py-2 rounded-lg shadow-lg hover:shadow-xl hover:from-purple-600 hover:to-indigo-600 transition duration-150 transform cursor-pointer flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 <Reply className="h-4 w-4" />
                 {replySending ? "Sending..." : "Send Reply"}
@@ -368,233 +373,262 @@ export default function AdminMessagesBoardPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Top bar */}
-      <div className="border-b border-gray-200 dark:border-gray-800 pb-4 flex items-center gap-3">
-        <div>
-          <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-            Contact Messages (Admin)
-          </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {items.length} messages •{" "}
-            {items.filter((m) => m.status === "new").length} new
-          </p>
-        </div>
-
-        {/* Search + Filters */}
-        <div className="ml-auto flex items-center gap-3">
-          <div className="relative">
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Search subject, email, message…"
-              className="w-64 sm:w-80 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 pl-9 pr-3 py-2 text-sm transition-all duration-200 focus:ring-2 focus:ring-indigo-700 focus:border-transparent"
-            />
-            <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-          </div>
-          <div className="relative">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="appearance-none rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 pr-8 text-sm transition-all duration-200 focus:ring-2 focus:ring-indigo-700 focus:border-transparent"
-            >
-              <option value="">All statuses</option>
-              <option value="new">New</option>
-              <option value="answered">Answered</option>
-              <option value="closed">Closed</option>
-            </select>
-            <Filter className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-          </div>
-          <button
-            onClick={() => {
-              const controller = new AbortController();
-              loadList(controller.signal);
-              setTimeout(() => controller.abort(), 10000);
-            }}
-            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 hover:shadow-sm"
-          >
-            <RefreshCcw className="h-4 w-4" /> Refresh
-          </button>
-        </div>
-      </div>
-
-      {/* Split view */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 h-[calc(100%-49px)]">
-        {/* Left: list */}
-        <div className="border-r border-gray-200 dark:border-gray-800 overflow-y-auto">
-          {loading ? (
-            <div className="p-6 text-gray-500">Loading…</div>
-          ) : error ? (
-            <div className="p-6 text-rose-600 dark:text-rose-300">{error}</div>
-          ) : list.length === 0 ? (
-            <div className="p-6 text-gray-600 dark:text-gray-300">
-              No messages.
+      {/* Main Container */}
+      <div className="">
+        {/* Top bar */}
+        <div className="border-b border-gray-200 dark:border-gray-800 pb-4 mb-6">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div className="flex-1">
+              <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                Contact Messages
+              </div>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                {items.length} messages •{" "}
+                {items.filter((m) => m.status === "new").length} new
+              </p>
             </div>
-          ) : (
-            <ul className="divide-y divide-gray-100 dark:divide-gray-800 bg-white rounded-sm dark:bg-gray-900 ">
-              {list.map((m) => {
-                const created = m.createdAt ? new Date(m.createdAt) : null;
-                const isActive = selected?._id === m._id;
-                return (
-                  <li
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openReplyPopup(m);
-                    }}
-                    key={m._id}
-                    className={`cursor-pointer px-4 sm:px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-200 ${
-                      isActive ? "bg-gray-50 dark:bg-gray-900/40" : ""
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div
-                        onClick={() => openDetail(m)}
-                        className="min-w-0 flex-1"
-                      >
-                        <div className="flex items-center gap-2">
-                          <div className="font-medium truncate">
-                            {m.subject || "No subject"}
-                          </div>
-                          {statusPill(m.status)}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {m.name || "Unknown"} · {m.email}
-                        </div>
-                        <div className="mt-1 text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
-                          {m.message}
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-end gap-2">
-                        <div className="text-xs text-gray-500 flex items-center gap-1 whitespace-nowrap">
-                          <Clock className="h-3.5 w-3.5" />
-                          {created ? created.toLocaleString() : ""}
-                        </div>
-                        {/* Reply button */}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openReplyPopup(m);
-                          }}
-                          className="cursor-pointer inline-flex items-center gap-1 rounded-md border border-gray-300 dark:border-gray-700 px-2.5 py-1.5 text-xs hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 hover:shadow-sm"
-                        >
-                          <Reply className="h-3.5 w-3.5" />
-                          Reply
-                        </button>
-                      </div>
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
 
-        {/* Right: detail */}
-        <div className="overflow-y-auto">
-          {!selected ? (
-            <div className="h-full flex items-center justify-center text-gray-500">
-              Select a message to view details
-            </div>
-          ) : detailLoading ? (
-            <div className="p-6 text-gray-500">Loading…</div>
-          ) : detailError ? (
-            <div className="p-6 text-rose-600 dark:text-rose-300">
-              {detailError}
-            </div>
-          ) : (
-            <div className="p-6">
-              {/* Header with reply button */}
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div className="text-xl font-semibold">
-                    {selected.subject || "Message"}
-                  </div>
-                  <div className="text-xs text-gray-500">
-                    {selected.createdAt
-                      ? new Date(selected.createdAt).toLocaleString()
-                      : ""}
-                  </div>
-                </div>
-                <button
-                  onClick={() => openReplyPopup(selected)}
-                  className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 hover:shadow-sm"
+            {/* Search + Filters */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <div className="relative flex-1 sm:w-64">
+                <input
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="Search messages..."
+                  className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 pl-9 pr-3 py-2 text-sm transition-all duration-200 focus:ring-2 focus:ring-indigo-700 focus:border-transparent"
+                />
+                <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+              </div>
+              <div className="relative flex-1 sm:w-auto">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 pr-8 text-sm transition-all duration-200 focus:ring-2 focus:ring-indigo-700 focus:border-transparent"
                 >
-                  <Reply className="h-4 w-4" />
-                  Reply
-                </button>
+                  <option value="">All statuses</option>
+                  <option value="new">New</option>
+                  <option value="answered">Answered</option>
+                  <option value="closed">Closed</option>
+                </select>
+                <Filter className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
               </div>
+              <button
+                onClick={() => {
+                  const controller = new AbortController();
+                  loadList(controller.signal);
+                  setTimeout(() => controller.abort(), 10000);
+                }}
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 dark:border-gray-700 px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 hover:shadow-sm"
+              >
+                <RefreshCcw className="h-4 w-4" /> 
+                <span className="hidden sm:inline">Refresh</span>
+              </button>
+            </div>
+          </div>
+        </div>
 
-              <div className="mt-4 grid gap-4 text-sm">
-                <div className="flex flex-wrap gap-6">
-                  <div>
-                    <div className="text-gray-500 text-xs uppercase">From</div>
-                    <div className="font-medium">
-                      {selected.name || "Unknown"}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {selected.email}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-gray-500 text-xs uppercase">Topic</div>
-                    <div>{selected.topic || "-"}</div>
-                  </div>
-                  <div>
-                    <div className="text-gray-500 text-xs uppercase">
-                      Status
-                    </div>
-                    {statusPill(selected.status)}
-                  </div>
+        {/* Split view */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 min-h-[calc(100vh-200px)]">
+          {/* Left: list */}
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                <MessageCircle className="h-5 w-5" />
+                Messages List
+              </h3>
+            </div>
+            
+            <div className="h-[500px] overflow-y-auto">
+              {loading ? (
+                <div className="p-6 text-gray-500 text-center">Loading messages...</div>
+              ) : error ? (
+                <div className="p-6 text-rose-600 dark:text-rose-300 text-center">{error}</div>
+              ) : list.length === 0 ? (
+                <div className="p-6 text-gray-600 dark:text-gray-300 text-center">
+                  No messages found.
                 </div>
-
-                <div>
-                  <div className="text-gray-500 text-xs uppercase mb-1">
-                    Message
-                  </div>
-                  <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-3 bg-gray-50 dark:bg-gray-900/30 whitespace-pre-line">
-                    {selected.message}
-                  </div>
-                </div>
-
-                {/* Replies */}
-                {Array.isArray(selected.replies) &&
-                  selected.replies.length > 0 && (
-                    <div>
-                      <div className="text-gray-500 text-xs uppercase mb-1">
-                        Replies
-                      </div>
-                      <div className="space-y-3">
-                        {selected.replies.map((r) => (
-                          <div
-                            key={r._id}
-                            className="rounded-lg bg-white dark:bg-gray-800/70 border border-gray-200 dark:border-gray-700 p-3 transition-all duration-200 hover:shadow-sm"
-                          >
-                            <div className="flex items-center justify-between gap-2">
-                              <div className="text-sm font-medium">
-                                {r.by?.name || "Admin"}
-                                {r.by?.email ? (
-                                  <span className="text-xs text-gray-500">
-                                    {" "}
-                                    ({r.by.email})
-                                  </span>
-                                ) : null}
+              ) : (
+                <ul className="divide-y divide-gray-100 dark:divide-gray-700">
+                  {list.map((m) => {
+                    const created = m.createdAt ? new Date(m.createdAt) : null;
+                    const isActive = selected?._id === m._id;
+                    return (
+                      <li
+                      onClick={(e) => {
+                                e.stopPropagation();
+                                openReplyPopup(m);
+                              }}
+                        key={m._id}
+                        className={`cursor-pointer p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-200 ${
+                          isActive ? "bg-gray-50 dark:bg-gray-700/30" : ""
+                        }`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                              <div className="font-medium text-gray-900 dark:text-white truncate">
+                                {m.subject || "No subject"}
                               </div>
-                              <div className="text-xs text-gray-500">
-                                {r.createdAt
-                                  ? new Date(r.createdAt).toLocaleString()
-                                  : ""}
-                              </div>
+                              {statusPill(m.status)}
                             </div>
-                            <div className="mt-2 text-sm whitespace-pre-line">
-                              {r.text}
+                            <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                              <User className="h-3 w-3" />
+                              <span>{m.name || "Unknown"}</span>
+                              <span>•</span>
+                              <Mail className="h-3 w-3" />
+                              <span className="truncate">{m.email}</span>
+                            </div>
+                            <div className="mt-1 text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
+                              {m.message}
                             </div>
                           </div>
-                        ))}
+                          <div className="flex flex-col items-end gap-2">
+                            <div className="text-xs text-gray-500 flex items-center gap-1 whitespace-nowrap">
+                              <Calendar className="h-3 w-3" />
+                              {created ? created.toLocaleDateString() : ""}
+                            </div>
+                            {/* Reply button */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openReplyPopup(m);
+                              }}
+                              className="cursor-pointer inline-flex items-center gap-1 rounded-md bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-2.5 py-1.5 text-xs hover:from-indigo-600 hover:to-purple-600 transition-all duration-200 hover:shadow-sm"
+                            >
+                              <Reply className="h-3.5 w-3.5" />
+                              Reply
+                            </button>
+                          </div>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+          </div>
+
+          {/* Right: detail */}
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                <MessageCircle className="h-5 w-5" />
+                Message Details
+              </h3>
+            </div>
+            
+            <div className="h-[500px] overflow-y-auto p-4">
+              {!selected ? (
+                <div className="h-full flex flex-col items-center justify-center text-gray-500 text-center p-8">
+                  <MessageCircle className="h-12 w-12 text-gray-300 mb-4" />
+                  <p>Select a message to view details</p>
+                </div>
+              ) : detailLoading ? (
+                <div className="p-6 text-gray-500 text-center">Loading message details...</div>
+              ) : detailError ? (
+                <div className="p-6 text-rose-600 dark:text-rose-300 text-center">
+                  {detailError}
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* Header with reply button */}
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                    <div className="flex-1">
+                      <div className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                        {selected.subject || "Message"}
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <Calendar className="h-3 w-3" />
+                        {selected.createdAt
+                          ? new Date(selected.createdAt).toLocaleString()
+                          : ""}
                       </div>
                     </div>
-                  )}
-              </div>
+                    <button
+                      onClick={() => openReplyPopup(selected)}
+                      className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 text-sm hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 hover:shadow-sm"
+                    >
+                      <Reply className="h-4 w-4" />
+                      Reply
+                    </button>
+                  </div>
+
+                  <div className="grid gap-4 text-sm">
+                    {/* Sender Info */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-900/30 rounded-lg">
+                      <div>
+                        <div className="text-gray-500 text-xs uppercase mb-1">From</div>
+                        <div className="font-medium text-gray-900 dark:text-white">
+                          {selected.name || "Unknown"}
+                        </div>
+                        <div className="text-xs text-gray-500 flex items-center gap-1 mt-1">
+                          <Mail className="h-3 w-3" />
+                          {selected.email}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-gray-500 text-xs uppercase mb-1">Topic</div>
+                        <div className="text-gray-900 dark:text-white">{selected.topic || "-"}</div>
+                      </div>
+                    </div>
+
+                    {/* Status */}
+                    <div className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border">
+                      <div className="text-gray-500 text-sm">Status:</div>
+                      {statusPill(selected.status)}
+                    </div>
+
+                    {/* Message Content */}
+                    <div>
+                      <div className="text-gray-500 text-xs uppercase mb-2">Message</div>
+                      <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-4 bg-white dark:bg-gray-800 whitespace-pre-line text-gray-700 dark:text-gray-300">
+                        {selected.message}
+                      </div>
+                    </div>
+
+                    {/* Replies */}
+                    {Array.isArray(selected.replies) &&
+                      selected.replies.length > 0 && (
+                        <div>
+                          <div className="text-gray-500 text-xs uppercase mb-2">
+                            Replies ({selected.replies.length})
+                          </div>
+                          <div className="space-y-3">
+                            {selected.replies.map((r) => (
+                              <div
+                                key={r._id}
+                                className="rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-4 transition-all duration-200 hover:shadow-sm"
+                              >
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                                  <div className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                                    <User className="h-4 w-4" />
+                                    {r.by?.name || "Admin"}
+                                    {r.by?.email ? (
+                                      <span className="text-xs text-gray-500">
+                                        ({r.by.email})
+                                      </span>
+                                    ) : null}
+                                  </div>
+                                  <div className="text-xs text-gray-500 flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    {r.createdAt
+                                      ? new Date(r.createdAt).toLocaleString()
+                                      : ""}
+                                  </div>
+                                </div>
+                                <div className="mt-2 text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">
+                                  {r.text}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
