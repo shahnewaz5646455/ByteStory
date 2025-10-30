@@ -171,8 +171,8 @@ export default function MyContentPage() {
   }
 
   return (
-    <div className=" min-h-screen p-4 sm:p-6 lg:p-8">
-      <div className="max-w-6xl">
+    <div className=" min-h-screen">
+      <div className="">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">

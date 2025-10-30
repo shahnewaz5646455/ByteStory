@@ -136,8 +136,8 @@ export default function MyPostsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen p-4 sm:p-6 lg:p-8">
-        <div className="max-w-6xl mx-auto">
+      <div className="min-h-screen">
+        <div className="">
           {/* Header Skeleton */}
           <div className="mb-12 text-left">
             <div className="animate-pulse">
@@ -196,8 +196,8 @@ export default function MyPostsPage() {
   }
 
   return (
-    <div className="min-h-screen p-4 sm:p-6 lg:p-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen">
+      <div className="">
         {/* Header */}
         <div className="mb-12 text-left">
           <div className="relative inline-block mb-4">
