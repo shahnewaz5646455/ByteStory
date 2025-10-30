@@ -2,6 +2,7 @@
 
 import CreatePost from "@/components/CreatePost";
 import Post from "@/components/Post";
+import { TrendingUp } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 
 export default function FeedPage() {
@@ -263,7 +264,7 @@ export default function FeedPage() {
             <div className="flex space-x-2">
               <button
                 onClick={() => setActiveFilter("all")}
-                className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
+                className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 cursor-pointer ${
                   activeFilter === "all"
                     ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/25"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
@@ -273,13 +274,13 @@ export default function FeedPage() {
               </button>
               <button
                 onClick={() => setActiveFilter("popular")}
-                className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
+                className={`px-4 flex items-center gap-2 py-2 rounded-xl font-medium transition-all duration-200 cursor-pointer ${
                   activeFilter === "popular"
                     ? "bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-lg shadow-pink-500/25"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
-                🔥 Popular
+                <TrendingUp /> Popular
               </button>
             </div>
           </div>
