@@ -1,8 +1,8 @@
 "use client";
-import { loadStripe } from '@stripe/stripe-js'
+import { loadStripe } from "@stripe/stripe-js";
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import ReactMarkdown from 'react-markdown';
+import ReactMarkdown from "react-markdown";
 import {
   Send,
   Sparkles,
@@ -36,96 +36,17 @@ import SpeechRecorder from "@/components/ui/speechRecorder";
 import { useSelector } from "react-redux";
 
 // Initialize Stripe with your public key
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 export default function AIWriterPage() {
   const auth = useSelector((store) => store.authStore.auth);
-  
+
   // ---- Blog Key State ----
   const [blogKeyCount, setBlogKeyCount] = useState(0);
-  const [userData, setUserData] = useState(null);
   const [showKeyModal, setShowKeyModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // ---- Hidden developer function to log user data to console ----
-  const logUserDataToConsole = async () => {
-    if (!auth?.email) {
-      console.log("🔴 No user email found in Redux store");
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/get-user-data?email=${encodeURIComponent(auth.email)}`);
-      const data = await response.json();
-
-      if (data.success) {
-        setUserData(data.user);
-        setBlogKeyCount(data.user.blog_key || 0);
-      } else {
-        console.error(" Failed to fetch user data:", data.message);
-      }
-    } catch (error) {
-      console.error(" Error fetching user data:", error);
-    }
-  };
-
-  // ---- Update Blog Key Count in Database ----
-  const updateBlogKeyInDB = async (newCount) => {
-    if (!auth?.email) return;
-
-    try {
-      const response = await fetch('/api/update-blog-keys', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: auth.email,
-          blog_key: newCount
-        }),
-      });
-
-      const data = await response.json();
-      
-      if (data.success) {
-        console.log("✅ Blog keys updated in database:", newCount);
-        setBlogKeyCount(newCount);
-      } else {
-        console.error("❌ Failed to update blog keys:", data.message);
-      }
-    } catch (error) {
-      console.error("❌ Error updating blog keys:", error);
-    }
-  };
-
-  // ---- Automatically log user data when component mounts or auth changes ----
-  useEffect(() => {
-    if (auth?.email) {
-      const timer = setTimeout(() => {
-        console.log("🚀 AIWriterPage mounted - Checking user data...");
-        logUserDataToConsole();
-      }, 1000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [auth?.email]);
-
-  // ---- Also provide a manual way to trigger from console ----
-  useEffect(() => {
-    window.debugUserData = logUserDataToConsole;
-    console.log("💡 Developer Tip: Type 'debugUserData()' in console to see user data");
-    
-    return () => {
-      delete window.debugUserData;
-    };
-  }, [auth?.email]);
-
-  // ---- Existing state variables ----
-  const [shareId, setShareId] = useState(null);
-  const [sharedUrl, setSharedUrl] = useState(
-    typeof window !== "undefined" ? window.location.href : "https://yourdomain.com"
-  );
-
+  // ---- Network State ----
   const [isOnline, setIsOnline] = useState(
     typeof window !== "undefined" ? navigator.onLine : true
   );
@@ -135,6 +56,7 @@ export default function AIWriterPage() {
   const [hasNetworkChanged, setHasNetworkChanged] = useState(false);
   const [pendingRequest, setPendingRequest] = useState(null);
 
+  // ---- Content State ----
   const [input, setInput] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [output, setOutput] = useState("");
@@ -143,44 +65,135 @@ export default function AIWriterPage() {
   const [showTemplates, setShowTemplates] = useState(false);
   const [error, setError] = useState("");
 
-  const [showShareMenu, setShowShareMenu] = useState(false);
+  // ---- Share State ----
+  const [shareId, setShareId] = useState(null);
+  const [sharedUrl, setSharedUrl] = useState(
+    typeof window !== "undefined" ? window.location.href : "https://yourdomain.com"
+  );
   const shareBtnRef = useRef(null);
   const shareMenuRef = useRef(null);
+  const [showShareMenu, setShowShareMenu] = useState(false);
 
-  // ---- Check Blog Keys Before API Call ----
-  const checkAndUseBlogKey = async () => {
+  // ---- Fetch user and keys immediately (no setTimeout, no window.debug) ----
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!auth?.email) return;
+      try {
+        const response = await fetch(
+          `/api/get-user-data?email=${encodeURIComponent(auth.email)}`
+        );
+        const data = await response.json();
+        if (data?.success) {
+          setBlogKeyCount(data.user?.blog_key || 0);
+        }
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+      }
+    };
+    fetchUserData();
+  }, [auth?.email]);
+
+  // ---- Network listeners ----
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      setHasNetworkChanged(true);
+    };
+    const handleOffline = () => {
+      setIsOnline(false);
+      setHasNetworkChanged(true);
+    };
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
+  // ---- Status banners + auto-run pending ----
+  useEffect(() => {
+    if (!hasNetworkChanged) return;
+
+    if (isOnline) {
+      setShowOffNetStatus(false);
+      setShowWaitingButton(false);
+      setShowNetStatus(true);
+
+      // Only auto-execute if we still have keys
+      if (pendingRequest && blogKeyCount > 0) {
+        executeGenerateContent(pendingRequest.input, pendingRequest.template);
+        setPendingRequest(null);
+      }
+
+      const t = setTimeout(() => setShowNetStatus(false), 4000);
+      return () => clearTimeout(t);
+    } else {
+      setShowNetStatus(false);
+      setShowOffNetStatus(true);
+      setIsGenerating(false);
+    }
+  }, [isOnline, hasNetworkChanged, pendingRequest, blogKeyCount]);
+
+  // ---- Strong client-side gate (auth + keys) ----
+  const canGenerate = !!auth && blogKeyCount > 0 && !!input.trim() && !isGenerating;
+
+  // ---- Generate flow with robust key handling ----
+  const executeGenerateContent = async (inputText, template) => {
+    // Client-side guard — blocks if zero keys
+    if (!auth) {
+      setError("Please login to use AI writing tool");
+      return;
+    }
     if (blogKeyCount <= 0) {
       setShowKeyModal(true);
-      return false;
-    }
-
-    // Deduct one key and update database
-    const newCount = blogKeyCount - 1;
-    await updateBlogKeyInDB(newCount);
-    return true;
-  };
-
-  // ---- Modified API functions with Blog Key Check ----
-  const executeGenerateContent = async (inputText, template) => {
-    // First check if user has blog keys
-    const hasKeys = await checkAndUseBlogKey();
-    if (!hasKeys) {
-      setIsGenerating(false);
       return;
     }
 
     setIsGenerating(true);
     setError("");
     setOutput("");
+
     try {
+      // IMPORTANT: Server must also enforce keys and atomically decrement.
       const resp = await fetch("/api/generate-content", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: inputText, template }),
+        // Include user identification if your API expects it (recommended)
+        body: JSON.stringify({
+          prompt: inputText,
+          template,
+          email: auth?.email, // or userId if preferred
+        }),
       });
+
+      // If your server responds 402/400 when no keys, handle it here
+      if (resp.status === 402) {
+        setShowKeyModal(true);
+        setIsGenerating(false);
+        return;
+      }
+
       const data = await resp.json();
-      if (resp.ok && data?.success) setOutput(data.content);
-      else setError(data?.message || "Failed to generate content. Please try again.");
+
+      if (resp.ok && data?.success) {
+        setOutput(data.content);
+
+        // If API returns updated remaining keys, reflect them:
+        if (typeof data?.remaining_blog_keys === "number") {
+          setBlogKeyCount(data.remaining_blog_keys);
+        } else {
+          // Optional: optimistically decrement exactly once per success
+          setBlogKeyCount((k) => Math.max(k - 1, 0));
+        }
+      } else {
+        // If server says "No blog keys left"
+        if (String(data?.message || "").toLowerCase().includes("no blog keys")) {
+          setShowKeyModal(true);
+        } else {
+          setError(data?.message || "Failed to generate content. Please try again.");
+        }
+      }
     } catch (e) {
       console.error(e);
       setError("Failed to generate content. Please try again.");
@@ -191,6 +204,7 @@ export default function AIWriterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!input.trim()) {
       setError("Please enter a topic or description");
       return;
@@ -201,40 +215,126 @@ export default function AIWriterPage() {
       return;
     }
 
+    if (blogKeyCount <= 0) {
+      // Hard stop: show purchase modal
+      setShowKeyModal(true);
+      return;
+    }
+
     if (!isOnline) {
+      // Do not queue if no keys
       setPendingRequest({ input: input.trim(), template: selectedTemplate });
       setShowWaitingButton(true);
       setError("");
       return;
     }
-    
+
     await executeGenerateContent(input.trim(), selectedTemplate);
   };
 
-  // ---- Existing functions ----
-  useEffect(() => {
-    function onClick(e) {
-      if (!showShareMenu) return;
-      const t = e.target;
-      if (
-        shareBtnRef.current &&
-        !shareBtnRef.current.contains(t) &&
-        shareMenuRef.current &&
-        !shareMenuRef.current.contains(t)
-      ) {
-        setShowShareMenu(false);
+  const PostToDB = async () => {
+    if (!output.trim()) {
+      setError("No content to share");
+      throw new Error("No content to share");
+    }
+
+    const time = new Date().toLocaleString("en-US", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+    try {
+      const resp = await fetch("/api/content-saveTo-DB", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: input,
+          template: selectedTemplate,
+          content: output,
+          type: "blog",
+          generated_time: { time },
+          visibility: "public",
+          user: { email: auth?.email, name: auth?.name },
+        }),
+      });
+
+      const contentData = await resp.json();
+
+      if (!resp.ok || !contentData?.success) {
+        throw new Error(contentData?.message || "Failed to save content");
       }
+
+      const insertedId = contentData.data.insertedId;
+      const origin =
+        typeof window !== "undefined" ? window.location.origin : "https://yourdomain.com";
+      const shareUrl = `${origin}/Shared-Content/${insertedId}`;
+
+      setShareId(insertedId);
+      setSharedUrl(shareUrl);
+
+      return shareUrl;
+    } catch (error) {
+      console.error("❌ Failed to save content:", error);
+      setError(error.message || "Failed to save content for sharing");
+      throw error;
     }
-    function onKey(e) {
-      if (e.key === "Escape") setShowShareMenu(false);
+  };
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(output);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1200);
+    } catch (err) {
+      console.error("Failed to copy:", err);
+      alert("Failed to copy content");
     }
-    document.addEventListener("mousedown", onClick);
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.removeEventListener("mousedown", onClick);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [showShareMenu]);
+  };
+
+  const handleCheckout = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lineItems: [
+            {
+              price_data: {
+                currency: "usd",
+                product_data: { name: "AI powered blog generator" },
+                unit_amount: 100,
+              },
+              quantity: 1,
+            },
+          ],
+        }),
+      });
+
+      const data = await res.json();
+
+      // Redirect using Stripe-hosted URL if available
+      if (data.url) {
+        window.location.href = data.url;
+        return;
+      }
+
+      // Fallback: redirect using session ID
+      if (data.id) {
+        const stripe = await stripePromise;
+        await stripe.redirectToCheckout({ sessionId: data.id });
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Checkout failed. See console for details.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const templates = [
     { id: "blog", name: "Blog Post", icon: <FileText size={18} /> },
@@ -261,151 +361,32 @@ export default function AIWriterPage() {
     },
   ];
 
-  useEffect(() => {
-    const handleOnline = () => {
-      setIsOnline(true);
-      setHasNetworkChanged(true);
-    };
-    const handleOffline = () => {
-      setIsOnline(false);
-      setHasNetworkChanged(true);
-    };
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!hasNetworkChanged) return;
-
-    if (isOnline) {
-      setShowOffNetStatus(false);
-      setShowWaitingButton(false);
-      setShowNetStatus(true);
-
-      if (pendingRequest) {
-        executeGenerateContent(pendingRequest.input, pendingRequest.template);
-        setPendingRequest(null);
-      }
-
-      const t = setTimeout(() => setShowNetStatus(false), 4000);
-      return () => clearTimeout(t);
-    } else {
-      setShowNetStatus(false);
-      setShowOffNetStatus(true);
-      setIsGenerating(false);
-    }
-  }, [isOnline, hasNetworkChanged, pendingRequest]);
-
-  const PostToDB = async () => {
-    if (!output.trim()) {
-      setError("No content to share");
-      throw new Error("No content to share");
-    }
-
-    const time = new Date().toLocaleString("en-US", {
-      day: "2-digit",
-      month: "short", 
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-
-    try {
-      const resp = await fetch("/api/content-saveTo-DB", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt: input,
-          template: selectedTemplate,
-          content: output,
-          type: "blog",
-          generated_time: { time },
-          visibility: "public",
-          user: { email: auth?.email, name: auth?.name },
-        }),
-      });
-
-      const contentData = await resp.json();
-      
-      if (!resp.ok || !contentData?.success) {
-        throw new Error(contentData?.message || "Failed to save content");
-      }
-
-      const insertedId = contentData.data.insertedId;
-      const origin = typeof window !== "undefined" ? window.location.origin : "https://yourdomain.com";
-      const shareUrl = `${origin}/Shared-Content/${insertedId}`;
-      
-      setShareId(insertedId);
-      setSharedUrl(shareUrl);
-      
-      console.log("✅ Content saved. Share URL:", shareUrl);
-      
-      return shareUrl;
-      
-    } catch (error) {
-      console.error("❌ Failed to save content:", error);
-      setError(error.message || "Failed to save content for sharing");
-      throw error;
-    }
-  };
-
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(output);
-      alert("Content copied to clipboard!");
-    } catch (err) {
-      console.error("Failed to copy:", err);
-      alert("Failed to copy content");
-    }
-  };
-
   const shareTitle = output ? output.slice(0, 80) : "Check this out";
 
-  const handleCheckout = async () => {
-    setLoading(true)
-    try {
-      const res = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          lineItems: [
-            {
-              price_data: {
-                currency: 'usd',
-                product_data: { name: 'AI powered blog generator' },
-                unit_amount: 100,
-              },
-              quantity: 1,
-            },
-          ],
-        }),
-      })
-
-      const data = await res.json()
-
-      // Redirect using Stripe-hosted URL if available
-      if (data.url) {
-        window.location.href = data.url
-        return
+  // Close share menu on outside click/esc
+  useEffect(() => {
+    function onClick(e) {
+      if (!showShareMenu) return;
+      const t = e.target;
+      if (
+        shareBtnRef.current &&
+        !shareBtnRef.current.contains(t) &&
+        shareMenuRef.current &&
+        !shareMenuRef.current.contains(t)
+      ) {
+        setShowShareMenu(false);
       }
-
-      // Fallback: redirect using session ID
-      if (data.id) {
-        const stripe = await stripePromise
-        await stripe.redirectToCheckout({ sessionId: data.id })
-      }
-    } catch (err) {
-      console.error(err)
-      alert('Checkout failed. See console for details.')
-    } finally {
-      setLoading(false)
     }
-  }
+    function onKey(e) {
+      if (e.key === "Escape") setShowShareMenu(false);
+    }
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [showShareMenu]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 text-gray-900 transition-colors duration-200 dark:from-gray-950 dark:via-gray-800 dark:to-gray-950 dark:text-white">
@@ -460,13 +441,14 @@ export default function AIWriterPage() {
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20">
                   <Key className="h-8 w-8 text-red-600 dark:text-red-400" />
                 </div>
-                
+
                 <h3 className="mb-2 text-xl font-bold text-gray-900 dark:text-white">
                   No Blog Keys Left!
                 </h3>
-                
+
                 <p className="mb-6 text-gray-600 dark:text-gray-300">
-                  You have used all your available blog keys. Purchase more keys to continue using the AI writing tool.
+                  You have used all your available blog keys. Purchase more keys to
+                  continue using the AI writing tool.
                 </p>
 
                 {/* Key Package */}
@@ -499,10 +481,10 @@ export default function AIWriterPage() {
                   >
                     Maybe Later
                   </button>
-                  
+
                   <button
                     onClick={() => {
-                      handleCheckout()
+                      handleCheckout();
                       setShowKeyModal(false);
                     }}
                     className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 font-medium text-white transition-all hover:from-amber-600 hover:to-orange-600"
@@ -522,7 +504,6 @@ export default function AIWriterPage() {
       </AnimatePresence>
 
       <main className="relative z-10 mx-auto max-w-7xl px-4 py-8">
-
         {/* Hero */}
         <section className="mb-6 text-center">
           <div className="mb-4 inline-flex w-full justify-center md:mb-6">
@@ -549,7 +530,8 @@ export default function AIWriterPage() {
             blog posts to professional documents, in seconds.
           </p>
         </section>
-         {/* Blog Key Counter */}
+
+        {/* Blog Key Counter */}
         {auth && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -627,7 +609,9 @@ export default function AIWriterPage() {
                     </div>
                     <ChevronDown
                       size={18}
-                      className={`text-indigo-400 transition-transform duration-300 ${showTemplates ? "rotate-180" : ""}`}
+                      className={`text-indigo-400 transition-transform duration-300 ${
+                        showTemplates ? "rotate-180" : ""
+                      }`}
                     />
                   </button>
 
@@ -688,13 +672,13 @@ export default function AIWriterPage() {
 
                   <div className="absolute bottom-3 right-3 z-10">
                     <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ scale: canGenerate ? 1.05 : 1 }}
+                      whileTap={{ scale: canGenerate ? 0.95 : 1 }}
                       type="submit"
                       aria-label="Send"
-                      disabled={isGenerating || !input.trim() || !auth}
+                      disabled={!canGenerate}
                       className={`rounded-full p-3 shadow-lg transition-all duration-300 ${
-                        isGenerating || !input.trim() || !auth
+                        !canGenerate
                           ? "cursor-not-allowed bg-gray-300 dark:bg-gray-600"
                           : "cursor-pointer bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-indigo-500/30 dark:hover:shadow-purple-500/20"
                       }`}
@@ -707,7 +691,9 @@ export default function AIWriterPage() {
                           <Clock size={22} className="text-white" />
                         </motion.div>
                       ) : !auth ? (
-                        <Key size={22} className="text-gray-500" />
+                        <Key size={22} className="text-gray-200" />
+                      ) : blogKeyCount <= 0 ? (
+                        <Key size={22} className="text-white" />
                       ) : (
                         <Send size={22} className="text-white" />
                       )}
@@ -720,6 +706,23 @@ export default function AIWriterPage() {
                   <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
                     <p className="text-blue-600 dark:text-blue-400 text-sm text-center">
                       🔐 Please login to use the AI Writing Assistant
+                    </p>
+                  </div>
+                )}
+
+                {/* No keys message (optional helper) */}
+                {auth && blogKeyCount <= 0 && (
+                  <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl">
+                    <p className="text-amber-700 dark:text-amber-300 text-sm text-center">
+                      You have no blog keys remaining.{" "}
+                      <button
+                        type="button"
+                        className="underline font-medium"
+                        onClick={() => setShowKeyModal(true)}
+                      >
+                        Buy more keys
+                      </button>{" "}
+                      to generate content.
                     </p>
                   </div>
                 )}
@@ -859,7 +862,7 @@ export default function AIWriterPage() {
                               onClick={async () => {
                                 try {
                                   const shareUrl = await PostToDB();
-                                  
+
                                   if (navigator.share) {
                                     await navigator.share({
                                       title: shareTitle,
@@ -896,7 +899,9 @@ export default function AIWriterPage() {
                         className="flex items-center rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-2 text-indigo-700 transition-all duration-200 hover:bg-indigo-100 dark:border-indigo-700/30 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50"
                       >
                         <Copy size={18} className="mr-2" />
-                        <span className="text-sm font-medium">Copy</span>
+                        <span className="text-sm font-medium">
+                          {copied ? "Copied!" : "Copy"}
+                        </span>
                       </motion.button>
                     </div>
                   </div>
@@ -932,16 +937,55 @@ export default function AIWriterPage() {
                   <div className="max-w-none markdown-content">
                     <ReactMarkdown
                       components={{
-                        h1: ({node, ...props}) => <h1 className="text-2xl font-bold mt-6 mb-4 text-gray-900 dark:text-white border-b pb-2" {...props} />,
-                        h2: ({node, ...props}) => <h2 className="text-xl font-bold mt-5 mb-3 text-gray-800 dark:text-gray-200" {...props} />,
-                        h3: ({node, ...props}) => <h3 className="text-lg font-semibold mt-4 mb-2 text-gray-700 dark:text-gray-300" {...props} />,
-                        p: ({node, ...props}) => <p className="mb-4 text-justify leading-relaxed text-gray-800 dark:text-gray-200" {...props} />,
-                        strong: ({node, ...props}) => <strong className="font-bold text-gray-900 dark:text-white" {...props} />,
-                        em: ({node, ...props}) => <em className="italic text-gray-700 dark:text-gray-300" {...props} />,
-                        ul: ({node, ...props}) => <ul className="mb-4 ml-6 list-disc space-y-2 text-gray-800 dark:text-gray-200" {...props} />,
-                        ol: ({node, ...props}) => <ol className="mb-4 ml-6 list-decimal space-y-2 text-gray-800 dark:text-gray-200" {...props} />,
-                        li: ({node, ...props}) => <li className="text-justify" {...props} />,
-                        blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-indigo-500 pl-4 my-4 italic text-gray-600 dark:text-gray-400" {...props} />,
+                        h1: ({ node, ...props }) => (
+                          <h1
+                            className="text-2xl font-bold mt-6 mb-4 text-gray-900 dark:text-white border-b pb-2"
+                            {...props}
+                          />
+                        ),
+                        h2: ({ node, ...props }) => (
+                          <h2
+                            className="text-xl font-bold mt-5 mb-3 text-gray-800 dark:text-gray-200"
+                            {...props}
+                          />
+                        ),
+                        h3: ({ node, ...props }) => (
+                          <h3
+                            className="text-lg font-semibold mt-4 mb-2 text-gray-700 dark:text-gray-300"
+                            {...props}
+                          />
+                        ),
+                        p: ({ node, ...props }) => (
+                          <p
+                            className="mb-4 text-justify leading-relaxed text-gray-800 dark:text-gray-200"
+                            {...props}
+                          />
+                        ),
+                        strong: ({ node, ...props }) => (
+                          <strong className="font-bold text-gray-900 dark:text-white" {...props} />
+                        ),
+                        em: ({ node, ...props }) => (
+                          <em className="italic text-gray-700 dark:text-gray-300" {...props} />
+                        ),
+                        ul: ({ node, ...props }) => (
+                          <ul
+                            className="mb-4 ml-6 list-disc space-y-2 text-gray-800 dark:text-gray-200"
+                            {...props}
+                          />
+                        ),
+                        ol: ({ node, ...props }) => (
+                          <ol
+                            className="mb-4 ml-6 list-decimal space-y-2 text-gray-800 dark:text-gray-200"
+                            {...props}
+                          />
+                        ),
+                        li: ({ node, ...props }) => <li className="text-justify" {...props} />,
+                        blockquote: ({ node, ...props }) => (
+                          <blockquote
+                            className="border-l-4 border-indigo-500 pl-4 my-4 italic text-gray-600 dark:text-gray-400"
+                            {...props}
+                          />
+                        ),
                       }}
                     >
                       {output}
@@ -957,7 +1001,8 @@ export default function AIWriterPage() {
                       Awaiting Your Inspiration
                     </h4>
                     <p className="max-w-xs text-sm text-gray-500 dark:text-gray-500">
-                      Enter your topic above and watch as AI transforms it into professional content
+                      Enter your topic above and watch as AI transforms it into professional
+                      content
                     </p>
                   </div>
                 )}
