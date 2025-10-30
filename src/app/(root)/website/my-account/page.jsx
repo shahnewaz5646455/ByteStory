@@ -117,7 +117,7 @@ const MyAccount = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="">
           {/* Header Skeleton */}
           <div className="mb-12 text-left">
             <div className="animate-pulse">
@@ -157,7 +157,7 @@ const MyAccount = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="">
         {/* Header */}
         <div className="mb-12 text-left">
           <div className="relative inline-block mb-4">

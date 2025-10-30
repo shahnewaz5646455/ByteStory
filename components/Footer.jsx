@@ -6,14 +6,14 @@ export default function Footer() {
 
   return (
     <footer className="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-0">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Main Footer Content */}
         <div className="py-12 md:py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+          <div className="flex flex-col lg:flex-row justify-between gap-8">
 
             {/* Brand Section */}
-            <div className="lg:col-span-1">
+            <div className="max-w-sm">
               <Link href="/" className="inline-flex items-center gap-2 mb-6">
                 <div className="w-10 h-10 rounded-full flex items-center justify-center 
                       bg-gradient-to-r from-purple-500 to-indigo-500 shadow-lg hover:shadow-xl transition-shadow">
@@ -69,72 +69,80 @@ export default function Footer() {
               </div>
             </div>
 
-            {/* Platform Links */}
+            {/* Links & Social Section */}
             <div>
-              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Platform</h4>
-              <ul className="space-y-3">
-                <li><Link href="/" className="text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">
-                  Home
-                </Link></li>
-                <li><Link href="/features" className="text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">
-                  Features
-                </Link></li>
-                <li><Link href="/learn" className="text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">
-                  Learn
-                </Link></li>
-                <li><Link href="/contact" className="text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">
-                  Contact
-                </Link></li>
-              </ul>
-            </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-18">
+                {/* Platform Links */}
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Platform</h4>
+                  <ul className="space-y-3">
+                    <li><Link href="/" className="text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">
+                      Home
+                    </Link></li>
+                    <li><Link href="/features" className="text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">
+                      Features
+                    </Link></li>
+                    <li><Link href="/learn" className="text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">
+                      Learn
+                    </Link></li>
+                    <li><Link href="/contact" className="text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">
+                      Contact
+                    </Link></li>
+                  </ul>
+                </div>
 
-            {/* Team Links */}
-            <div>
-              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Team</h4>
-              <ul className="space-y-3">
-                <li><Link href="/team/about" className="text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">About Us</Link></li>
-                <li><Link href="/team/journey" className="text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">Our Journey</Link></li>
-              </ul>
-            </div>
+                {/* Team Links */}
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Team</h4>
+                  <ul className="space-y-3">
+                    <li><Link href="/team/about" className="text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">About Us</Link></li>
+                    <li><Link href="/team/journey" className="text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">Our Journey</Link></li>
+                  </ul>
+                </div>
 
-            {/* Support & Legal */}
-            <div>
-              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Support</h4>
-              <ul className="space-y-3">
-                <li><Link href="/contact" className="text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">Contact Us</Link></li>
-                <li><Link href="/support/privacy" className="text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/support/terms" className="text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">Terms of Service</Link></li>
-              </ul>
-
-              {/* Social Links */}
-              <div className="mt-8">
+                {/* Support Links */}
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Support</h4>
+                  <ul className="space-y-3">
+                    <li><Link href="/contact" className="text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">Contact Us</Link></li>
+                    <li><Link href="/support/privacy" className="text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">Privacy Policy</Link></li>
+                    <li><Link href="/support/terms" className="text-gray-600 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors">Terms of Service</Link></li>
+                  </ul>
+                  
+                  {/* follow us */}
+                   <div className="mt-6">
                 <h5 className="font-medium text-gray-700 dark:text-gray-200 mb-4">Follow Us</h5>
-                <div className="flex space-x-4">
+                <div className="flex gap-2">
                   <Link href="#" className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md 
-                         hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200">
+                       hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 flex items-center justify-center">
                     <Facebook className="w-5 h-5" />
                   </Link>
                   <Link href="#" className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md 
-                         hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200">
+                       hover:text-indigo-600 dark:hover:text-indigo-400 transition-all duration-200 flex items-center justify-center">
                     <Github className="w-5 h-5" />
                   </Link>
                   <Link href="#" className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md 
-                         hover:text-pink-500 transition-all duration-200">
+                       hover:text-pink-500 transition-all duration-200 flex items-center justify-center">
                     <Instagram className="w-5 h-5" />
                   </Link>
                   <Link href="#" className="p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md 
-                         hover:text-blue-600 transition-all duration-200">
+                       hover:text-blue-600 transition-all duration-200 flex items-center justify-center">
                     <Linkedin className="w-5 h-5" />
                   </Link>
                 </div>
               </div>
+                </div>
+              </div>
+             
+
+              {/* Social Links Grid */}
             </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="border-t border-gray-200 dark:border-gray-800 py-6">
-          <div className="flex justify-center items-center space-y-4 md:space-y-0">
+          <div className="flex justify-center items-center">
             <div className="text-gray-500 dark:text-gray-400 text-sm flex items-center gap-1">
               © {currentYear} ByteStory. Made with <Heart className="h-4 w-4 text-purple-500" /> ByteBuilders.
             </div>
