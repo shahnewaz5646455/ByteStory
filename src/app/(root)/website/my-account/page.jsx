@@ -117,7 +117,7 @@ const MyAccount = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="">
           {/* Header Skeleton */}
           <div className="mb-12 text-left">
             <div className="animate-pulse">
@@ -157,7 +157,7 @@ const MyAccount = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="">
         {/* Header */}
         <div className="mb-12 text-left">
           <div className="relative inline-block mb-4">
@@ -174,7 +174,7 @@ const MyAccount = () => {
         {/* Navigation */}
         <div className="flex justify-start mb-8">
           <Link
-            href="/my-posts"
+            href="/website/my-posts"
             className="inline-flex items-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />

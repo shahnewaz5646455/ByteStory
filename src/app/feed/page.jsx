@@ -2,6 +2,7 @@
 
 import CreatePost from "@/components/CreatePost";
 import Post from "@/components/Post";
+import { TrendingUp } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 
 export default function FeedPage() {
@@ -175,7 +176,7 @@ export default function FeedPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Enhanced Header */}
         <div className="text-center mb-12">
@@ -263,7 +264,7 @@ export default function FeedPage() {
             <div className="flex space-x-2">
               <button
                 onClick={() => setActiveFilter("all")}
-                className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
+                className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 cursor-pointer ${
                   activeFilter === "all"
                     ? "bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-500/25"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
@@ -273,13 +274,13 @@ export default function FeedPage() {
               </button>
               <button
                 onClick={() => setActiveFilter("popular")}
-                className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 ${
+                className={`px-4 flex items-center gap-2 py-2 rounded-xl font-medium transition-all duration-200 cursor-pointer ${
                   activeFilter === "popular"
                     ? "bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-lg shadow-pink-500/25"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
-                🔥 Popular
+                <TrendingUp /> Popular
               </button>
             </div>
           </div>

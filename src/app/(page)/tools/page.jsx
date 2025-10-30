@@ -41,15 +41,6 @@ const tools = [
   },
   {
     name: "PDF Summarizer",
-    desc: "Quickly get the main points from any PDF document.",
-    icon: FileText,
-    href: "/pdf_summarizer",
-    color: "from-indigo-500 to-blue-500",
-    bgColor: "bg-indigo-50 dark:bg-indigo-900/20",
-    tag: "Time Saver"
-  },
-  {
-    name: "PDF Extractor",
     desc: "Extract text from PDF and generate summarized version instantly.",
     icon: Sparkles,
     href: "/pdf-converter",
@@ -119,10 +110,6 @@ export default function ToolsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
-                whileHover={{ 
-                  scale: 1.02,
-                  y: -4,
-                }}
                 className="group"
               >
                 <a
