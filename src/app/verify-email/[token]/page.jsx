@@ -68,7 +68,7 @@ const EmailVerification = ({ params }) => {
     }
   }, [token, dispatch]);
 
-  // Loading State - Verification চলাকালীন
+  // Loading State - Verification
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">

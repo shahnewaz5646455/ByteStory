@@ -275,7 +275,7 @@ export default function Post({ post, onUpdate, onDelete }) {
                   const response = await fetch(`/api/posts/${post.id}`, {
                     method: "DELETE",
                     headers: {
-                      "x-user-email": session.email, // ✅ এই লাইনটা add করুন
+                      "x-user-email": session.email,
                     },
                   });
 

@@ -1,4 +1,3 @@
-// models/BlogPost.js
 import mongoose from "mongoose";
 
 const blogPostSchema = new mongoose.Schema(

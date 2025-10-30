@@ -1,4 +1,3 @@
-// app/api/email-writer/save/route.js
 import { connectDB } from "@/lib/database.Connection";
 import EmailTemplateModel from "@/app/models/EmailTemplate.model";
 
