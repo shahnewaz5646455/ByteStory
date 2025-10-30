@@ -149,6 +149,7 @@ export default function RegisterPage() {
               shape="rectangular"
               text="continue_with"
               width="320"
+              logo_alignment="center"
             />
           </div>
 

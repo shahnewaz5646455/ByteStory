@@ -177,7 +177,7 @@ function LoginPage() {
               {/* Google Button */}
 
               <div className="flex justify-center mb-6">
-                <div className="w-full max-w-[280px] mx-auto">
+                <div>
                   <GoogleLogin
                     onSuccess={handleGoogleSuccess}
                     onError={() => {
@@ -186,8 +186,9 @@ function LoginPage() {
                     }}
                     text="continue_with"
                     size="large"
-                    width="280"
+                    width="320"
                     shape="rectangular"
+                    logo_alignment="center"
                   />
                 </div>
               </div>
