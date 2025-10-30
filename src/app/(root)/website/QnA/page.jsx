@@ -3,7 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { useRouter, useSearchParams } from "next/navigation";
-import { MessageSquare, RefreshCcw, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  MessageSquare,
+  RefreshCcw,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 export default function QnA() {
   const auth = useSelector((store) => store?.authStore?.auth);
@@ -30,7 +35,8 @@ export default function QnA() {
         setError(null);
 
         const url = new URL(
-          (typeof window !== "undefined" ? window.location.origin : "") + "/api/public-messages"
+          (typeof window !== "undefined" ? window.location.origin : "") +
+            "/api/public-messages"
         );
         url.searchParams.set("email", auth.email.toLowerCase());
         url.searchParams.set("page", String(page));
@@ -65,20 +71,22 @@ export default function QnA() {
   }, [auth?.email, page]);
 
   function gotoPage(p) {
-    setLoading(true)
+    setLoading(true);
     const params = new URLSearchParams(Array.from(searchParams.entries()));
     params.set("page", String(p));
-    router.push("/website/QnA")
-   setTimeout(() => {
-    setLoading(false);
-   }, 3000); 
+    router.push("/website/QnA");
+    setTimeout(() => {
+      setLoading(false);
+    }, 3000);
   }
 
   if (!auth) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center px-6">
         <div className="w-full max-w-lg rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-8 text-center shadow">
-          <h1 className="text-2xl font-semibold mb-2">Please sign in to view your messages</h1>
+          <h1 className="text-2xl font-semibold mb-2">
+            Please sign in to view your messages
+          </h1>
           <p className="text-gray-600 dark:text-gray-300 mb-6">
             You must be logged in to see messages you sent via the contact page.
           </p>
@@ -98,8 +106,10 @@ export default function QnA() {
       {/* Header */}
       <div className="mb-6 flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">My Messages</h1>
-          <p className="text-sm text-gray-600 dark:text-gray-300">
+          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-4">
+            My Messages
+          </h1>
+          <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
             Questions and messages you sent via the Contact page.
           </p>
         </div>
@@ -117,8 +127,20 @@ export default function QnA() {
       {loading && (
         <div className="flex items-center justify-center py-16 text-gray-500 dark:text-gray-300">
           <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
-            <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-            <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8v4A4 4 0 008 12H4z"></path>
+            <circle
+              className="opacity-20"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+              fill="none"
+            ></circle>
+            <path
+              className="opacity-80"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4A4 4 0 008 12H4z"
+            ></path>
           </svg>
           Loading…
         </div>
@@ -159,7 +181,9 @@ export default function QnA() {
                 className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div className="font-semibold text-lg">{item.subject || "No subject"}</div>
+                  <div className="font-semibold text-lg">
+                    {item.subject || "No subject"}
+                  </div>
                   <div className="flex items-center gap-2">
                     {item.topic && (
                       <span className="text-xs rounded-full px-2.5 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800">
@@ -195,12 +219,18 @@ export default function QnA() {
                     {item.replies.map((r) => {
                       const rDate = r.createdAt ? new Date(r.createdAt) : null;
                       return (
-                        <div key={r._id} className="rounded-lg bg-white dark:bg-gray-800/70 border border-gray-200 dark:border-gray-700 p-3">
+                        <div
+                          key={r._id}
+                          className="rounded-lg bg-white dark:bg-gray-800/70 border border-gray-200 dark:border-gray-700 p-3"
+                        >
                           <div className="flex items-center justify-between gap-2">
                             <div className="text-sm font-medium">
                               {r.by?.name || "Admin"}
                               {r.by?.email ? (
-                                <span className="text-xs text-gray-500 dark:text-gray-400"> ({r.by.email})</span>
+                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                  {" "}
+                                  ({r.by.email})
+                                </span>
                               ) : null}
                             </div>
                             <div className="text-xs text-gray-500 dark:text-gray-400">

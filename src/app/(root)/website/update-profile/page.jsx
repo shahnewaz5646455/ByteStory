@@ -181,10 +181,10 @@ const ProfilePage = () => {
         {/* Header */}
         <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-4">
               My Profile
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
+            <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
               Manage your personal information and account settings
             </p>
           </div>
