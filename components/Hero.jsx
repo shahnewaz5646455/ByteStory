@@ -6,8 +6,10 @@ import Link from 'next/link';
 import { SparklesText } from '@/components/ui/sparkles-text';
 import GridBackgroundView from '@/components/ui/GridBackgroundView';
 import { BackgroundBeamsWithCollision } from '@/components/ui/background-beams-with-collision';
+import { useSelector } from 'react-redux';
 
 const Hero = () => {
+  const auth = useSelector((store) => store.authStore.auth);
   return (
     <section className="relative px-4 overflow-hidden flex flex-col items-center justify-center py-12 md:py-16 lg:py-0 min-h-[calc(100vh-64px)]">
       <div className="absolute inset-0  z-0">
@@ -40,7 +42,7 @@ const Hero = () => {
         {/* Buttons */}
         <div className="flex flex-nowrap justify-center gap-4 mb-16">
           <Link
-            href="/login"
+             href={auth ? "/tools" : "/login"}
             className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold text-sm md:text-base px-5 py-3 md:px-8 md:py-4 rounded-lg shadow-lg hover:shadow-xl hover:from-purple-600 hover:to-indigo-600 transition duration-150 transform cursor-pointer flex items-center justify-center w-max whitespace-nowrap"
           >
             Start Creating Now
