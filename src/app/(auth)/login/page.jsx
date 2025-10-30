@@ -334,7 +334,7 @@ function LoginPage() {
                 type="button"
                 onClick={() => handleCredentialClick("admin")}
                 variant="outline"
-                className="flex-1 border-2 border-red-400 dark:border-red-500 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 hover:text-red-700 dark:hover:text-red-300 font-medium py-2.5 rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
+                className="flex-1 border-2 border-red-400 dark:border-red-500 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 hover:text-red-700 dark:hover:text-red-300 font-medium py-2.5 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Shield className="w-4 h-4" />
                 Admin Login
@@ -343,7 +343,7 @@ function LoginPage() {
                 type="button"
                 onClick={() => handleCredentialClick("user")}
                 variant="outline"
-                className="flex-1 border-2 border-green-400 dark:border-green-500 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950 hover:text-green-700 dark:hover:text-green-300 font-medium py-2.5 rounded-lg transition-all duration-300 flex items-center justify-center gap-2"
+                className="flex-1 border-2 border-green-400 dark:border-green-500 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950 hover:text-green-700 dark:hover:text-green-300 font-medium py-2.5 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer"
               >
                 <User className="w-4 h-4" />
                 User Login
