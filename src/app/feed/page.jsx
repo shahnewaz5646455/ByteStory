@@ -229,11 +229,14 @@ export default function FeedPage() {
                 onClick={() => setActiveFilter("popular")}
                 className={`px-4 flex items-center gap-2 py-2 rounded-xl font-medium transition-all duration-200 cursor-pointer ${
                   activeFilter === "popular"
-                    ? "bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-lg shadow-pink-500/25"
+                    ? "group/button relative inline-flex items-center justify-center overflow-hidden rounded-md hover:bg-gray-800 bg-gray-800 backdrop-blur-lg text-base font-semibold text-white transition-all duration-150 ease-in-out hover:shadow-lg hover:shadow-gray-600/50 dark:hover:shadow-indigo-600/30 border border-white/20 dark:border-indigo-400/20 cursor-pointer"
                     : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
                 }`}
               >
                 <TrendingUp /> Popular
+                 <div className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]">
+        <div className="relative h-full w-10 bg-white/20 dark:bg-indigo-300/20"></div>
+      </div>
               </button>
             </div>
           </div>
