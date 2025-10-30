@@ -711,112 +711,126 @@ export default function Post({ post, onUpdate, onDelete }) {
         )}
       </div>
 
-      {/* Post Stats */}
-      <div className="px-5 py-3 border-t border-gray-100 dark:border-gray-700 flex justify-between text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-750">
-        <div className="flex items-center space-x-6">
-          <div className="flex items-center space-x-2">
-            <div className="flex -space-x-1">
-              {post.likes.length > 0 && (
-                <div className="w-6 h-6 bg-blue-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center shadow-sm">
-                  <LikeIcon className="w-3 h-3 text-white" filled={true} />
-                </div>
-              )}
-              {post.loves.length > 0 && (
-                <div className="w-6 h-6 bg-red-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center shadow-sm">
-                  <LoveIcon className="w-3 h-3 text-white" filled={true} />
-                </div>
-              )}
-            </div>
-            <span className="font-medium">
-              {post.likes.length + post.loves.length}
-            </span>
+     {/* Post Stats */}
+<div className="px-5 py-3 border-t border-gray-100 dark:border-gray-800 flex justify-between text-sm bg-white dark:bg-gray-800">
+  <div className="flex items-center space-x-6">
+    {/* Reactions Count */}
+    <div className="flex items-center space-x-2">
+      <div className="flex -space-x-1">
+        {post.likes.length > 0 && (
+          <div className="w-6 h-6 bg-blue-500 rounded-full border-2 border-white dark:border-gray-900 flex items-center justify-center shadow-sm">
+            <LikeIcon className="w-3 h-3 text-white" filled={true} />
           </div>
-          <button
-            onClick={() => setShowComments(!showComments)}
-            className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-          >
-            {post.comments.length} comments
-          </button>
-        </div>
+        )}
+        {post.loves.length > 0 && (
+          <div className="w-6 h-6 bg-red-500 rounded-full border-2 border-white dark:border-gray-900 flex items-center justify-center shadow-sm">
+            <LoveIcon className="w-3 h-3 text-white" filled={true} />
+          </div>
+        )}
+        {post.likes.length === 0 && post.loves.length === 0 && (
+          <div className="w-6 h-6 bg-gray-300 dark:bg-gray-600 rounded-full border-2 border-white dark:border-gray-900 flex items-center justify-center shadow-sm">
+            <LikeIcon className="w-3 h-3 text-gray-500 dark:text-gray-400" filled={false} />
+          </div>
+        )}
       </div>
+      <span className="font-medium text-gray-700 dark:text-gray-300">
+        {post.likes.length + post.loves.length}
+      </span>
+    </div>
+    
+    {/* Comments Toggle */}
+    <button
+      onClick={() => setShowComments(!showComments)}
+      className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-200 font-medium px-2 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+    >
+      {post.comments.length} {post.comments.length === 1 ? 'comment' : 'comments'}
+    </button>
+  </div>
+  
+  {/* Optional: Share or other actions */}
+  <div className="flex items-center space-x-4">
+    <button className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-200 font-medium px-2 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-xs">
+      Share
+    </button>
+  </div>
+</div>
 
       {/* Post Actions */}
-      <div className="px-3 py-2 flex justify-between border-t border-gray-100 dark:border-gray-700">
-        <button
-          onClick={() => handleReaction("like")}
-          disabled={isLoading}
-          className={`flex items-center space-x-2 px-4 py-3 rounded-lg flex-1 justify-center transition-all duration-300 disabled:opacity-50 group ${
-            isLiked
-              ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-              : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
-          }`}
-        >
-          <div
-            className={`transform transition-transform group-hover:scale-110 ${
-              isLiked ? "scale-110" : ""
-            }`}
-          >
-            <LikeIcon className="w-5 h-5" filled={isLiked} />
-          </div>
-          <span
-            className={`font-medium ${
-              isLiked ? "text-blue-600 dark:text-blue-400" : ""
-            }`}
-          >
-            Like
-          </span>
-        </button>
+<div className="px-3 py-2 flex justify-between border-t border-gray-100 dark:border-gray-700">
+  <button
+    onClick={() => handleReaction("like")}
+    disabled={isLoading}
+    className={`flex items-center justify-center space-x-1 px-2 py-3 rounded-lg flex-1 min-w-0 transition-all duration-300 disabled:opacity-50 group ${
+      isLiked
+        ? "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+        : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+    }`}
+  >
+    <div
+      className={`transform transition-transform group-hover:scale-110 ${
+        isLiked ? "scale-110" : ""
+      }`}
+    >
+      <LikeIcon className="w-4 h-4 sm:w-5 sm:h-5" filled={isLiked} />
+    </div>
+    <span
+      className={`font-medium text-xs sm:text-sm truncate ${
+        isLiked ? "text-blue-600 dark:text-blue-400" : ""
+      }`}
+    >
+      Like
+    </span>
+  </button>
 
-        <button
-          onClick={() => handleReaction("love")}
-          disabled={isLoading}
-          className={`flex items-center space-x-2 px-4 py-3 rounded-lg flex-1 justify-center transition-all duration-300 disabled:opacity-50 group ${
-            isLoved
-              ? "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400"
-              : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
-          }`}
-        >
-          <div
-            className={`transform transition-transform group-hover:scale-110 ${
-              isLoved ? "scale-110" : ""
-            }`}
-          >
-            <LoveIcon className="w-5 h-5" filled={isLoved} />
-          </div>
-          <span
-            className={`font-medium ${
-              isLoved ? "text-red-600 dark:text-red-400" : ""
-            }`}
-          >
-            Love
-          </span>
-        </button>
+  <button
+    onClick={() => handleReaction("love")}
+    disabled={isLoading}
+    className={`flex items-center justify-center space-x-1 px-2 py-3 rounded-lg flex-1 min-w-0 transition-all duration-300 disabled:opacity-50 group ${
+      isLoved
+        ? "bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400"
+        : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+    }`}
+  >
+    <div
+      className={`transform transition-transform group-hover:scale-110 ${
+        isLoved ? "scale-110" : ""
+      }`}
+    >
+      <LoveIcon className="w-4 h-4 sm:w-5 sm:h-5" filled={isLoved} />
+    </div>
+    <span
+      className={`font-medium text-xs sm:text-sm truncate ${
+        isLoved ? "text-red-600 dark:text-red-400" : ""
+      }`}
+    >
+      Love
+    </span>
+  </button>
 
-        <button
-          onClick={() => setShowComments(!showComments)}
-          disabled={isLoading}
-          className="flex items-center space-x-2 px-4 py-3 rounded-lg flex-1 justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 disabled:opacity-50 group"
-        >
-          <div className="transform transition-transform group-hover:scale-110">
-            <CommentIcon className="w-5 h-5" />
-          </div>
-          <span className="font-medium">Comment</span>
-        </button>
+  <button
+    onClick={() => setShowComments(!showComments)}
+    disabled={isLoading}
+    className="flex items-center justify-center space-x-1 px-2 py-3 rounded-lg flex-1 min-w-0 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 disabled:opacity-50 group"
+  >
+    <div className="transform transition-transform group-hover:scale-110">
+      <CommentIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+    </div>
+    <span className="font-medium text-xs sm:text-sm truncate">Comment</span>
+  </button>
 
-        <button
-          onClick={handleShare}
-          disabled={isLoading || isSharing}
-          className="flex items-center space-x-2 px-4 py-3 rounded-lg flex-1 justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 disabled:opacity-50 group"
-        >
-          <div className="transform transition-transform group-hover:scale-110">
-            <ShareIcon className="w-5 h-5" />
-          </div>
-          <span className="font-medium">
-            {isSharing ? "Sharing..." : "Share"}
-          </span>
-        </button>
-      </div>
-
+  <button
+    onClick={handleShare}
+    disabled={isLoading || isSharing}
+    className="flex items-center justify-center space-x-1 px-2 py-3 rounded-lg flex-1 min-w-0 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-300 disabled:opacity-50 group"
+  >
+    <div className="transform transition-transform group-hover:scale-110">
+      <ShareIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+    </div>
+    <span className="font-medium text-xs sm:text-sm truncate">
+      {isSharing ? "Sharing..." : "Share"}
+    </span>
+  </button>
+</div>
       {/* Share Options Modal */}
       {showShareOptions && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
@@ -908,106 +922,106 @@ export default function Post({ post, onUpdate, onDelete }) {
         </div>
       )}
 
-      {/* Comments Section */}
-      {showComments && (
-        <div className="border-t border-gray-100 dark:border-gray-700 p-5 bg-gray-50 dark:bg-gray-750">
-          {/* Comment Input */}
-          <form onSubmit={handleComment} className="flex space-x-3 mb-6">
-            <div className="flex-shrink-0">
-              {session?.photoURL ? (
-                <img
-                  src={session.photoURL}
-                  alt={session?.name}
-                  className="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-sm"
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                    if (e.target.nextSibling) {
-                      e.target.nextSibling.style.display = "flex";
-                    }
-                  }}
-                />
-              ) : null}
-              <div
-                className="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm border-2 border-white dark:border-gray-700 shadow-sm flex-shrink-0"
-                style={{ display: session?.photoURL ? "none" : "flex" }}
-              >
-                {session?.name?.charAt(0)?.toUpperCase() || "U"}
-              </div>
-            </div>
+     {/* Comments Section */}
+{showComments && (
+  <div className="border-t border-gray-200 dark:border-gray-700 p-5 bg-gray-50 dark:bg-gray-900/50 backdrop-blur-sm">
+    {/* Comment Input */}
+    <form onSubmit={handleComment} className="flex space-x-3 mb-6">
+      <div className="flex-shrink-0">
+        {session?.photoURL ? (
+          <img
+            src={session.photoURL}
+            alt={session?.name}
+            className="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-gray-800 shadow-sm"
+            onError={(e) => {
+              e.target.style.display = "none";
+              if (e.target.nextSibling) {
+                e.target.nextSibling.style.display = "flex";
+              }
+            }}
+          />
+        ) : null}
+        <div
+          className="w-10 h-10 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-sm border-2 border-white dark:border-gray-800 shadow-sm flex-shrink-0"
+          style={{ display: session?.photoURL ? "none" : "flex" }}
+        >
+          {session?.name?.charAt(0)?.toUpperCase() || "U"}
+        </div>
+      </div>
 
-            <div className="flex-1">
-              <input
-                type="text"
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                placeholder="Write a comment..."
-                disabled={isLoading}
-                className="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:opacity-50 shadow-sm transition-all"
+      <div className="flex-1">
+        <input
+          type="text"
+          value={commentText}
+          onChange={(e) => setCommentText(e.target.value)}
+          placeholder="Write a comment..."
+          disabled={isLoading}
+          className="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-full bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent disabled:opacity-50 shadow-sm transition-all duration-200"
+        />
+      </div>
+      <button
+        type="submit"
+        disabled={isLoading || !commentText.trim()}
+        className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 text-white rounded-xl text-sm font-medium disabled:opacity-50 hover:shadow-md transition-all duration-200 transform hover:-translate-y-0.5 flex-shrink-0 self-start mt-2 shadow-sm"
+      >
+        {isLoading ? "Posting..." : "Post"}
+      </button>
+    </form>
+
+    {/* Comments List */}
+    <div className="space-y-4">
+      {post.comments.map((comment) => (
+        <div key={comment.id} className="flex space-x-3 group">
+          <div className="flex-shrink-0">
+            {comment.authorImage ? (
+              <img
+                src={comment.authorImage}
+                alt={comment.authorName}
+                className="w-9 h-9 rounded-full object-cover border-2 border-white dark:border-gray-800 shadow-sm"
+                onError={(e) => {
+                  e.target.style.display = "none";
+                  if (e.target.nextSibling) {
+                    e.target.nextSibling.style.display = "flex";
+                  }
+                }}
               />
-            </div>
-            <button
-              type="submit"
-              disabled={isLoading || !commentText.trim()}
-              className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl text-sm font-medium disabled:opacity-50 hover:shadow-md transition-all transform hover:-translate-y-0.5 flex-shrink-0 self-start mt-2"
+            ) : null}
+            <div
+              className="w-9 h-9 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-xs border-2 border-white dark:border-gray-800 shadow-sm flex-shrink-0"
+              style={{ display: comment.authorImage ? "none" : "flex" }}
             >
-              {isLoading ? "Posting..." : "Post"}
-            </button>
-          </form>
+              {comment.authorName?.charAt(0)?.toUpperCase() || "U"}
+            </div>
+          </div>
 
-          {/* Comments List */}
-          <div className="space-y-4">
-            {post.comments.map((comment) => (
-              <div key={comment.id} className="flex space-x-3 group">
-                <div className="flex-shrink-0">
-                  {comment.authorImage ? (
-                    <img
-                      src={comment.authorImage}
-                      alt={comment.authorName}
-                      className="w-9 h-9 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-sm"
-                      onError={(e) => {
-                        e.target.style.display = "none";
-                        if (e.target.nextSibling) {
-                          e.target.nextSibling.style.display = "flex";
-                        }
-                      }}
-                    />
-                  ) : null}
-                  <div
-                    className="w-9 h-9 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold text-xs border-2 border-white dark:border-gray-700 shadow-sm flex-shrink-0"
-                    style={{ display: comment.authorImage ? "none" : "flex" }}
-                  >
-                    {comment.authorName?.charAt(0)?.toUpperCase() || "U"}
-                  </div>
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="bg-white dark:bg-gray-700 rounded-2xl p-4 shadow-sm border border-gray-200 dark:border-gray-600 group-hover:shadow-md transition-all">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <h4 className="font-semibold text-gray-900 dark:text-white text-sm truncate">
-                        {comment.authorName}
-                      </h4>
-                      <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
-                        {formatTime(comment.createdAt)}
-                      </span>
-                    </div>
-                    <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed break-words">
-                      {comment.content}
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-4 mt-2 ml-2 text-xs text-gray-500 dark:text-gray-400">
-                    <button className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors font-medium">
-                      Like
-                    </button>
-                    <button className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors font-medium">
-                      Reply
-                    </button>
-                  </div>
-                </div>
+          <div className="flex-1 min-w-0">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-200 dark:border-gray-700 group-hover:shadow-md transition-all duration-200 group-hover:border-gray-300 dark:group-hover:border-gray-600">
+              <div className="flex items-center space-x-2 mb-1">
+                <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm truncate">
+                  {comment.authorName}
+                </h4>
+                <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
+                  {formatTime(comment.createdAt)}
+                </span>
               </div>
-            ))}
+              <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed break-words">
+                {comment.content}
+              </p>
+            </div>
+            <div className="flex items-center space-x-4 mt-2 ml-2 text-xs">
+              <button className="text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 font-medium">
+                Like
+              </button>
+              <button className="text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200 font-medium">
+                Reply
+              </button>
+            </div>
           </div>
         </div>
-      )}
+      ))}
+    </div>
+  </div>
+)}
     </div>
   );
 }
