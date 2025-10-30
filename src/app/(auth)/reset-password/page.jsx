@@ -83,7 +83,7 @@ const ResetPassword = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-800 dark:to-gray-950 p-4">
       <div className="max-w-md w-full">
-        {/* যদি OTP verify হয়ে যায় */}
+        {/* OTP verify  */}
         {isOtpVerified ? (
           <UpdatePassword email={otpEmail} />
         ) : (

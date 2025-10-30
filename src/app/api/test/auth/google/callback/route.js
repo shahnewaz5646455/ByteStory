@@ -6,7 +6,6 @@ import { NextResponse } from "next/server";
 
 export async function GET(request) {
   try {
-    // 1 Connect to MongoDB
     await connectDB();
 
     // 2 Get the code from Google redirect
@@ -22,7 +21,7 @@ export async function GET(request) {
 
     console.log("🔐 Exchanging code for tokens...");
 
-    // 3 Exchange code for tokens
+    //  Exchange code for tokens
     const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -44,7 +43,7 @@ export async function GET(request) {
       );
     }
 
-    // 4 Fetch user info from Google
+    //  Fetch user info from Google
 
     const userRes = await fetch(
       "https://www.googleapis.com/oauth2/v3/userinfo",
@@ -67,7 +66,7 @@ export async function GET(request) {
 
     console.log("👤 Google user data:", { name, email });
 
-    // 5 Find or create the user
+    //  Find or create the user
     let user = await UserModel.findOne({ email });
     let isNewUser = false;
 
@@ -119,7 +118,7 @@ export async function GET(request) {
       console.log("ℹ️ Existing user, no notification needed");
     }
 
-    // 6️⃣ Generate JWT
+    // Generate JWT
 
     const secret = new TextEncoder().encode(process.env.SECRET_KEY);
     const jwt = await new SignJWT({
@@ -132,7 +131,7 @@ export async function GET(request) {
       .setProtectedHeader({ alg: "HS256" })
       .sign(secret);
 
-    // 7️⃣ Role-based redirect
+    // Role-based redirect
     let redirectUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/`;
     if (user.role === "admin") {
       redirectUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/admin/adminDashboard`;
@@ -146,7 +145,7 @@ export async function GET(request) {
       isNewUser ? "NEW GOOGLE USER" : "EXISTING USER"
     );
 
-    // 8️⃣ Set cookie and redirect
+    // Set cookie and redirect
     const response = NextResponse.redirect(redirectUrl);
     response.cookies.set("authToken", jwt, {
       httpOnly: true,

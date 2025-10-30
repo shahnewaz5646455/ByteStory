@@ -1,17 +1,11 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-// import Visitor from "@/models/Visitor";
-// import PageView from "@/models/PageView";
-// import User from "@/models/User";
-// import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { connectDB } from "@/lib/database.Connection";
 import ActiveSession from "@/app/models/ActiveSession";
 import Visitor from "@/app/models/Visitor";
 import PageView from "@/app/models/PageView";
 import UserModel from "@/app/models/User.model";
 import { authOptions } from "../../auth/[...nextauth]/route";
-// import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-
 export async function POST(request) {
   try {
     // Connect to database

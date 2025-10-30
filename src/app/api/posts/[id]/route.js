@@ -69,7 +69,6 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
-    // ✅ params await করুন
     const { id } = await params;
 
     // Get user email from headers

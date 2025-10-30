@@ -1,4 +1,3 @@
-// app/api/visitors/stats/route.js
 import { NextResponse } from "next/server";
 import Visitor from "@/app/models/Visitor";
 import PageView from "@/app/models/PageView";
@@ -77,10 +76,10 @@ export async function GET(request) {
 
     // NEW: Get hourly data for charts
     const hourlyData = await getHourlyData(startDate, period);
-    
+
     // NEW: Get traffic sources data
     const trafficSources = await getTrafficSources(startDate);
-    
+
     // NEW: Get device types data
     const deviceTypes = await getDeviceTypes(startDate);
 
@@ -113,8 +112,8 @@ export async function GET(request) {
         trafficSources,
         deviceTypes,
         realtime: {
-          activeUsers: totalActive
-        }
+          activeUsers: totalActive,
+        },
       },
     });
   } catch (error) {
@@ -128,66 +127,69 @@ export async function GET(request) {
 
 // NEW: Function to get hourly data for charts
 async function getHourlyData(startDate, period) {
-  const hourGroupFormat = period === "today" 
-    ? { hour: { $hour: "$createdAt" } } 
-    : { hour: { $dateToString: { format: "%m-%d", date: "$createdAt" } } };
+  const hourGroupFormat =
+    period === "today"
+      ? { hour: { $hour: "$createdAt" } }
+      : { hour: { $dateToString: { format: "%m-%d", date: "$createdAt" } } };
 
   const hourlyVisitors = await Visitor.aggregate([
     {
       $match: {
-        createdAt: { $gte: startDate }
-      }
+        createdAt: { $gte: startDate },
+      },
     },
     {
       $group: {
         _id: hourGroupFormat,
         visitors: { $sum: 1 },
-        uniqueVisitors: { $addToSet: "$visitorId" }
-      }
+        uniqueVisitors: { $addToSet: "$visitorId" },
+      },
     },
     {
-      $sort: { "_id.hour": 1 }
-    }
+      $sort: { "_id.hour": 1 },
+    },
   ]);
 
   const hourlyPageViews = await PageView.aggregate([
     {
       $match: {
-        createdAt: { $gte: startDate }
-      }
+        createdAt: { $gte: startDate },
+      },
     },
     {
       $group: {
         _id: hourGroupFormat,
-        pageViews: { $sum: 1 }
-      }
+        pageViews: { $sum: 1 },
+      },
     },
     {
-      $sort: { "_id.hour": 1 }
-    }
+      $sort: { "_id.hour": 1 },
+    },
   ]);
 
   // Combine the data
   const hourlyDataMap = new Map();
 
-  hourlyVisitors.forEach(item => {
-    const hour = period === "today" 
-      ? `${item._id.hour.toString().padStart(2, '0')}:00` 
-      : item._id.hour;
-    
+  hourlyVisitors.forEach((item) => {
+    const hour =
+      period === "today"
+        ? `${item._id.hour.toString().padStart(2, "0")}:00`
+        : item._id.hour;
+
     hourlyDataMap.set(hour, {
       hour,
       visitors: item.visitors,
       activeUsers: item.uniqueVisitors.length,
-      pageViews: 0
+      pageViews: 0,
     });
   });
 
-  hourlyPageViews.forEach(item => {
-    const hour = period === "today" 
-      ? `${item._id.hour.toString().padStart(2, '0')}:00` 
-      : item._id.hour;
-    
+  hourlyPageViews.forEach((item) => {
+    const hour =
+      period === "today"
+        ? `${item._id.hour.toString().padStart(2, "0")}:00`
+        : item._id.hour;
+
     if (hourlyDataMap.has(hour)) {
       hourlyDataMap.get(hour).pageViews = item.pageViews;
     } else {
@@ -195,7 +197,7 @@ async function getHourlyData(startDate, period) {
         hour,
         visitors: 0,
         activeUsers: 0,
-        pageViews: item.pageViews
+        pageViews: item.pageViews,
       });
     }
   });
@@ -213,23 +215,23 @@ async function getTrafficSources(startDate) {
   const trafficSources = await Visitor.aggregate([
     {
       $match: {
-        createdAt: { $gte: startDate }
-      }
+        createdAt: { $gte: startDate },
+      },
     },
     {
       $group: {
         _id: "$source",
-        count: { $sum: 1 }
-      }
+        count: { $sum: 1 },
+      },
     },
     {
-      $sort: { count: -1 }
-    }
+      $sort: { count: -1 },
+    },
   ]);
 
-  return trafficSources.map(source => ({
+  return trafficSources.map((source) => ({
     source: source._id || "Direct",
-    count: source.count
+    count: source.count,
   }));
 }
 
@@ -238,22 +240,22 @@ async function getDeviceTypes(startDate) {
   const deviceTypes = await Visitor.aggregate([
     {
       $match: {
-        createdAt: { $gte: startDate }
-      }
+        createdAt: { $gte: startDate },
+      },
     },
     {
       $group: {
         _id: "$deviceType",
-        count: { $sum: 1 }
-      }
+        count: { $sum: 1 },
+      },
     },
     {
-      $sort: { count: -1 }
-    }
+      $sort: { count: -1 },
+    },
   ]);
 
-  return deviceTypes.map(device => ({
+  return deviceTypes.map((device) => ({
     device: device._id || "Unknown",
-    count: device.count
+    count: device.count,
   }));
 }

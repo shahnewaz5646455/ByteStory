@@ -5,7 +5,7 @@ import { jwtVerify } from "jose";
 
 export async function POST(request) {
   try {
-    await connectDB(); // await add করুন
+    await connectDB();
     const { token } = await request.json();
 
     if (!token) {

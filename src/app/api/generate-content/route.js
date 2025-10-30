@@ -13,7 +13,7 @@ export async function POST(request) {
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-    // system prompts এ markdown ব্যবহারের অনুমতি দিন
+    // system prompts markdown
     const systemPrompts = {
       blog: `You are a professional blog writer with 10+ years of experience. Create a comprehensive, engaging blog post.
 
@@ -96,33 +96,33 @@ CONTENT GUIDELINES:
 
 PRODUCT/SERVICE: ${prompt}
 
-IMPORTANT: Use persuasive formatting with markdown to highlight key points.`
+IMPORTANT: Use persuasive formatting with markdown to highlight key points.`,
     };
 
     const selectedPrompt = systemPrompts[template] || systemPrompts.blog;
 
-    const model = genAI.getGenerativeModel({ 
+    const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
       generationConfig: {
         temperature: template === "academic" ? 0.3 : 0.8,
         topK: 40,
         topP: 0.95,
         maxOutputTokens: 2048,
-      }
+      },
     });
 
     const result = await model.generateContent(selectedPrompt);
     const text = result.response.text();
 
-    // শুধুমাত্র এক্সট্রা স্পেস এবং whitespace ক্লিনআপ করুন, markdown রাখুন
+    //  whitespace clean-up, markdown
     const cleanText = text
-      .replace(/\n{3,}/g, '\n\n')      // Remove extra newlines
-      .replace(/\s+\./g, '.')          // Fix spacing before periods
+      .replace(/\n{3,}/g, "\n\n") // Remove extra newlines
+      .replace(/\s+\./g, ".") // Fix spacing before periods
       .trim();
 
-    return Response.json({ 
-      success: true, 
-      content: cleanText 
+    return Response.json({
+      success: true,
+      content: cleanText,
     });
   } catch (error) {
     console.error("Gemini API error:", error);
@@ -130,7 +130,8 @@ IMPORTANT: Use persuasive formatting with markdown to highlight key points.`
       {
         success: false,
         error: "Failed to generate content.",
-        details: process.env.NODE_ENV === "development" ? error.message : undefined,
+        details:
+          process.env.NODE_ENV === "development" ? error.message : undefined,
       },
       { status: 500 }
     );

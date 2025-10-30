@@ -1,5 +1,3 @@
-// app/api/email-writer/generate/route.js
-
 import { connectDB } from "@/lib/database.Connection";
 import EmailTemplateModel from "@/app/models/EmailTemplate.model";
 import { GoogleGenerativeAI } from "@google/generative-ai";
