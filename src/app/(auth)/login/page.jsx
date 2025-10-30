@@ -176,11 +176,21 @@ function LoginPage() {
 
               {/* Google Button */}
 
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={() => console.log("Google Login Failed")}
-                text="continue_with"
-              />
+              <div className="flex justify-center mb-6">
+                <div className="w-full max-w-[280px] mx-auto">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={() => {
+                      showToast("error", "Google login failed");
+                      console.log("Google Login Failed");
+                    }}
+                    text="continue_with"
+                    size="large"
+                    width="280"
+                    shape="rectangular"
+                  />
+                </div>
+              </div>
 
               {/* Separator */}
               <div className="flex items-center gap-3 my-6">
