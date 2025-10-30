@@ -81,7 +81,7 @@ const HowItWorks = () => {
           {/* Middle Line */}
           <div className="absolute left-1/2 top-0 h-full w-1 bg-gradient-to-b from-blue-500 via-purple-500 to-pink-500 transform -translate-x-1/2"></div>
 
-          <div className="steps-container space-y-2">
+          <div className="steps-container space-y-6 md:space-y-2">
             {steps.map((step, index) => (
               <div
                 key={step.id}
