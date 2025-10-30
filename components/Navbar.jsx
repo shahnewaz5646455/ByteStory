@@ -277,7 +277,7 @@ export default function Navbar() {
                         : ""
                     }`}
                   >
-                    Feed
+                   Story Feed
                   </NavigationMenuLink>
                 </NavigationMenuItem>
 

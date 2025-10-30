@@ -67,7 +67,7 @@ export default function EmailWriter() {
   const [savedTemplates, setSavedTemplates] = useState([]);
   const [activeTab, setActiveTab] = useState("compose");
 
-  // ---- Blog Key State ----
+  // ---- email Key State ----
   const [emailKeyCount, setEmailKeyCount] = useState(0);
   const [userData, setUserData] = useState(null);
   const [showKeyModal, setShowKeyModal] = useState(false);
