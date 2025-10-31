@@ -84,7 +84,11 @@ export default function AIWriterPage() {
         );
         const data = await response.json();
         if (data?.success) {
-          setBlogKeyCount(data.user?.blog_key || 0);
+           console.log("✅ USER DATA FROM DATABASE:");
+        console.log("📧 Email:", data.user.email);
+        console.log("👤 Name:", data.user.name);
+        console.log("🔑 blog Keys:", data.user.blog_key);
+          setBlogKeyCount( data.user.blog_key || 0);
         }
       } catch (err) {
         console.error("Error fetching user data:", err);
@@ -295,47 +299,55 @@ export default function AIWriterPage() {
     }
   };
 
-  const handleCheckout = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          lineItems: [
-            {
-              price_data: {
-                currency: "usd",
-                product_data: { name: "AI powered blog generator" },
-                unit_amount: 100,
-              },
-              quantity: 1,
+ const handleCheckout = async () => {
+  setLoading(true);
+  try {
+    const res = await fetch("/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        lineItems: [
+          {
+            price_data: {
+              currency: "usd",
+              product_data: { name: "Blog Keys (10-pack)" },
+              unit_amount: 100, // $1.00
             },
-          ],
-        }),
-      });
+            quantity: 1, // 1 pack
+          },
+        ],
 
-      const data = await res.json();
+        // ✅ Use snake_case to match webhook expectations
+        email: auth.email,
+        key_type: "blog",    // ✅ Changed from keyType to key_type
+        quantity: 10,        // ✅ 10 keys per pack
+      }),
+    });
 
-      // Redirect using Stripe-hosted URL if available
-      if (data.url) {
-        window.location.href = data.url;
-        return;
-      }
+    const data = await res.json();
 
-      // Fallback: redirect using session ID
-      if (data.id) {
-        const stripe = await stripePromise;
-        await stripe.redirectToCheckout({ sessionId: data.id });
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Checkout failed. See console for details.");
-    } finally {
-      setLoading(false);
+    if (!res.ok) {
+      throw new Error(data.error || "Checkout failed");
     }
-  };
 
+    // Redirect using Stripe-hosted URL
+    if (data.url) {
+      window.location.href = data.url;
+      return;
+    }
+
+    // Fallback: redirect using session ID
+    if (data.id) {
+      const stripe = await stripePromise;
+      await stripe.redirectToCheckout({ sessionId: data.id });
+    }
+  } catch (err) {
+    console.error("❌ Checkout error:", err);
+    alert("Checkout failed: " + err.message);
+  } finally {
+    setLoading(false);
+  }
+};
   const templates = [
     { id: "blog", name: "Blog Post", icon: <FileText size={18} /> },
     { id: "creative", name: "Creative Story", icon: <PenTool size={18} /> },
@@ -609,9 +621,8 @@ export default function AIWriterPage() {
                     </div>
                     <ChevronDown
                       size={18}
-                      className={`text-indigo-400 transition-transform duration-300 ${
-                        showTemplates ? "rotate-180" : ""
-                      }`}
+                      className={`text-indigo-400 transition-transform duration-300 ${showTemplates ? "rotate-180" : ""
+                        }`}
                     />
                   </button>
 
@@ -631,11 +642,10 @@ export default function AIWriterPage() {
                               setShowTemplates(false);
                             }}
                             type="button"
-                            className={`group flex w-full items-center px-4 py-3 text-left transition-all duration-200 hover:bg-indigo-50 dark:hover:bg-gray-700 ${
-                              selectedTemplate === template.id
+                            className={`group flex w-full items-center px-4 py-3 text-left transition-all duration-200 hover:bg-indigo-50 dark:hover:bg-gray-700 ${selectedTemplate === template.id
                                 ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300"
                                 : "text-gray-700 dark:text-gray-300"
-                            }`}
+                              }`}
                           >
                             <span className="text-indigo-500 transition-transform group-hover:scale-110 dark:text-indigo-400">
                               {template.icon}
@@ -677,11 +687,10 @@ export default function AIWriterPage() {
                       type="submit"
                       aria-label="Send"
                       disabled={!canGenerate}
-                      className={`rounded-full p-3 shadow-lg transition-all duration-300 ${
-                        !canGenerate
+                      className={`rounded-full p-3 shadow-lg transition-all duration-300 ${!canGenerate
                           ? "cursor-not-allowed bg-gray-300 dark:bg-gray-600"
                           : "cursor-pointer bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-indigo-500/30 dark:hover:shadow-purple-500/20"
-                      }`}
+                        }`}
                     >
                       {isGenerating ? (
                         <motion.div
@@ -1030,7 +1039,7 @@ export default function AIWriterPage() {
                   </div>
 
                   <div className="w-full sm:w-auto">
-                    <Reader />
+                    {/* <Reader /> */}
                   </div>
                 </motion.div>
               )}
