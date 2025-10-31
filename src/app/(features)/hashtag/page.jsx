@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import { Sparkles, Hash, Copy, CheckCircle, RotateCw, Settings, TrendingUp, BarChart3, Download, Plus, Minus, Wifi, WifiOff, AlertTriangle, Key, X, ShoppingCart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSelector } from "react-redux";
+import { loadStripe } from "@stripe/stripe-js";
+// Initialize Stripe with your public key
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY );
 
 export default function Home() {
   const auth = useSelector((store) => store.authStore.auth);
@@ -238,6 +241,66 @@ export default function Home() {
     await executeGenerateContent(requestData);
   };
 
+// make session /checkout to stripe for payment
+ const handleCheckout = async () => {
+  setLoading(true);
+  try {
+    const res = await fetch("/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        lineItems: [
+          {
+            price_data: {
+              currency: "usd",
+              product_data: { name: "Hashtag Keys (10-pack)" }, 
+              unit_amount: 100,
+            },
+            quantity: 1,
+          },
+        ],
+        key_type: "hashtag",        
+        quantity: 10,       
+        email: auth.email,      
+      }),
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+
+    if (data.error) {
+      throw new Error(data.error);
+    }
+
+    // Redirect using Stripe-hosted URL if available
+    if (data.url) {
+      window.location.href = data.url;
+      return;
+    }
+
+    // Fallback: redirect using session ID
+    if (data.id) {
+      const stripe = await stripePromise;
+      const { error } = await stripe.redirectToCheckout({ 
+        sessionId: data.id 
+      });
+      
+      if (error) {
+        throw new Error(error.message);
+      }
+    } else {
+      throw new Error('No session ID or URL returned from server');
+    }
+  } catch (err) {
+    console.error("Checkout error:", err);
+    alert(`Checkout failed: ${err.message}`);
+  } finally {
+    setLoading(false);
+  }
+};
   const copyToClipboard = async (specificTags = null) => {
     const tagsToCopy = specificTags || Array.from(selectedHashtags).length > 0
       ? Array.from(selectedHashtags)
@@ -386,16 +449,22 @@ export default function Home() {
                   </button>
                   
                   <button
-                    onClick={() => {
-                      // Here you can integrate with payment gateway
-                      alert("Redirecting to payment gateway...");
-                      setShowKeyModal(false);
-                    }}
-                    className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 font-medium text-white transition-all hover:from-amber-600 hover:to-orange-600"
-                  >
-                    <ShoppingCart size={18} />
-                    Buy Now
-                  </button>
+  onClick={() => {
+    handleCheckout();
+    setShowKeyModal(false);
+  }}
+  disabled={loading}
+  className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-3 font-medium text-white transition-all hover:from-amber-600 hover:to-orange-600 disabled:opacity-50"
+>
+  {loading ? (
+    <RotateCw className="h-4 w-4 animate-spin" />
+  ) : (
+    <>
+      <ShoppingCart size={18} />
+      Buy Now
+    </>
+  )}
+</button>
                 </div>
 
                 <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">

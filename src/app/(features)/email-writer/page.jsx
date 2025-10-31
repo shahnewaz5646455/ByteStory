@@ -81,6 +81,7 @@ export default function EmailWriter() {
   const [showOffNetStatus, setShowOffNetStatus] = useState(!isOnline);
   const [hasNetworkChanged, setHasNetworkChanged] = useState(false);
   const [pendingRequest, setPendingRequest] = useState(null);
+  const [error, setError] = useState(null);
 
   // ---- Delete Dialog State ----
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -146,6 +147,10 @@ export default function EmailWriter() {
       const data = await response.json();
 
       if (data.success) {
+         console.log("✅ USER DATA FROM DATABASE:");
+        console.log("📧 Email:", data.user.email);
+        console.log("👤 Name:", data.user.name);
+        console.log("🔑 Hashtag Keys:", data.user.hashtag_key);
         setUserData(data.user);
         setEmailKeyCount(data.user.email_key || 0);
 
@@ -464,7 +469,8 @@ export default function EmailWriter() {
   };
 
   // Error state
-  const [error, setError] = useState("");
+  
+  // payment checkout request
   const handleCheckout = async () => {
     setLoading(true);
     try {
@@ -482,6 +488,9 @@ export default function EmailWriter() {
               quantity: 1,
             },
           ],
+           email: auth.email,
+    key_type: "email",    
+    quantity: 10,   
         }),
       });
 
