@@ -1,7 +1,5 @@
 # 🧠 ByteStory — AI Powered Blogging Platform  
 
-> Empowering creators with intelligent content generation, SEO optimization, and seamless collaboration through AI.
-
 ![ByteStory Preview](https://i.ibb.co/6Jp3r40M/Screenshot-3.png)
 
 ---
