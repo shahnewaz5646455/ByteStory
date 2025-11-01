@@ -123,75 +123,91 @@ export function VisitorStats() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Active Users</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {stats?.realtime?.activeUsers || stats?.period?.activeUsers || 0}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Currently online</p>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                <Users className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Visitors</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {stats?.period?.visitors || 0}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">This {period}</p>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                <Eye className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Page Views</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {stats?.period?.pageViews || 0}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">This {period}</p>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                <TrendingUp className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Users</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {stats?.totals?.users || 0}
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Registered users</p>
-              </div>
-              <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                <Globe className="h-6 w-6 text-white" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+  <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+    <CardContent className="p-4 sm:p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">
+            Active Users
+          </p>
+          <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">
+            {stats?.realtime?.activeUsers || stats?.period?.activeUsers || 0}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            Currently online
+          </p>
+        </div>
+        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0">
+          <Users className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+        </div>
       </div>
+    </CardContent>
+  </Card>
+  
+  <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+    <CardContent className="p-4 sm:p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">
+            Total Visitors
+          </p>
+          <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">
+            {stats?.period?.visitors || 0}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            This {period}
+          </p>
+        </div>
+        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0">
+          <Eye className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+  
+  <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+    <CardContent className="p-4 sm:p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">
+            Page Views
+          </p>
+          <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">
+            {stats?.period?.pageViews || 0}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            This {period}
+          </p>
+        </div>
+        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center flex-shrink-0">
+          <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+  
+  <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
+    <CardContent className="p-4 sm:p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">
+            Total Users
+          </p>
+          <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mt-1">
+            {stats?.totals?.users || 0}
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            Registered users
+          </p>
+        </div>
+        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl flex items-center justify-center flex-shrink-0">
+          <Globe className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+</div>
 
       {/* Charts and Popular Pages Side by Side */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -232,7 +248,7 @@ export function VisitorStats() {
               </div>
             </div>
            <div className="h-80">
-  <ResponsiveContainer width="100%" height="100%">
+  <ResponsiveContainer className="-ml-10 md:w-[104%] w-[110%] " width="" height="100%">
     {chartData.length === 0 ? (
       <div className="flex items-center justify-center h-full">
         <div className="text-center text-gray-500 dark:text-gray-400">

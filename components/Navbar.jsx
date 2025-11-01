@@ -212,10 +212,10 @@ export default function Navbar() {
           {/* Logo */}
           <Link
             href="/"
-            className="flex-shrink-0 font-bold text-2xl flex items-center gap-2 cursor-pointer transition-colors"
+            className="flex-shrink-0 font-bold text-xl sm:text-2xl flex items-center gap-2 cursor-pointer transition-colors"
           >
-            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-r from-purple-500 to-indigo-500 shadow-md">
-              <Lightbulb className="w-6 h-6 text-white" />
+            <div className="sm:w-10 sm:h-10 h-8 w-8 rounded-full flex items-center justify-center bg-gradient-to-r from-purple-500 to-indigo-500 shadow-md">
+              <Lightbulb className="sm:w-6 sm:h-6 w-5 h-5 text-white" />
             </div>
             <p className="text-gray-800 dark:text-gray-100">ByteStory</p>
           </Link>
