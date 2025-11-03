@@ -29,38 +29,6 @@ From **SEO scoring** to **spell checking**, **hashtag generation**, and **PDF su
 
 ---
 
-## 🛠️ Getting Started
-
-### 1. Clone the repository
-
-```sh
-git clone https://github.com/yourusername/bytestory.git
-cd bytestory
-```
-
-### 2. Install dependencies
-
-```sh
-npm install
-```
-
-### 3. Set up your Gemini API key
-
-Create a `.env.local` file:
-
-```
-GEMINI_API_KEY=your_google_gemini_api_key
-```
-
-### 4. Add PDF.js worker
-
-Copy `pdf.worker.min.js` from `node_modules/pdfjs-dist/build/pdf.worker.min.js` to your `public` folder:
-
-```
-cp node_modules/pdfjs-dist/build/pdf.worker.min.js public/pdf.worker.min.js
-```
-
-### 5. Run the development server
 
 ```sh
 npm run dev
