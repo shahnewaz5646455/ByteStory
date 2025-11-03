@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { Sparkles, FileText, Zap, TrendingUp, CheckCircle, Hash, Mail, ArrowRight } from "lucide-react";
+import { Sparkles, FileText, Zap, TrendingUp, CheckCircle, Hash, Mail, ArrowRight, BookHeart } from "lucide-react";
 
 const tools = [
   {
@@ -42,7 +42,7 @@ const tools = [
   {
     name: "PDF Summarizer",
     desc: "Extract text from PDF and generate summarized version instantly.",
-    icon: Sparkles,
+    icon: BookHeart,
     href: "/pdf-converter",
     color: "from-violet-500 to-purple-500",
     bgColor: "bg-violet-50 dark:bg-violet-900/20",
