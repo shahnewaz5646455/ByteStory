@@ -96,7 +96,7 @@ STRIPE_WEBHOOK_SECRET=your_secret
 ```bash
 Copy code
 # Clone repository
-git clone https://github.com/your-username/bytestory.git
+git clone https://github.com/shahnewaz5646455/ByteStory.git
 cd bytestory
 npm install
 ```
