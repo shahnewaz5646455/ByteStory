@@ -71,7 +71,7 @@ export default function AdminSidebar({ onClose }) {
       icon: Users,
       badge: totalUsers !== null ? String(totalUsers) : null,
     },
-    { name: "Content", href: "/feed", icon: FileText },
+    { name: "My Post", href: "/admin/adminDashboard/my-posts", icon: FileText },
     {
       name: "Public Messages",
       href: "/admin/adminDashboard/public-messages",
