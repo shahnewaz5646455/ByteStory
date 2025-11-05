@@ -917,7 +917,7 @@ export default function AIWriterPage() {
                 )}
               </div>
 
-              <div className="h-48 overflow-y-auto rounded-2xl border-2 border-indigo-100/50 bg-gradient-to-br from-white to-indigo-50/50 p-6 shadow-inner dark:from-gray-700/80 dark:to-gray-800/80 dark:border-gray-600">
+              <div className="h-72 overflow-y-auto rounded-2xl border-2 border-indigo-100/50 bg-gradient-to-br from-white to-indigo-50/50 p-6 shadow-inner dark:from-gray-700/80 dark:to-gray-800/80 dark:border-gray-600">
                 {isGenerating ? (
                   <div className="flex h-full items-center justify-center">
                     <motion.div
