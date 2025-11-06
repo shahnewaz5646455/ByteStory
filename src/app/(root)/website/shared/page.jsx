@@ -340,7 +340,7 @@ export default function MyContentPage() {
                         </button>
 
                         <a
-                          href={`/content/${content._id}`}
+                          href={`/Shared-Content/${content._id}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
