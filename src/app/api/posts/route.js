@@ -27,6 +27,7 @@ export async function POST(request) {
       likes: [],
       loves: [],
       comments: [],
+      isDeleted: false, // ✅ Add this field explicitly
     });
 
     const savedPost = await newPost.save();
@@ -45,6 +46,7 @@ export async function POST(request) {
       comments: savedPost.comments,
       createdAt: savedPost.createdAt,
       updatedAt: savedPost.updatedAt,
+      isDeleted: savedPost.isDeleted, // ✅ Include this in response
     });
   } catch (error) {
     console.error("Error creating post:", error);
@@ -59,7 +61,13 @@ export async function GET() {
   try {
     await connectDB();
 
-    const posts = await Post.find({}).sort({ createdAt: -1 }).limit(20).lean();
+    // ✅ Only fetch posts that are NOT deleted
+    const posts = await Post.find({
+      isDeleted: { $ne: true }, // This will exclude deleted posts
+    })
+      .sort({ createdAt: -1 })
+      .limit(20)
+      .lean();
 
     const formattedPosts = posts.map((post) => ({
       id: post._id.toString(),
@@ -83,6 +91,7 @@ export async function GET() {
       })),
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
+      isDeleted: post.isDeleted, // ✅ Include this field
     }));
 
     return NextResponse.json(formattedPosts);
